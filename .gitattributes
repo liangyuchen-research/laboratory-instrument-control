@@ -1,0 +1,5 @@
+# Preserve reviewed source and scientific artifact checksums across platforms.
+* -text
+*.h5 binary
+*.npy binary
+*.zcos binary
