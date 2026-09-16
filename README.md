@@ -26,7 +26,7 @@ The controller supports background acquisition, raw or background-subtracted spe
 | `models/` | Scilab/Xcos thermal feedback model |
 | `scripts/` | Offline source, protocol, and failure-handling checks |
 
-This repository contains the earlier pulse/spectrometer instrument. The later FastAPI application and multi-pump liquid-handling system are not included.
+**Related research:** Autonomous Laboratory for Automated Solution Preparation and Quantitative Analysis, Plasma Engineering Laboratory, National Taiwan University. This repository contains the earlier pulse/spectrometer instrument. The later FastAPI application and multi-pump liquid-handling system are not included.
 
 ## Offline checks
 
