@@ -10,9 +10,6 @@ import tkinter.ttk as ttk
 from tkinter.constants import *
 import os.path
 from queue import Queue
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtGui import QWindow
-from PyQt5.QtCore import Qt
 
 _location = os.path.dirname(__file__)
 
@@ -22,8 +19,8 @@ import control_gui_support
 # import Spectra_Viewer
 # =============================================================================
 
-_bgcolor = "SystemButtonFace"
-_fgcolor = "SystemWindowText"
+_bgcolor = "#f0f0f0"
+_fgcolor = "#000000"
 _tabfg1 = "black"
 _tabfg2 = "white"
 _bgmode = "light"
@@ -37,12 +34,11 @@ def _style_code():
     global _style_code_ran
     if _style_code_ran:
         return
-    try:
-        control_gui_support.root.tk.call("source", os.path.join(_location, "themes", "vista.tcl"))
-    except:
-        pass
     style = ttk.Style()
-    style.theme_use("vista")
+    if "vista" in style.theme_names():
+        style.theme_use("vista")
+    elif "clam" in style.theme_names():
+        style.theme_use("clam")
     style.configure(".", font="TkDefaultFont")
     _style_code_ran = 1
 
@@ -59,7 +55,7 @@ class Toplevel1:
         top.maxsize(1924, 1061)
         top.resizable(1, 1)
         top.title(f"Mode {select_mode}")
-        top.configure(highlightcolor="SystemWindowText")
+        top.configure(highlightcolor="#000000")
 
         self.top = top
         self.combobox = tk.StringVar()
@@ -75,7 +71,7 @@ class Toplevel1:
             compound="left",
             underline="""-1""",
         )
-        self.parameter_setting.configure(highlightcolor="SystemWindowText")
+        self.parameter_setting.configure(highlightcolor="#000000")
 
         self.result = tk.Frame(self.TNotebook1)
         self.TNotebook1.add(self.result, padding=3)
@@ -85,7 +81,7 @@ class Toplevel1:
             compound="left",
             underline="""-1""",
         )
-        self.result.configure(highlightcolor="SystemWindowText")
+        self.result.configure(highlightcolor="#000000")
 
         self.analysis = tk.Frame(self.TNotebook1)
         self.TNotebook1.add(self.analysis, padding=3)
@@ -95,7 +91,7 @@ class Toplevel1:
             compound="left",
             underline="""-1""",
         )
-        self.analysis.configure(highlightcolor="SystemWindowText")
+        self.analysis.configure(highlightcolor="#000000")
 
         self.combobox_var_1 = tk.StringVar()
         self.metal_combobox_1 = ttk.Combobox(self.parameter_setting)
@@ -103,7 +99,7 @@ class Toplevel1:
         self.metal_combobox_1.configure(values=self.value_list)
         self.metal_combobox_1.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.metal_combobox_1.configure(textvariable=self.combobox_var_1)
-        self.metal_combobox_1.configure(foreground="SystemWindowText")
+        self.metal_combobox_1.configure(foreground="#000000")
         self.combobox_var_1.set("Metal 1")
 
         self.combobox_var_2 = tk.StringVar()
@@ -112,7 +108,7 @@ class Toplevel1:
         self.metal_combobox_2.configure(values=self.value_list)
         self.metal_combobox_2.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.metal_combobox_2.configure(textvariable=self.combobox_var_2)
-        self.metal_combobox_2.configure(foreground="SystemWindowText")
+        self.metal_combobox_2.configure(foreground="#000000")
         self.combobox_var_2.set("Metal 2")
 
         self.combobox_var_3 = tk.StringVar()
@@ -121,7 +117,7 @@ class Toplevel1:
         self.metal_combobox_3.configure(values=self.value_list)
         self.metal_combobox_3.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.metal_combobox_3.configure(textvariable=self.combobox_var_3)
-        self.metal_combobox_3.configure(foreground="SystemWindowText")
+        self.metal_combobox_3.configure(foreground="#000000")
         self.combobox_var_3.set("Metal 3")
 
         self.combobox_var_4 = tk.StringVar()
@@ -130,7 +126,7 @@ class Toplevel1:
         self.metal_combobox_4.configure(values=self.value_list)
         self.metal_combobox_4.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.metal_combobox_4.configure(textvariable=self.combobox_var_4)
-        self.metal_combobox_4.configure(foreground="SystemWindowText")
+        self.metal_combobox_4.configure(foreground="#000000")
         self.combobox_var_4.set("Metal 4")
 
         self.combobox_var_5 = tk.StringVar()
@@ -139,7 +135,7 @@ class Toplevel1:
         self.metal_combobox_5.configure(values=self.value_list)
         self.metal_combobox_5.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.metal_combobox_5.configure(textvariable=self.combobox_var_5)
-        self.metal_combobox_5.configure(foreground="SystemWindowText")
+        self.metal_combobox_5.configure(foreground="#000000")
         self.combobox_var_5.set("Metal 5")
 
         self.loop = tk.Label(self.parameter_setting)
@@ -148,8 +144,8 @@ class Toplevel1:
         self.loop.configure(activeforeground="black")
         self.loop.configure(disabledforeground="#b4b4b4")
         self.loop.configure(font="-family {Times New Roman} -size 20")
-        self.loop.configure(foreground="SystemWindowText")
-        self.loop.configure(highlightcolor="SystemWindowText")
+        self.loop.configure(foreground="#000000")
+        self.loop.configure(highlightcolor="#000000")
         self.loop.configure(text="""Loop""")
 
         self.conductivity = tk.Label(self.parameter_setting)
@@ -158,8 +154,8 @@ class Toplevel1:
         self.conductivity.configure(activeforeground="black")
         self.conductivity.configure(disabledforeground="#b4b4b4")
         self.conductivity.configure(font="-family {Times New Roman} -size 20")
-        self.conductivity.configure(foreground="SystemWindowText")
-        self.conductivity.configure(highlightcolor="SystemWindowText")
+        self.conductivity.configure(foreground="#000000")
+        self.conductivity.configure(highlightcolor="#000000")
         self.conductivity.configure(text="""Conductivity""")
 
         self.voltage = tk.Label(self.parameter_setting)
@@ -168,8 +164,8 @@ class Toplevel1:
         self.voltage.configure(activeforeground="black")
         self.voltage.configure(disabledforeground="#b4b4b4")
         self.voltage.configure(font="-family {Times New Roman} -size 20")
-        self.voltage.configure(foreground="SystemWindowText")
-        self.voltage.configure(highlightcolor="SystemWindowText")
+        self.voltage.configure(foreground="#000000")
+        self.voltage.configure(highlightcolor="#000000")
         self.voltage.configure(text="""Voltage""")
 
         self.ontime = tk.Label(self.parameter_setting)
@@ -178,8 +174,8 @@ class Toplevel1:
         self.ontime.configure(activeforeground="black")
         self.ontime.configure(disabledforeground="#b4b4b4")
         self.ontime.configure(font="-family {Times New Roman} -size 20")
-        self.ontime.configure(foreground="SystemWindowText")
-        self.ontime.configure(highlightcolor="SystemWindowText")
+        self.ontime.configure(foreground="#000000")
+        self.ontime.configure(highlightcolor="#000000")
         self.ontime.configure(text="""Ontime""")
 
         self.offtime = tk.Label(self.parameter_setting)
@@ -188,8 +184,8 @@ class Toplevel1:
         self.offtime.configure(activeforeground="black")
         self.offtime.configure(disabledforeground="#b4b4b4")
         self.offtime.configure(font="-family {Times New Roman} -size 20")
-        self.offtime.configure(foreground="SystemWindowText")
-        self.offtime.configure(highlightcolor="SystemWindowText")
+        self.offtime.configure(foreground="#000000")
+        self.offtime.configure(highlightcolor="#000000")
         self.offtime.configure(text="""Offtime""")
 
         self.cycle = tk.Label(self.parameter_setting)
@@ -198,8 +194,8 @@ class Toplevel1:
         self.cycle.configure(activeforeground="black")
         self.cycle.configure(disabledforeground="#b4b4b4")
         self.cycle.configure(font="-family {Times New Roman} -size 20")
-        self.cycle.configure(foreground="SystemWindowText")
-        self.cycle.configure(highlightcolor="SystemWindowText")
+        self.cycle.configure(foreground="#000000")
+        self.cycle.configure(highlightcolor="#000000")
         self.cycle.configure(text="""Cycle""")
 
         self.spectra = tk.Label(self.parameter_setting)
@@ -208,8 +204,8 @@ class Toplevel1:
         self.spectra.configure(activeforeground="black")
         self.spectra.configure(disabledforeground="#b4b4b4")
         self.spectra.configure(font="-family {Times New Roman} -size 20")
-        self.spectra.configure(foreground="SystemWindowText")
-        self.spectra.configure(highlightcolor="SystemWindowText")
+        self.spectra.configure(foreground="#000000")
+        self.spectra.configure(highlightcolor="#000000")
         self.spectra.configure(text="""Spectra""")
 
         self.interval = tk.Label(self.parameter_setting)
@@ -218,8 +214,8 @@ class Toplevel1:
         self.interval.configure(activeforeground="black")
         self.interval.configure(disabledforeground="#b4b4b4")
         self.interval.configure(font="-family {Times New Roman} -size 20")
-        self.interval.configure(foreground="SystemWindowText")
-        self.interval.configure(highlightcolor="SystemWindowText")
+        self.interval.configure(foreground="#000000")
+        self.interval.configure(highlightcolor="#000000")
         self.interval.configure(text="""Interval""")
 
         self.time = tk.Label(self.parameter_setting)
@@ -228,8 +224,8 @@ class Toplevel1:
         self.time.configure(activeforeground="black")
         self.time.configure(disabledforeground="#b4b4b4")
         self.time.configure(font="-family {Times New Roman} -size 20")
-        self.time.configure(foreground="SystemWindowText")
-        self.time.configure(highlightcolor="SystemWindowText")
+        self.time.configure(foreground="#000000")
+        self.time.configure(highlightcolor="#000000")
         self.time.configure(text="""Time""")
 
         self.integration = tk.Label(self.parameter_setting)
@@ -238,139 +234,139 @@ class Toplevel1:
         self.integration.configure(activeforeground="black")
         self.integration.configure(disabledforeground="#b4b4b4")
         self.integration.configure(font="-family {Times New Roman} -size 20")
-        self.integration.configure(foreground="SystemWindowText")
-        self.integration.configure(highlightcolor="SystemWindowText")
+        self.integration.configure(foreground="#000000")
+        self.integration.configure(highlightcolor="#000000")
         self.integration.configure(text="""Integration""")
 
         self.metal_entry_1 = tk.Entry(self.parameter_setting)
         self.metal_entry_1.place(relx=0.155, rely=0.172, height=37, relwidth=0.14)
-        self.metal_entry_1.configure(background="SystemButtonFace")
+        self.metal_entry_1.configure(background="#f0f0f0")
         self.metal_entry_1.configure(disabledforeground="#b4b4b4")
         self.metal_entry_1.configure(font="-family {Times New Roman} -size 14")
-        self.metal_entry_1.configure(foreground="SystemWindowText")
-        self.metal_entry_1.configure(highlightcolor="SystemWindowText")
+        self.metal_entry_1.configure(foreground="#000000")
+        self.metal_entry_1.configure(highlightcolor="#000000")
         self.metal_entry_1.configure(selectbackground="#d9d9d9")
         self.metal_entry_1.configure(selectforeground="black")
 
         self.metal_entry_2 = tk.Entry(self.parameter_setting)
         self.metal_entry_2.place(relx=0.155, rely=0.309, height=37, relwidth=0.14)
-        self.metal_entry_2.configure(background="SystemButtonFace")
+        self.metal_entry_2.configure(background="#f0f0f0")
         self.metal_entry_2.configure(disabledforeground="#b4b4b4")
         self.metal_entry_2.configure(font="-family {Times New Roman} -size 14")
-        self.metal_entry_2.configure(foreground="SystemWindowText")
-        self.metal_entry_2.configure(highlightcolor="SystemWindowText")
+        self.metal_entry_2.configure(foreground="#000000")
+        self.metal_entry_2.configure(highlightcolor="#000000")
         self.metal_entry_2.configure(selectbackground="#d9d9d9")
         self.metal_entry_2.configure(selectforeground="black")
 
         self.metal_entry_3 = tk.Entry(self.parameter_setting)
         self.metal_entry_3.place(relx=0.155, rely=0.446, height=37, relwidth=0.14)
-        self.metal_entry_3.configure(background="SystemButtonFace")
+        self.metal_entry_3.configure(background="#f0f0f0")
         self.metal_entry_3.configure(disabledforeground="#b4b4b4")
         self.metal_entry_3.configure(font="-family {Times New Roman} -size 14")
-        self.metal_entry_3.configure(foreground="SystemWindowText")
-        self.metal_entry_3.configure(highlightcolor="SystemWindowText")
+        self.metal_entry_3.configure(foreground="#000000")
+        self.metal_entry_3.configure(highlightcolor="#000000")
         self.metal_entry_3.configure(selectbackground="#d9d9d9")
         self.metal_entry_3.configure(selectforeground="black")
 
         self.metal_entry_4 = tk.Entry(self.parameter_setting)
         self.metal_entry_4.place(relx=0.155, rely=0.583, height=37, relwidth=0.14)
-        self.metal_entry_4.configure(background="SystemButtonFace")
+        self.metal_entry_4.configure(background="#f0f0f0")
         self.metal_entry_4.configure(disabledforeground="#b4b4b4")
         self.metal_entry_4.configure(font="-family {Times New Roman} -size 14")
-        self.metal_entry_4.configure(foreground="SystemWindowText")
-        self.metal_entry_4.configure(highlightcolor="SystemWindowText")
+        self.metal_entry_4.configure(foreground="#000000")
+        self.metal_entry_4.configure(highlightcolor="#000000")
         self.metal_entry_4.configure(selectbackground="#d9d9d9")
         self.metal_entry_4.configure(selectforeground="black")
 
         self.metal_entry_5 = tk.Entry(self.parameter_setting)
         self.metal_entry_5.place(relx=0.155, rely=0.72, height=37, relwidth=0.14)
 
-        self.metal_entry_5.configure(background="SystemButtonFace")
+        self.metal_entry_5.configure(background="#f0f0f0")
         self.metal_entry_5.configure(disabledforeground="#b4b4b4")
         self.metal_entry_5.configure(font="-family {Times New Roman} -size 14")
-        self.metal_entry_5.configure(foreground="SystemWindowText")
-        self.metal_entry_5.configure(highlightcolor="SystemWindowText")
+        self.metal_entry_5.configure(foreground="#000000")
+        self.metal_entry_5.configure(highlightcolor="#000000")
         self.metal_entry_5.configure(selectbackground="#d9d9d9")
         self.metal_entry_5.configure(selectforeground="black")
 
         self.ontime_entry = tk.Entry(self.parameter_setting)
         self.ontime_entry.place(relx=0.465, rely=0.172, height=37, relwidth=0.14)
 
-        self.ontime_entry.configure(background="SystemButtonFace")
+        self.ontime_entry.configure(background="#f0f0f0")
         self.ontime_entry.configure(disabledforeground="#b4b4b4")
         self.ontime_entry.configure(font="-family {Times New Roman} -size 14")
-        self.ontime_entry.configure(foreground="SystemWindowText")
-        self.ontime_entry.configure(highlightcolor="SystemWindowText")
+        self.ontime_entry.configure(foreground="#000000")
+        self.ontime_entry.configure(highlightcolor="#000000")
         self.ontime_entry.configure(selectbackground="#d9d9d9")
         self.ontime_entry.configure(selectforeground="black")
 
         self.offtime_entry = tk.Entry(self.parameter_setting)
         self.offtime_entry.place(relx=0.465, rely=0.309, height=37, relwidth=0.14)
-        self.offtime_entry.configure(background="SystemButtonFace")
+        self.offtime_entry.configure(background="#f0f0f0")
         self.offtime_entry.configure(disabledforeground="#b4b4b4")
         self.offtime_entry.configure(font="-family {Times New Roman} -size 14")
-        self.offtime_entry.configure(foreground="SystemWindowText")
-        self.offtime_entry.configure(highlightcolor="SystemWindowText")
+        self.offtime_entry.configure(foreground="#000000")
+        self.offtime_entry.configure(highlightcolor="#000000")
         self.offtime_entry.configure(selectbackground="#d9d9d9")
         self.offtime_entry.configure(selectforeground="black")
 
         self.cycle_entry = tk.Entry(self.parameter_setting)
         self.cycle_entry.place(relx=0.465, rely=0.446, height=37, relwidth=0.14)
-        self.cycle_entry.configure(background="SystemButtonFace")
+        self.cycle_entry.configure(background="#f0f0f0")
         self.cycle_entry.configure(disabledforeground="#b4b4b4")
         self.cycle_entry.configure(font="-family {Times New Roman} -size 14")
-        self.cycle_entry.configure(foreground="SystemWindowText")
-        self.cycle_entry.configure(highlightcolor="SystemWindowText")
+        self.cycle_entry.configure(foreground="#000000")
+        self.cycle_entry.configure(highlightcolor="#000000")
         self.cycle_entry.configure(selectbackground="#d9d9d9")
         self.cycle_entry.configure(selectforeground="black")
 
         self.spectra_interval_entry = tk.Entry(self.parameter_setting)
         self.spectra_interval_entry.place(relx=0.465, rely=0.72, height=37, relwidth=0.14)
-        self.spectra_interval_entry.configure(background="SystemButtonFace")
+        self.spectra_interval_entry.configure(background="#f0f0f0")
         self.spectra_interval_entry.configure(disabledforeground="#b4b4b4")
         self.spectra_interval_entry.configure(font="-family {Times New Roman} -size 14")
-        self.spectra_interval_entry.configure(foreground="SystemWindowText")
-        self.spectra_interval_entry.configure(highlightcolor="SystemWindowText")
+        self.spectra_interval_entry.configure(foreground="#000000")
+        self.spectra_interval_entry.configure(highlightcolor="#000000")
         self.spectra_interval_entry.configure(selectbackground="#d9d9d9")
         self.spectra_interval_entry.configure(selectforeground="black")
 
         self.integration_time_entry = tk.Entry(self.parameter_setting)
         self.integration_time_entry.place(relx=0.465, rely=0.583, height=37, relwidth=0.14)
-        self.integration_time_entry.configure(background="SystemButtonFace")
+        self.integration_time_entry.configure(background="#f0f0f0")
         self.integration_time_entry.configure(disabledforeground="#b4b4b4")
         self.integration_time_entry.configure(font="-family {Times New Roman} -size 14")
-        self.integration_time_entry.configure(foreground="SystemWindowText")
-        self.integration_time_entry.configure(highlightcolor="SystemWindowText")
+        self.integration_time_entry.configure(foreground="#000000")
+        self.integration_time_entry.configure(highlightcolor="#000000")
         self.integration_time_entry.configure(selectbackground="#d9d9d9")
         self.integration_time_entry.configure(selectforeground="black")
 
         self.conductivity_entry = tk.Entry(self.parameter_setting)
         self.conductivity_entry.place(relx=0.795, rely=0.309, height=37, relwidth=0.14)
-        self.conductivity_entry.configure(background="SystemButtonFace")
+        self.conductivity_entry.configure(background="#f0f0f0")
         self.conductivity_entry.configure(disabledforeground="#b4b4b4")
         self.conductivity_entry.configure(font="-family {Times New Roman} -size 14")
-        self.conductivity_entry.configure(foreground="SystemWindowText")
-        self.conductivity_entry.configure(highlightcolor="SystemWindowText")
+        self.conductivity_entry.configure(foreground="#000000")
+        self.conductivity_entry.configure(highlightcolor="#000000")
         self.conductivity_entry.configure(selectbackground="#d9d9d9")
         self.conductivity_entry.configure(selectforeground="black")
 
         self.voltage_entry = tk.Entry(self.parameter_setting)
         self.voltage_entry.place(relx=0.795, rely=0.172, height=37, relwidth=0.14)
-        self.voltage_entry.configure(background="SystemButtonFace")
+        self.voltage_entry.configure(background="#f0f0f0")
         self.voltage_entry.configure(disabledforeground="#b4b4b4")
         self.voltage_entry.configure(font="-family {Times New Roman} -size 14")
-        self.voltage_entry.configure(foreground="SystemWindowText")
-        self.voltage_entry.configure(highlightcolor="SystemWindowText")
+        self.voltage_entry.configure(foreground="#000000")
+        self.voltage_entry.configure(highlightcolor="#000000")
         self.voltage_entry.configure(selectbackground="#d9d9d9")
         self.voltage_entry.configure(selectforeground="black")
 
         self.loop_entry = tk.Entry(self.parameter_setting)
         self.loop_entry.place(relx=0.795, rely=0.446, height=37, relwidth=0.14)
-        self.loop_entry.configure(background="SystemButtonFace")
+        self.loop_entry.configure(background="#f0f0f0")
         self.loop_entry.configure(disabledforeground="#b4b4b4")
         self.loop_entry.configure(font="-family {Times New Roman} -size 14")
-        self.loop_entry.configure(foreground="SystemWindowText")
-        self.loop_entry.configure(highlightcolor="SystemWindowText")
+        self.loop_entry.configure(foreground="#000000")
+        self.loop_entry.configure(highlightcolor="#000000")
         self.loop_entry.configure(selectbackground="#d9d9d9")
         self.loop_entry.configure(selectforeground="black")
 
@@ -379,7 +375,7 @@ class Toplevel1:
         self.save_path_text.configure(background="white")
         self.save_path_text.configure(disabledforeground="#b4b4b4")
         self.save_path_text.configure(font="-family {Microsoft JhengHei UI} -size 12")
-        self.save_path_text.configure(highlightcolor="SystemWindowText")
+        self.save_path_text.configure(highlightcolor="#000000")
         self.save_path_text.configure(selectbackground="#d9d9d9")
         self.save_path_text.configure(selectforeground="black")
         self.save_path_text.insert(0, self.save_path)
@@ -392,8 +388,8 @@ class Toplevel1:
         self.start_button.configure(command=self.raspberrypi_controll_functions.start)
         self.start_button.configure(disabledforeground="#b4b4b4")
         self.start_button.configure(font="-family {Times New Roman} -size 18")
-        self.start_button.configure(foreground="SystemWindowText")
-        self.start_button.configure(highlightcolor="SystemWindowText")
+        self.start_button.configure(foreground="#000000")
+        self.start_button.configure(highlightcolor="#000000")
         self.start_button.configure(text="""Start""")
 
         self.stop_button = tk.Button(self.parameter_setting)
@@ -403,9 +399,9 @@ class Toplevel1:
         self.stop_button.configure(command=self.raspberrypi_controll_functions.close_ui)
         self.stop_button.configure(disabledforeground="#b4b4b4")
         self.stop_button.configure(font="-family {Times New Roman} -size 18")
-        self.stop_button.configure(foreground="SystemWindowText")
-        self.stop_button.configure(highlightcolor="SystemWindowText")
-        self.stop_button.configure(text="""Stop""")
+        self.stop_button.configure(foreground="#000000")
+        self.stop_button.configure(highlightcolor="#000000")
+        self.stop_button.configure(text="Close UI", font="-family {Times New Roman} -size 13")
 
         self.combobox_var_parameter = tk.StringVar()
         self.parameter_combobox = ttk.Combobox(self.parameter_setting)
@@ -426,8 +422,8 @@ class Toplevel1:
         self.back_button.configure(activeforeground="black")
         self.back_button.configure(disabledforeground="#b4b4b4")
         self.back_button.configure(font="-family {Microsoft JhengHei UI} -size 16")
-        self.back_button.configure(foreground="SystemWindowText")
-        self.back_button.configure(highlightcolor="SystemWindowText")
+        self.back_button.configure(foreground="#000000")
+        self.back_button.configure(highlightcolor="#000000")
         self.back_button.configure(text="""↩""")
 
         self.wash_button = tk.Button(
@@ -438,9 +434,10 @@ class Toplevel1:
         self.wash_button.configure(activeforeground="black")
         self.wash_button.configure(disabledforeground="#b4b4b4")
         self.wash_button.configure(font="-family {Microsoft JhengHei UI} -size 9")
-        self.wash_button.configure(foreground="SystemWindowText")
-        self.wash_button.configure(highlightcolor="SystemWindowText")
+        self.wash_button.configure(foreground="#000000")
+        self.wash_button.configure(highlightcolor="#000000")
         self.wash_button.configure(text="""Wash""")
+        self.wash_button.place_forget()  # No washing operation exists in this legacy controller.
 
         self.Button3 = tk.Button(self.parameter_setting)
         self.Button3.place(relx=0.145, rely=0.018, height=46, width=48)
@@ -448,17 +445,18 @@ class Toplevel1:
         self.Button3.configure(activeforeground="black")
         self.Button3.configure(disabledforeground="#b4b4b4")
         self.Button3.configure(font="-family {Microsoft JhengHei UI} -size 9")
-        self.Button3.configure(foreground="SystemWindowText")
-        self.Button3.configure(highlightcolor="SystemWindowText")
+        self.Button3.configure(foreground="#000000")
+        self.Button3.configure(highlightcolor="#000000")
         self.Button3.configure(text="""Button""")
+        self.Button3.place_forget()  # Unassigned designer control; not an implemented operation.
 
         self.savepath_button = tk.Button(self.parameter_setting)
         self.savepath_button.place(relx=0.571, rely=0.035, height=30, width=28)
         self.savepath_button.configure(activebackground="#d9d9d9")
         self.savepath_button.configure(activeforeground="black")
         self.savepath_button.configure(disabledforeground="#b4b4b4")
-        self.savepath_button.configure(foreground="SystemWindowText")
-        self.savepath_button.configure(highlightcolor="SystemWindowText")
+        self.savepath_button.configure(foreground="#000000")
+        self.savepath_button.configure(highlightcolor="#000000")
         self.savepath_button.configure(text="""...""")
         self.savepath_button.configure(command=self.raspberrypi_controll_functions.change_save_path)
 
@@ -470,8 +468,8 @@ class Toplevel1:
         self.spectrum_label.configure(compound="left")
         self.spectrum_label.configure(disabledforeground="#b4b4b4")
         self.spectrum_label.configure(font="-family {Microsoft JhengHei UI} -size 14")
-        self.spectrum_label.configure(foreground="SystemWindowText")
-        self.spectrum_label.configure(highlightcolor="SystemWindowText")
+        self.spectrum_label.configure(foreground="#000000")
+        self.spectrum_label.configure(highlightcolor="#000000")
         self.spectrum_label.configure(text="""Spectrum""")
 
         self.time_series_label = tk.Label(self.result)
@@ -482,8 +480,8 @@ class Toplevel1:
         self.time_series_label.configure(compound="left")
         self.time_series_label.configure(disabledforeground="#b4b4b4")
         self.time_series_label.configure(font="-family {Microsoft JhengHei UI} -size 14")
-        self.time_series_label.configure(foreground="SystemWindowText")
-        self.time_series_label.configure(highlightcolor="SystemWindowText")
+        self.time_series_label.configure(foreground="#000000")
+        self.time_series_label.configure(highlightcolor="#000000")
         self.time_series_label.configure(text="""Time Series""")
 
         self.combobox_var_time = tk.StringVar()
@@ -553,9 +551,9 @@ class Toplevel1:
 
         self.console_text = tk.Text(self.top)
         self.console_text.place(relx=0.048, rely=0.84, relheight=0.108, relwidth=0.88)
-        self.console_text.configure(background="SystemButtonFace")
+        self.console_text.configure(background="#f0f0f0")
         self.console_text.configure(font="-family {Microsoft JhengHei UI} -size 12")
-        self.console_text.configure(highlightcolor="SystemWindowText")
+        self.console_text.configure(highlightcolor="#000000")
         self.console_text.configure(selectbackground="#a0a0a0")
         self.console_text.configure(selectforeground="black")
         self.console_text.configure(wrap="word")
@@ -607,14 +605,14 @@ class Toplevel2:
         top.maxsize(3844, 1061)
         top.resizable(1, 1)
         top.title("Mode Selection")
-        top.configure(highlightcolor="SystemWindowText")
+        top.configure(highlightcolor="#000000")
 
         self.top = top
         self.select_mode_functions = control_gui_support.SelectModeFunctions(
             self
         )  # Create the mode-selection controller
 
-        self.menubar = tk.Menu(top, font="TkMenuFont", bg="SystemButtonFace", fg=_fgcolor)
+        self.menubar = tk.Menu(top, font="TkMenuFont", bg="#f0f0f0", fg=_fgcolor)
         top.configure(menu=self.menubar)
 
         self.Mode1 = tk.Button(self.top, command=lambda: self.select_mode_functions.select_mode(1))
@@ -624,7 +622,7 @@ class Toplevel2:
         self.Mode1.configure(disabledforeground="#b4b4b4")
         self.Mode1.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.Mode1.configure(foreground="#000000")
-        self.Mode1.configure(highlightcolor="SystemWindowText")
+        self.Mode1.configure(highlightcolor="#000000")
         self.Mode1.configure(text="""Mode1""")
 
         self.Mode2 = tk.Button(self.top, command=lambda: self.select_mode_functions.select_mode(2))
@@ -634,7 +632,7 @@ class Toplevel2:
         self.Mode2.configure(disabledforeground="#b4b4b4")
         self.Mode2.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.Mode2.configure(foreground="#000000")
-        self.Mode2.configure(highlightcolor="SystemWindowText")
+        self.Mode2.configure(highlightcolor="#000000")
         self.Mode2.configure(text="""Mode2""")
 
         self.Mode3 = tk.Button(self.top, command=lambda: self.select_mode_functions.select_mode(3))
@@ -644,8 +642,9 @@ class Toplevel2:
         self.Mode3.configure(disabledforeground="#b4b4b4")
         self.Mode3.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.Mode3.configure(foreground="#000000")
-        self.Mode3.configure(highlightcolor="SystemWindowText")
-        self.Mode3.configure(text="""Mode3""")
+        self.Mode3.configure(highlightcolor="#000000")
+        self.Mode3.configure(text="Unavailable", state=tk.DISABLED)
+        self.Mode3.place_forget()  # Only raw and background-subtracted acquisition are implemented.
 
         self.ok_button = tk.Button(self.top, command=self.select_mode_functions.proceed)
         self.ok_button.place(relx=0.435, rely=0.752, height=36, width=78)
@@ -654,7 +653,7 @@ class Toplevel2:
         self.ok_button.configure(disabledforeground="#b4b4b4")
         self.ok_button.configure(font="-family {Microsoft JhengHei UI} -size 14")
         self.ok_button.configure(foreground="#000000")
-        self.ok_button.configure(highlightcolor="SystemWindowText")
+        self.ok_button.configure(highlightcolor="#000000")
         self.ok_button.configure(text="""OK""")
         self.ok_button.configure(state=tk.DISABLED)
 
@@ -667,16 +666,16 @@ class Toplevel2:
         self.save_path_button.configure(disabledforeground="#b4b4b4")
         self.save_path_button.configure(font="-family {Microsoft JhengHei UI} -size 12")
         self.save_path_button.configure(foreground="#000000")
-        self.save_path_button.configure(highlightcolor="SystemWindowText")
+        self.save_path_button.configure(highlightcolor="#000000")
         self.save_path_button.configure(text="""Save Path""")
 
         self.save_path_entry = tk.Entry(self.top)
         self.save_path_entry.place(relx=0.209, rely=0.489, height=37, relwidth=0.737)
-        self.save_path_entry.configure(background="SystemButtonFace")
+        self.save_path_entry.configure(background="#f0f0f0")
         self.save_path_entry.configure(disabledforeground="#b4b4b4")
         self.save_path_entry.configure(font="-family {Microsoft JhengHei UI} -size 12")
         self.save_path_entry.configure(foreground="#000000")
-        self.save_path_entry.configure(highlightcolor="SystemWindowText")
+        self.save_path_entry.configure(highlightcolor="#000000")
         self.save_path_entry.configure(selectbackground="#d9d9d9")
         self.save_path_entry.configure(selectforeground="black")
         if save_path:

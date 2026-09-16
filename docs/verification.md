@@ -44,3 +44,16 @@ No physical serial port was opened, no firmware was uploaded, and no live pump o
 The source firmware's long scale diagnostics continue servicing stepper pulses but defer new USB commands and cleaning transitions until the diagnostic completes. The API guard checks known peristaltic activity. Syringe motion is not represented in the cached state, so run diagnostics only when the entire physical apparatus is idle. The timing implementation was retained rather than changed without hardware validation.
 
 Use the [hardware setup and calibration notes](../README.md#hardware-configuration) before a physical deployment. The preserved earlier pulse-control and spectral-acquisition implementation has its own [verification scope and limitations](../legacy/instrument-control/README.md).
+
+## Legacy implementation review
+
+The full-tree review on 17 September 2026 also checked every legacy directory, including the vendor source trees and serialized Xcos model. The v6 code remained unchanged from the checks above.
+
+- The STM32F103C8 firmware compiled and linked with Arm GNU GCC 7.2.1 using the new standalone `build.py` recipe: 18,992 bytes text, 504 bytes data and 1,912 bytes BSS.
+- The separately attributed RS485 Arduino variant compiled for the Uno target with AVR core 1.8.8 and LiquidCrystal I2C 1.1.2: 12,940 bytes flash and 581 bytes static RAM. The sketch produced no warnings; dependency warnings were confined to the LCD library and Arduino core.
+- Six acquisition regression checks cover current exported-spectrum filenames, background handling, wavelength alignment, UART failure propagation, cleanup, release of a waiting pulse thread, and timeout-budget validation before connection. Three desktop failure checks and the fixed-width protocol check also passed.
+- The Xcos archive passed CRC checks. All four members were inspected, including the XML diagram and Java-serialized Scilab dictionary, with no personal workstation paths or Chinese text found. The model was not executed.
+
+The legacy reader now matches the Raspberry Pi export format, and failed runs cannot reuse a prior run's file list. Acquisition-worker failures propagate to the process instead of leaving a pulse thread waiting indefinitely. Full timestamp precision prevents overwriting closely spaced spectra. Unimplemented designer controls are hidden; the window-closing button is labeled **Close UI**, since remote cancellation is not implemented.
+
+The vendor spectrometer SDK remains an external dependency. The host watchdog calculation now converts its millisecond timing budget to whole seconds with upward rounding and rejects values outside the protocol field before connection. Firmware timing is unchanged. Physical pulse timing, watchdog operation and live acquisition still require validation on the original instrument, as detailed in the [legacy protocol notes](../legacy/instrument-control/docs/hardware-and-protocol.md).

@@ -41,14 +41,29 @@ The Raspberry Pi opens the spectrometer through `ctypes`, reads the wavelength g
 
 Generated text files contain wavelength and intensity columns. Filenames encode timestamps and measurement parameters. The desktop fetches the most recent date-organized acquisition directory and plots spectra or selected-wavelength traces.
 
-## Preserved limitations to review before operation
+## Trigger-watchdog timeout
 
-- The source computes `est_to_ms` and then rounds it directly into `est_to_sec`, without dividing by 1,000. The firmware interprets the transmitted field as seconds. This unit inconsistency is documented rather than silently changing experimental timing during packaging.
-- The fractional on-time carry guard checks `1000` even though the fractional field is calculated by multiplying by `100`. Input range handling and rounding should be verified for the intended instrument settings.
-- The serial format has fixed-width minimum formatting but does not reject overflow values. The offline test checks representative valid parameters only.
+The STM32 parses the final field as whole seconds and compares elapsed `HAL_GetTick()` milliseconds against `timeout * 1000`. Every PB10 trigger restarts that elapsed-time counter. The host now calculates its budget in milliseconds and **rounds upward after dividing by 1,000**. The earlier code incorrectly sent millisecond values as seconds.
+
+The budget covers the longest of the encoded pulse train, the initial two-second host delay plus the acquisition interval, and the integration time plus acquisition interval. It then adds the original two-second allowance for scheduling and file I/O:
+
+```text
+timeout_seconds = ceil((max(pulse_train_ms,
+                           2000 + interval_ms,
+                           integration_ms + interval_ms) + 2000) / 1000)
+```
+
+Pulse duration uses the same hundredth-millisecond on-time rounding as the UART encoder. A budget exceeding the four-digit 9,999-second field is rejected before opening the UART, rather than clamped to a value that could interrupt the sequence. For example, on=1.25 ms, off=12 ms, 34 cycles, integration=10 ms, interval=20 ms produces a five-second watchdog. A direct conversion of pulse duration alone would not account for the host delay and repeated acquisitions.
+
+Timeout expiry stops the firmware pulse timer and begins its existing two-second delayed power-off sequence. The firmware is unchanged. Pure tests verify units, rounding, acquisition-gap coverage, field encoding, and overflow rejection. The scheduling allowance and physical timing have not been validated on hardware.
+
+## Preserved limitations to review before operation
+- The encoder normalizes fractional carry at `100` hundredths and rejects non-finite or overflowing fixed-width values before sending a command. These protocol limits are not a physical operating envelope for the connected supply or timer.
 - Closing the desktop GUI does not stop an active remote acquisition. The source's local stop-file field is not implemented as a complete remote cancellation mechanism.
 - The GUI retains automatic acceptance of unknown SSH host keys from the legacy source. Review connection policy for the intended instrument network before deployment.
 - The `.ioc` file does not fully describe all manually added GPIO/interrupt changes in `Core/Src/main.c`. Inspect both before regeneration or flashing.
 - The spectrometer SDK is not included, and no compatibility claim is made for another OS, CPU architecture, spectrometer, or library version.
 
-Offline checks cover source syntax, command encoding, and remote failure handling. A nonzero remote exit code prevents the desktop from treating the run as successful and fetching previous acquisition files. The checks use in-memory serial, GPIO, and SSH substitutes. Firmware compilation, live acquisition, and model simulation remain unverified.
+Offline checks cover source syntax, command encoding, exported-spectrum parsing, worker cleanup and remote failure handling. UART connection failures now raise errors; acquisition-thread errors release waiting pulse threads and propagate to the process. A final stop command and UART cleanup run after acquisition success or failure. A nonzero remote exit code prevents the desktop from treating the run as successful and fetching previous acquisition files. The checks use in-memory serial, GPIO, and SSH substitutes.
+
+STM32 firmware compiled and linked with Arm GNU GCC 7.2.1 (18,992 bytes text, 504 bytes data, 1,912 bytes BSS). The contributed Arduino sketch compiled for the Uno target with AVR core 1.8.8 and LiquidCrystal I2C 1.1.2 (12,940 bytes flash, 581 bytes static RAM). No hardware was connected or flashed. Live acquisition and Xcos simulation remain unverified.

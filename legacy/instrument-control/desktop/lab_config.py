@@ -4,6 +4,7 @@ from pathlib import Path
 import configparser
 import json
 import os
+import math
 
 CONFIG_PATH = Path(os.environ.get("LAB_CONFIG_FILE", Path(__file__).with_name("config.local.ini")))
 
@@ -19,8 +20,11 @@ def load_settings() -> dict:
 
     def wavelength_list(key: str, environment: str, default: str) -> list[float]:
         parsed = json.loads(value(key, environment, default))
-        if not isinstance(parsed, list) or not all(isinstance(x, (int, float)) for x in parsed):
-            raise ValueError(f"{key} must be a JSON list of numeric wavelengths.")
+        if not isinstance(parsed, list) or not all(
+            not isinstance(x, bool) and isinstance(x, (int, float)) and math.isfinite(x)
+            for x in parsed
+        ):
+            raise ValueError(f"{key} must be a JSON list of finite numeric wavelengths.")
         return parsed
 
     return {

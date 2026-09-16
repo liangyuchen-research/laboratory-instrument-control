@@ -1,8 +1,47 @@
 # 1. ───────────────────────────── Imports and module constants ─────────────────────────────
-import serial, sys, json, os, time, shutil, RPi.GPIO as GPIO
+import json
+import math
+import os
+import sys
+import time
+
+import serial
+import RPi.GPIO as GPIO
 from datetime import datetime
 from threading import Thread
-from ctypes import *
+from queue import Queue
+from ctypes import CDLL, c_float, c_int, c_short, c_void_p, pointer
+
+
+def calculate_timeout_seconds(on_ms, off_ms, cycles, integration_ms, interval_ms):
+    """Budget the STM32 trigger watchdog in whole seconds, without shortening it.
+
+    Each rising trigger resets the firmware watchdog. Cover the encoded pulse
+    train, the initial two-second host delay, and subsequent acquisition gaps,
+    retaining the original two-second allowance for scheduling and file I/O.
+    """
+    values = (on_ms, off_ms, cycles, integration_ms, interval_ms)
+    if any(isinstance(value, bool) or not isinstance(value, (int, float))
+           or not math.isfinite(value) for value in values):
+        raise ValueError("Timing parameters must be finite numbers")
+    if not 0.01 <= on_ms <= 999.99:
+        raise ValueError("On-time must be between 0.01 and 999.99 ms")
+    for name, value in (("Off-time", off_ms), ("Cycle count", cycles)):
+        if int(value) != value or not 1 <= value <= 9999:
+            raise ValueError(f"{name} must be an integer from 1 to 9999")
+    if int(integration_ms) != integration_ms or integration_ms < 1 or interval_ms < 0:
+        raise ValueError("Integration time must be a positive integer and interval nonnegative")
+
+    # Match the command encoder's hundredth-millisecond rounding, including carry.
+    on_integer = int(on_ms)
+    on_hundredths = on_integer * 100 + int(round((on_ms - on_integer) * 100))
+    pulse_ms = (on_hundredths / 100 + off_ms) * cycles
+    initial_trigger_gap_ms = 2000 + interval_ms
+    subsequent_trigger_gap_ms = integration_ms + interval_ms
+    budget_ms = max(pulse_ms, initial_trigger_gap_ms, subsequent_trigger_gap_ms) + 2000
+    if budget_ms > 9999 * 1000:
+        raise ValueError("Required trigger-watchdog timeout exceeds the 9999-second protocol limit")
+    return max(1, math.ceil(budget_ms / 1000))
 
 
 # 2. ────────────────────────────── Main controller ────────────────────────────────
@@ -16,6 +55,7 @@ class Rpi_STM32_Control:
         self.stop_file = os.path.join(os.path.dirname(__file__), "stop_rpi_control")
         self.running = True
         self.signal = []  # handshake list for threads
+        self.worker_errors = Queue()
 
     # 2-2  UART connection
     def connect_arduino(self):
@@ -42,14 +82,26 @@ class Rpi_STM32_Control:
         Encode timing, voltage, cycle count, and timeout parameters.
         The first six payload digits encode integer milliseconds and hundredths of a millisecond.
         """
+        fields = {"on": on, "off": off, "cycles": cyc, "voltage": volt, "timeout": timeout}
+        if any(isinstance(value, bool) or not isinstance(value, (int, float))
+               or not math.isfinite(value) for value in fields.values()):
+            raise ValueError("Pulse parameters must be finite numbers")
+        if not 0.01 <= on <= 999.99:
+            raise ValueError("On-time must be between 0.01 and 999.99 ms")
+        for name, value in (("off", off), ("cycles", cyc), ("timeout", timeout)):
+            if int(value) != value or not 1 <= value <= 9999:
+                raise ValueError(f"{name} must be an integer from 1 to 9999")
+        if int(volt) != volt or not 0 <= volt <= 9999:
+            raise ValueError("Voltage must be an integer from 0 to 9999")
+
         # ---- 1. Parse the on-time value ----
         on_int = int(on)  # Integer milliseconds
         on_dec = int(
             round((on - on_int) * 100)
         )  # Encode hundredths of a millisecond in three digits
 
-        # Original fractional carry guard; see the protocol notes
-        if on_dec == 1000:
+        # Normalize rounding at a millisecond boundary without widening the field.
+        if on_dec == 100:
             on_int += 1
             on_dec = 0
 
@@ -132,7 +184,7 @@ class Rpi_STM32_Control:
             time.sleep(interval / 1000)
             self.signal[i] = "S"  # Allow the pulse thread to proceed
 
-            ts = datetime.now().strftime("%Y%m%d-%H%M%S%f")[:-5]
+            ts = datetime.now().strftime("%Y%m%d-%H%M%S%f")
             fname = f"{path}/{ts}_{volt}_{ON}_{OFF}_{cyc}_{label}.txt"
 
             self.dll.UAI_SpectrometerDataOneshot(self.hand, IT * 1000, pointer(self.buffer), avg)
@@ -153,6 +205,8 @@ class Rpi_STM32_Control:
             GPIO.setmode(GPIO.BOARD)
             GPIO.setup(self.Pin, GPIO.OUT)
             while self.signal[i] != "S":
+                if not self.running:
+                    return
                 time.sleep(0.0005)
             time.sleep(0.002)
             GPIO.output(self.Pin, GPIO.HIGH)
@@ -162,16 +216,54 @@ class Rpi_STM32_Control:
             GPIO.cleanup()
 
     # 5. ───────────────────────────── Main acquisition routine ────────────────────────────
-    def run(self):
-        # 5-1  UART
-        if not self.connect_arduino():
-            return
+    def _run_worker(self, target, *args):
+        try:
+            target(*args)
+        except Exception as exc:
+            self.worker_errors.put(exc)
+            self.running = False
 
-        # 5-2  Parse GUI or CLI parameters from JSON
-        if len(sys.argv) < 2:
-            print("Need JSON parameter")
-            return
+    def run(self):
+        if len(sys.argv) != 2:
+            raise ValueError("Supply one JSON object containing acquisition parameters")
         p = json.loads(sys.argv[1])
+        if not isinstance(p, dict):
+            raise ValueError("Acquisition parameters must be a JSON object")
+        required = ("Selected Mode", "Ontime", "Offtime", "Cycle", "Voltage",
+                    "Integration Time", "Spectra Interval", "Loopnum", "Conductivity",
+                    "Metal1", "Metal2", "Metal3", "Metal4", "Metal5")
+        for key in required:
+            value = p.get(key)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise ValueError(f"{key} must be a finite number")
+        if p["Selected Mode"] not in (1, 2):
+            raise ValueError("Selected Mode must be 1 (raw) or 2 (background-subtracted)")
+        for key in ("Loopnum", "Integration Time"):
+            if int(p[key]) != p[key] or p[key] < 1:
+                raise ValueError(f"{key} must be a positive integer")
+        if p["Spectra Interval"] < 0:
+            raise ValueError("Spectra Interval cannot be negative")
+        p["Loopnum"] = int(p["Loopnum"])
+        p["Integration Time"] = int(p["Integration Time"])
+        self.timeout_seconds = calculate_timeout_seconds(
+            p["Ontime"], p["Offtime"], p["Cycle"],
+            p["Integration Time"], p["Spectra Interval"]
+        )
+        if not self.connect_arduino():
+            raise RuntimeError("Could not connect to the STM32 UART")
+        try:
+            self._acquire(p)
+        finally:
+            self.running = False
+            try:
+                if self.Arduino_ser.is_open:
+                    self.Arduino_ser.write(b"stop\n")
+            finally:
+                self.Arduino_ser.close()
+                GPIO.cleanup()
+        print("[DONE] all loops finished")
+
+    def _acquire(self, p):
         self.sel_mode = p["Selected Mode"]  # Mode 1 or mode 2
 
         # 5-3  Connect to the spectrometer
@@ -195,17 +287,9 @@ class Rpi_STM32_Control:
                 f.write(f"{self.SD_lambda[k]:.3f}\t{self.background[k]:.8f}\n")
 
         # 5-6  Encode parameters and trigger the STM32
-        est_to_ms = (p["Ontime"] + p["Offtime"]) * p[
-            "Cycle"
-        ] + 2000  # Duration calculated in milliseconds
-        est_to_sec = int(
-            round(est_to_ms)
-        )  # Original conversion retained; see the timeout-unit caveat
-        est_to_sec = max(1, min(est_to_sec, 9999))  # Clamp to the supported four-digit field
-
         cond = self.send_condition(
-            p["Ontime"], p["Offtime"], p["Cycle"], p["Voltage"], est_to_sec
-        )  # Transmit the timeout field interpreted as seconds
+            p["Ontime"], p["Offtime"], p["Cycle"], p["Voltage"], self.timeout_seconds
+        )  # Validated whole-second trigger-watchdog budget
         time.sleep(2)
         print("[UART]", cond)
 
@@ -216,8 +300,9 @@ class Rpi_STM32_Control:
         )
 
         t_spec = Thread(
-            target=self.Spec_thread,
+            target=self._run_worker,
             args=(
+                self.Spec_thread,
                 p["Ontime"],
                 p["Offtime"],
                 p["Cycle"],
@@ -229,15 +314,15 @@ class Rpi_STM32_Control:
                 label,
             ),
         )
-        t_pulse = Thread(target=self.Pulse_thread, args=(p["Loopnum"],))
+        t_pulse = Thread(target=self._run_worker, args=(self.Pulse_thread, p["Loopnum"],))
         t_spec.start()
         t_pulse.start()
         t_spec.join()
         t_pulse.join()
+        if not self.worker_errors.empty():
+            raise RuntimeError("Acquisition worker failed") from self.worker_errors.get()
 
-        # 5-8  Finish by stopping STM32 pulse generation
-        self.Arduino_ser.write(b"stop\n")
-        print("[DONE] all loops finished")
+        # run() sends the final stop command and closes the UART in its finally block.
 
 
 # 6. ────────────────────────────  Script entry point  ─────────────────────────────

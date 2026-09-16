@@ -10,6 +10,9 @@ outputs/
 vendor-sdk/
 Debug/
 Release/
+build/
+*.hex
+*.bin
 *.o
 *.d
 *.elf

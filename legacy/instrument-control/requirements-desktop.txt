@@ -4,5 +4,4 @@ pandas>=1.5,<3
 matplotlib>=3.6,<4
 paramiko>=2.12,<4
 scp>=0.14,<1
-PyQt5>=5.15,<6
 # tkinter is supplied by Python or the operating system, not by pip.

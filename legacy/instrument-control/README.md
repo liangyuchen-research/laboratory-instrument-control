@@ -36,9 +36,10 @@ Run from this `legacy/instrument-control/` directory:
 python scripts/validate_repository.py
 python scripts/check_protocol.py
 python scripts/check_desktop.py
+python scripts/check_acquisition.py
 ```
 
-These checks validate Python syntax, firmware command fields, remote-failure handling, and model-file structure using in-memory substitutes for serial, GPIO, and SSH. They do not access hardware.
+These checks validate Python syntax, firmware command fields, remote-failure handling, exported-spectrum parsing, worker failure cleanup, and model-file structure using in-memory substitutes for serial, GPIO, and SSH. They do not access hardware. The acquisition parser checks require NumPy and pandas from `requirements-desktop.txt`.
 
 ## Desktop setup
 
@@ -46,6 +47,11 @@ Create and activate a Python environment, then install the dependencies:
 
 ```bash
 python -m venv .venv
+```
+
+Activate the environment (`.venv\Scripts\activate` on Windows, or `source .venv/bin/activate` on Linux/macOS), then install:
+
+```bash
 python -m pip install -r requirements-desktop.txt
 ```
 
@@ -57,13 +63,23 @@ After configuring the instrument:
 python desktop/control_gui.py
 ```
 
+The interface supports raw and background-subtracted acquisition. Unimplemented designer controls are hidden. **Close UI** closes the desktop window; it does not cancel an active remote acquisition. The current Raspberry Pi exporter and desktop reader share the same timestamp/parameter filename format. Background files are excluded from measurement plots, and already corrected spectra are not background-subtracted a second time.
+
 ## Hardware setup and limitations
 
 Install `requirements-raspberry-pi.txt` on the Raspberry Pi. Obtain the UAI spectrometer SDK for the device and set `LAB_SPECTROMETER_LIBRARY` to its library path. The vendor binary is not included.
 
-The STM32 sources target STM32F103C8T6. Review the wiring, timer configuration, and manually edited firmware before building with a compatible STM32 toolchain. The saved CubeMX configuration may not include all source changes. The contributed Arduino variant uses a separate protocol.
+The STM32 sources target STM32F103C8T6. A standalone, compile-only build uses Python and Arm GNU Toolchain:
 
-See [hardware and protocol notes](docs/hardware-and-protocol.md) for pin assignments, command fields, and known timing and cancellation limitations. Firmware compilation, graphical operation, and live acquisition have not been verified for this release.
+```bash
+python firmware/stm32/build.py
+```
+
+Put the toolchain's `bin` directory on `PATH`, or supply `--toolchain /path/to/toolchain/bin`. The script produces ELF, HEX and BIN files under the ignored `firmware/stm32/build/` directory and never flashes a board. It compiled and linked successfully with Arm GNU GCC 7.2.1. The linker compatibility copy omits newer `READONLY` annotations while preserving the archived source linker script. Review wiring, timer settings and manually edited firmware before any hardware use; the saved CubeMX configuration may not include all source changes.
+
+The separately attributed Arduino variant uses a different protocol. It requires the Arduino AVR Boards package and **LiquidCrystal I2C 1.1.2**. It compiled for `arduino:avr:uno` using AVR core 1.8.8; this establishes build compatibility, not the identity or validation of the original physical board.
+
+See [hardware and protocol notes](docs/hardware-and-protocol.md) for pin assignments, command fields, and known timing and cancellation limitations. Graphical operation with live instruments and physical acquisition remain unverified.
 
 The Xcos model is a thermal feedback example with heater, valve, sensor, and PID blocks. It has been inspected structurally but not simulated, and does not validate pump mass control.
 

@@ -1,4 +1,5 @@
 from lab_config import load_settings
+from spectral_data import SpectralDataReader
 import shlex
 
 #! /usr/bin/env python3
@@ -52,6 +53,8 @@ class SelectModeFunctions:
         self.selected_mode = None
 
     def select_mode(self, mode):
+        if mode not in (1, 2):
+            raise ValueError("Only raw and background-subtracted acquisition are supported")
         self.selected_mode = mode
         self.reset_button_colors()
         if mode == 1:
@@ -63,9 +66,9 @@ class SelectModeFunctions:
         self.update_ok_button_state()
 
     def reset_button_colors(self):
-        self.top.Mode1.configure(bg="SystemButtonFace")
-        self.top.Mode2.configure(bg="SystemButtonFace")
-        self.top.Mode3.configure(bg="SystemButtonFace")
+        self.top.Mode1.configure(bg="#f0f0f0")
+        self.top.Mode2.configure(bg="#f0f0f0")
+        self.top.Mode3.configure(bg="#f0f0f0")
 
     def update_ok_button_state(self):
         if self.selected_mode is not None and self.top.save_path_entry.get():
@@ -117,8 +120,7 @@ class SelectModeFunctions:
         _w1.normalize_list.config(values=load_normalize_config())
 
     def show_mode3(self, mode_select_window, directory_name):
-        0
-        # mode_select_window.destroy()
+        raise ValueError("Mode 3 has no acquisition implementation")
 
     def back_to_mode_select(self, main_mode_window, save_path):
         main_mode_window.destroy()  # Close the acquisition window
@@ -306,6 +308,7 @@ class RaspberryPiController:
                 self.update_plot()
 
     def run_pi_commands(self):
+        self.file_path_list = []  # Never associate previous files with a failed run.
         try:
             if self.send_to_pi(self.values) and not self.stop:
                 sys.stdout.write("Starting file transfer\n")
@@ -500,7 +503,7 @@ class RaspberryPiController:
     def wash(self):
         self.w1.wash_button.configure(bg="lightblue")
         if self.is_wash:
-            self.w1.wash_button.configure(bg="SystemButtonFace")
+            self.w1.wash_button.configure(bg="#f0f0f0")
             self.is_wash = False
         else:
             self.w1.wash_button.configure(bg="lightblue")
@@ -528,7 +531,7 @@ class RaspberryPiController:
         colors = [to_hex(c) for c in colors]
         for i in range(len(data)):
             y_data = data.iloc[i].values
-            if self.nor_point_index:
+            if self.nor_point_index is not None:
                 normalization_value = data.iloc[i].values[self.nor_point_index]
                 y_data = y_data / normalization_value
 
@@ -538,7 +541,7 @@ class RaspberryPiController:
         if self.w1.average_var.get() == 1:
             self.spectrum_ax.plot(self.wavelength, avg_spectrum / len(data), color="#42A5F5")
 
-        if self.nor_point_index:
+        if self.nor_point_index is not None:
             mark_intensity = y_data
             self.spectrum_ax.plot(
                 self.wavelength[self.nor_point_index],
@@ -558,7 +561,7 @@ class RaspberryPiController:
             self.spectrum_ax.yaxis.set_major_formatter(
                 ticker.FuncFormatter(lambda x, pos: f"{int(x/1000)}k")
             )
-            if not self.nor_point_index
+            if self.nor_point_index is None
             else None
         )
 
@@ -593,7 +596,7 @@ class RaspberryPiController:
         time_series_index = []
         for i in range(len(data)):
             y_data = data.iloc[i].values
-            if self.nor_point_index:
+            if self.nor_point_index is not None:
                 normalization_value = data.iloc[i].values[self.nor_point_index]
                 y_data = y_data / normalization_value
             intensity = y_data[closest_index]
@@ -610,7 +613,7 @@ class RaspberryPiController:
             self.time_ax.yaxis.set_major_formatter(
                 ticker.FuncFormatter(lambda x, pos: f"{int(x/1000)}k")
             )
-            if not self.nor_point_index
+            if self.nor_point_index is None
             else None
         )
 
@@ -743,7 +746,7 @@ class RaspberryPiController:
 
         for i in range(len(data)):
             y_data = data.iloc[i].values
-            if self.nor_point_index:
+            if self.nor_point_index is not None:
                 normalization_value = data.iloc[i].values[self.nor_point_index]
                 y_data = y_data / normalization_value
 
@@ -753,7 +756,7 @@ class RaspberryPiController:
         if self.w1.average_var.get() == 1:
             zoom_ax.plot(self.wavelength, avg_spectrum / len(data), color="#42A5F5")
 
-        if self.nor_point_index:
+        if self.nor_point_index is not None:
             mark_intensity = y_data
             zoom_ax.plot(
                 self.wavelength[self.nor_point_index],
@@ -772,7 +775,7 @@ class RaspberryPiController:
             zoom_ax.yaxis.set_major_formatter(
                 ticker.FuncFormatter(lambda x, pos: f"{int(x / 1000)}k")
             )
-            if not self.nor_point_index
+            if self.nor_point_index is None
             else None
         )
         # zoom_ax.legend(loc="upper right", title='Spectra Index', fontsize=12, title_fontsize=12)
@@ -852,116 +855,8 @@ class StdoutRedirector:
         self.text_widget.after(100, self.process_queue)  # Poll the queue every 100 milliseconds
 
 
-class data_reader:
-    def __init__(self, txt_files):
-        self.txt_files = txt_files
-        self.column_index = [
-            "Time",
-            "Voltage",
-            "Ontime",
-            "Offtime",
-            "Cycle",
-            "Conductivity",
-            "Metal1",
-            "Metal2",
-            "Metal3",
-            "Metal4",
-            "Metal5",
-            "Run",
-        ]
-        self.wavelength = []
-
-    def Wavelength_extraction(self):
-        with open(self.txt_files[0], "r") as f:
-            content = f.readlines()
-            self.pixel_number = len(content)
-            for i in range(self.pixel_number):
-                self.wavelength.append(str(content[i].split("\t")[0]))
-        return self.wavelength
-
-    def Data_transfer(self):
-        data_condition = []
-        data_origin = []
-        run = 1
-        time = 0
-        wavelength = self.Wavelength_extraction()
-        is_background = False
-
-        for file_path in self.txt_files:
-            file_name = os.path.basename(file_path)
-            parts = os.path.splitext(file_name)[0].rsplit("_", 11)
-            if len(parts) == 12 and parts[-11] == "0":
-                is_background = True
-                break
-
-        if not is_background:
-            background = [0] * self.pixel_number
-
-        for i, file_path in enumerate(self.txt_files):
-            file_name = os.path.basename(file_path)
-            parts = os.path.splitext(file_name)[0].rsplit("_", 11)
-
-            if len(parts) != 12:
-                # print(f"[WARNING] Filename format incorrect: {file_name}")
-                continue
-
-            try:
-                float_parts = [
-                    float(x) for x in parts[-11:]
-                ]  # Convert the final 11 fields to floats, excluding the timestamp
-            except ValueError:
-                # print(f"[WARNING] Skipping non-numeric file: {file_name}")
-                continue
-
-            # Handle background files with zero on-time
-            if parts[-11] == "0":
-                with open(file_path, "r") as f:
-                    content = f.readlines()
-                    background = [
-                        float(content[j].split("\t")[1]) for j in range(self.pixel_number)
-                    ]
-
-                # Infer the run index after the background file
-                if data_condition and i + 1 < len(self.txt_files):
-                    next_parts = os.path.splitext(os.path.basename(self.txt_files[i + 1]))[
-                        0
-                    ].rsplit("_", 11)[-11:]
-                    try:
-                        target_list = [float(x) for x in next_parts]
-                        matching_rows = [
-                            row[-1] for row in data_condition if row[1:-1] == target_list
-                        ]
-                        run = max(matching_rows) + 1 if matching_rows else 1
-                    except ValueError:
-                        run = 1
-                time += 1
-
-            else:
-                data_condition.append([time] + float_parts + [run])
-
-                with open(file_path, "r") as f:
-                    content = f.readlines()
-                    intensity = [
-                        float(content[j].split("\t")[1]) - background[j]
-                        for j in range(self.pixel_number)
-                    ]
-                    data_origin.append(intensity)
-
-        condition = pd.DataFrame(data_condition, columns=self.column_index)
-        data = pd.DataFrame(data_origin, columns=wavelength)
-
-        grouped_conditions = condition.groupby(list(condition.columns)).apply(
-            lambda x: x.index.tolist()
-        )
-        drop_indices = [indices[0] for indices in grouped_conditions if len(indices) > 1]
-
-        condition = condition.drop(index=drop_indices).reset_index(drop=True)
-        data = data.drop(index=drop_indices).reset_index(drop=True)
-        grouped_conditions = condition.groupby(list(condition.columns)).apply(
-            lambda x: x.index.tolist()
-        )
-
-        return condition, data, grouped_conditions
+# Preserve the historical class name used by plotting callbacks.
+data_reader = SpectralDataReader
 
 
 def on_closing(root):

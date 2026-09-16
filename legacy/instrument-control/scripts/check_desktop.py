@@ -68,11 +68,13 @@ class RemoteAcquisitionChecks(unittest.TestCase):
         downloads = []
         controller = SimpleNamespace(
             values={}, stop=False, queue=queue.Queue(),
+            file_path_list=["previous-acquisition.txt"],
             send_to_pi=lambda values: False,
             get_result_from_pi=lambda: downloads.append(True),
         )
         worker(controller)
         self.assertEqual(downloads, [])
+        self.assertEqual(controller.file_path_list, [])
         self.assertEqual(controller.queue.get_nowait(), "thread_finished")
 
     def test_worker_reports_completion_after_unexpected_failure(self):
