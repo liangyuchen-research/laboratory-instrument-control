@@ -1,13 +1,13 @@
-# Attribution and curation
+# Attribution and source notes
 
 ## Source groups
 
-- The primary desktop interface, Raspberry Pi controller, and STM32 firmware came from the main instrument-control research directory supplied by the repository owner.
-- The Arduino/RS485 sketch came from a separately contributor-named subdirectory. It is presented as a contributed variant. The private provenance ledger retains the exact original directory name, without asserting an unverified English name or sole ownership.
+- The primary desktop interface, Raspberry Pi controller, and STM32 firmware belong to the instrument-control research source collection.
+- The Arduino/RS485 sketch is a contributed variant from a separate source subdirectory. The private provenance ledger retains its original contributor directory name.
 - The Xcos diagram came from the separate feedback-control model directory. Its original ZIP package and extracted source were both archived.
 - HAL, CMSIS, and STM32 device support files retain their original STMicroelectronics and Arm notices. The licenses remain at their original positions under `firmware/stm32/Drivers/`.
 
-## Public-source changes
+## Repository changes
 
 All changes were made to copies. Original source files and their hashes remain in the private archive.
 
@@ -19,6 +19,7 @@ All changes were made to copies. Original source files and their hashes remain i
 6. Retained the GUI acquisition-history file on close rather than deleting it.
 7. Parameterized serial device, baud rate, physical trigger pin, spectrometer library path, and acquisition output directory.
 8. Formatted Python source and normalized exported source line endings without redesigning pulse or acquisition algorithms.
+9. Treat nonzero remote-controller exit codes as acquisition failures, preventing a failed run from triggering a download of previous results. The worker reports completion to the GUI even after an exception.
 
 ## Material retained privately
 
@@ -30,4 +31,4 @@ The selected public implementation follows the main STM32 control path. Alternat
 
 Python syntax, source language, configuration parsing, numerical protocol fields, archive integrity, vendor-file hashes, and the Xcos ZIP/XML structure were checked. The protocol tests replace both serial and GPIO with in-memory fakes. No hardware was accessed. STM32 compilation, Arduino compilation, graphical launch, SSH connectivity, vendor SDK loading, pulse timing, spectrum acquisition, and full feedback simulation were not validated.
 
-No publication result, measured latency, hardware accuracy, author name, or software/data license was invented during this organization work.
+Hardware behavior and research results require validation on the original instrument.

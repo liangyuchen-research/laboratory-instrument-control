@@ -306,11 +306,12 @@ class RaspberryPiController:
                 self.update_plot()
 
     def run_pi_commands(self):
-        if self.send_to_pi(self.values):
-            if not self.stop:
+        try:
+            if self.send_to_pi(self.values) and not self.stop:
                 sys.stdout.write("Starting file transfer\n")
                 sys.stdout.flush()
                 self.get_result_from_pi()
+        finally:
             self.queue.put("thread_finished")
 
     def update_parameter_history(self):
@@ -426,13 +427,18 @@ class RaspberryPiController:
                 time.sleep(0.1)
 
             exit_status = channel.recv_exit_status()
+            if exit_status != 0:
+                raise RuntimeError(
+                    f"Remote controller exited with status {exit_status}. "
+                    "Review the acquisition log before retrying."
+                )
             return True
 
         except Exception as e:
             sys.stdout.write(f"Connection or remote execution failed: {str(e)}\n")
             sys.stdout.flush()
             messagebox.showerror(
-                "UART/GPIO error", f"Connection or remote execution failed：\n{str(e)}"
+                "UART/GPIO error", f"Connection or remote execution failed:\n{str(e)}"
             )
             return False
 

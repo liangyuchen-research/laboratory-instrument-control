@@ -51,4 +51,4 @@ Generated text files contain wavelength and intensity columns. Filenames encode 
 - The `.ioc` file does not fully describe all manually added GPIO/interrupt changes in `Core/Src/main.c`. Inspect both before regeneration or flashing.
 - The spectrometer SDK is not included, and no compatibility claim is made for another OS, CPU architecture, spectrometer, or library version.
 
-Only static validation and mocked protocol checks were performed. No serial port, GPIO pin, SSH session, shared hardware library, model simulation, compiler, or instrument was invoked during these checks.
+Offline checks cover source syntax, command encoding, and remote failure handling. A nonzero remote exit code prevents the desktop from treating the run as successful and fetching previous acquisition files. The checks use in-memory serial, GPIO, and SSH substitutes. Firmware compilation, live acquisition, and model simulation remain unverified.
