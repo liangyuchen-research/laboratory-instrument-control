@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Syringe Pump Wiring — Autonomous Laboratory v6</title>
+<style>
+  :root{--navy:#12263f;--acc:#2563eb;--acc2:#60a5fa;--grey:#64748b;--light:#eff4fb;
+        --green:#15803d;--teal:#0f6e56;--purple:#4338ca;--red:#b91c1c;--amber:#b45309;
+        --ink:#1f2937;--line:#dbe3ef;--soft:#f6f9fd}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#e9eef7 0%,#eef1f6 340px);color:var(--ink);
+       font-family:"Segoe UI",system-ui,sans-serif;
+       font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+  .page{max-width:1020px;margin:34px auto 60px;background:#fff;border-radius:18px;
+        box-shadow:0 1px 3px rgba(18,38,63,.06),0 12px 40px rgba(18,38,63,.10);
+        padding:54px 62px 66px}
+  header.doc{text-align:center;padding-bottom:28px;margin-bottom:28px;position:relative}
+  header.doc::after{content:"";position:absolute;left:32%;right:32%;bottom:0;height:3px;
+        border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+  header.doc h1{margin:0 0 12px;font-size:28px;color:var(--navy);letter-spacing:-.4px;line-height:1.35}
+  header.doc .sub{color:var(--grey);font-size:14px;line-height:1.8}
+  nav.toc{background:var(--soft);border:1px solid var(--line);border-radius:12px;
+        padding:16px 24px;margin:0 0 34px;font-size:14px;line-height:2.1}
+  nav.toc b{color:var(--navy);letter-spacing:.5px}
+  nav.toc a{color:var(--acc);text-decoration:none;margin-right:16px;white-space:nowrap;
+        border-bottom:1px solid transparent;transition:.15s}
+  nav.toc a:hover{border-bottom-color:var(--acc)}
+  h2{font-size:21px;color:var(--navy);margin:48px 0 16px;padding:2px 0 2px 15px;
+     border-left:5px solid var(--acc);border-radius:2px;line-height:1.45;letter-spacing:-.2px}
+  h3{font-size:16.5px;color:var(--navy);margin:30px 0 10px;padding-left:2px}
+  h3::before{content:"▸ ";color:var(--acc2)}
+  p{margin:0 0 15px;text-align:left}
+  ul,ol{margin:0 0 16px;padding-left:24px}
+  li{margin-bottom:7px}
+  table{border-collapse:separate;border-spacing:0;width:100%;margin:16px 0 26px;
+        font-size:13.5px;line-height:1.6;border:1px solid var(--line);
+        border-radius:11px;overflow:hidden;box-shadow:0 1px 2px rgba(18,38,63,.04)}
+  th{background:linear-gradient(180deg,#1c3357,#12263f);color:#fff;font-weight:600;
+     padding:11px 13px;text-align:left;font-size:13px;letter-spacing:.3px}
+  td{border-top:1px solid var(--line);padding:10px 13px;vertical-align:top}
+  tr:nth-child(even) td{background:#fafcff}
+  tbody tr:hover td,table tr:hover td{background:#f0f6ff}
+  code{background:var(--light);padding:2px 7px;border-radius:5px;font-size:.88em;
+       color:#1e40af;font-family:Consolas,monospace}
+  pre{background:linear-gradient(180deg,#152238,#0f172a);color:#dbe7ff;border-radius:12px;
+      padding:18px 22px;font-size:12.8px;line-height:1.7;overflow-x:auto;margin:14px 0 24px;
+      font-family:Consolas,monospace;
+      box-shadow:0 4px 16px rgba(15,23,42,.18)}
+  pre code{background:none;color:inherit;padding:0}
+  figure{margin:24px 0 30px;text-align:center}
+  figure svg{width:100%;height:auto;display:block;border:1px solid var(--line);
+             border-radius:14px;box-shadow:0 2px 12px rgba(18,38,63,.07)}
+  figcaption{margin-top:12px;color:var(--grey);font-size:13.5px;font-weight:600}
+  .note,.danger,.ok{border-radius:10px;padding:14px 18px 14px 46px;margin:16px 0 22px;
+       font-size:14.5px;line-height:1.85;position:relative}
+  .note::before,.danger::before,.ok::before{position:absolute;left:16px;top:13px;
+       font-weight:700;font-size:15px}
+  .note{background:#fffbeb;border:1px solid #fcd995;border-left:4px solid var(--amber)}
+  .note::before{content:"!";color:var(--amber);left:19px}
+  .danger{background:#fef4f4;border:1px solid #f6bcbc;border-left:4px solid var(--red)}
+  .danger::before{content:"\26A0";color:var(--red)}
+  .ok{background:#f2fdf5;border:1px solid #a7e8bf;border-left:4px solid var(--green)}
+  .ok::before{content:"\2713";color:var(--green)}
+  .tA{color:var(--teal);font-weight:700}
+  .tB{color:var(--purple);font-weight:700}
+  .tC{color:var(--green);font-weight:700}
+  td .sub{color:var(--grey);font-size:12px}
+  .chk{list-style:none;padding-left:4px;margin:10px 0 20px}
+  .chk li{margin-bottom:9px;padding-left:30px;position:relative}
+  .chk li::before{content:"\2610";position:absolute;left:0;top:-1px;font-size:19px;color:var(--acc)}
+  footer.doc{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);
+             color:var(--grey);font-size:13px;text-align:center;line-height:1.8}
+  a{color:var(--acc)}
+  @media(max-width:820px){.page{padding:28px 18px 40px;margin:0;border-radius:0}
+    header.doc h1{font-size:23px}h2{font-size:19px;margin-top:38px}
+    table{font-size:12.8px}th,td{padding:9px 10px}}
+  @media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:0}
+    nav.toc{display:none}h2{break-after:avoid}table,figure{break-inside:avoid}}
+</style></head><body><div class="page">
+<header class="doc">
+  <h1>Syringe Pump Wiring</h1>
+  <p class="sub">RUNZE SY-01B · ASCII protocol, 9600 baud · Address 0 · 12000 half-steps per stroke<br>
+  Arduino Mega <b>Serial1(D18 / D19)</b> → MAX13487 adapter → DB15 → pump · Nine connections</p>
+</header>
+
+<nav class="toc"><b>Contents</b><br>
+<a href="#s1">1. Overview</a><a href="#s2">2. Components</a><a href="#s3">3. RS485 Direction Control</a>
+<a href="#s4">4. DB15 Connector Orientation</a><a href="#s5">5. Factory Cable Identification</a><a href="#s6">6. Connection Tables</a>
+<a href="#s7">7. Assembly Sequence</a><a href="#s8">8. Unit Conversion</a><a href="#s9">9. Initial Test</a><a href="#s10">10. Troubleshooting</a>
+</nav>
+
+<h2 id="s1">1. Overview</h2>
+<p>The syringe pump uses the Mega's <b>second</b> hardware serial port, <code>Serial1</code>. The scale uses <code>Serial2</code>. Each device has <b>a dedicated RS485 adapter</b> and a separate bus, avoiding address conflicts and isolating communication faults.</p>
+<figure><svg viewBox="0 0 980 480" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif">
+<rect width="980" height="480" fill="#fbfcfe"/>
+<text x="490" y="32" font-size="17" font-weight="700" fill="#12263f" text-anchor="middle">Figure 1 · Syringe pump signal chain: nine connections</text>
+
+<rect x="34" y="118" width="196" height="150" rx="12" fill="#eef4ff" stroke="#2563eb" stroke-width="2"/>
+<text x="132" y="150" font-size="14.5" font-weight="700" fill="#12263f" text-anchor="middle">Arduino Mega</text>
+<text x="132" y="177" font-size="12" fill="#1f2937" text-anchor="middle">D18 = TX1 → DI</text>
+<text x="132" y="199" font-size="12" fill="#1f2937" text-anchor="middle">D19 = RX1 ← RO</text>
+<text x="132" y="221" font-size="12" fill="#1f2937" text-anchor="middle">5V ‧ GND</text>
+<text x="132" y="248" font-size="11.5" fill="#b45309" text-anchor="middle">Dedicated Serial1 bus</text>
+
+<rect x="306" y="118" width="196" height="150" rx="12" fill="#f5f3ff" stroke="#4338ca" stroke-width="2"/>
+<text x="404" y="150" font-size="14.5" font-weight="700" fill="#12263f" text-anchor="middle">MAX13487 adapter</text>
+<text x="404" y="177" font-size="12" fill="#64748b" text-anchor="middle">VCC GND DI RO</text>
+<text x="404" y="199" font-size="12" fill="#64748b" text-anchor="middle">A / B (RS485)</text>
+<text x="404" y="225" font-size="12" font-weight="700" fill="#15803d" text-anchor="middle">Automatic direction</text>
+<text x="404" y="248" font-size="11.5" fill="#15803d" text-anchor="middle">No DE / RE connection</text>
+
+<rect x="578" y="118" width="164" height="150" rx="12" fill="#eef2f7" stroke="#64748b" stroke-width="2"/>
+<text x="660" y="150" font-size="14.5" font-weight="700" fill="#12263f" text-anchor="middle">DB15 female connector</text>
+<text x="660" y="177" font-size="12" fill="#15803d" text-anchor="middle">pin 11 = A</text>
+<text x="660" y="199" font-size="12" fill="#2563eb" text-anchor="middle">pin 12 = B</text>
+<text x="660" y="221" font-size="12" fill="#64748b" text-anchor="middle">pin 10 = signal ground</text>
+<text x="660" y="248" font-size="12" fill="#b91c1c" text-anchor="middle">pin 1 / 9 = 24V</text>
+
+<rect x="818" y="118" width="128" height="150" rx="12" fill="#f3fbf6" stroke="#15803d" stroke-width="2"/>
+<text x="882" y="150" font-size="14.5" font-weight="700" fill="#12263f" text-anchor="middle">SY-01B</text>
+<text x="882" y="178" font-size="11.5" fill="#64748b" text-anchor="middle">Syringe pump</text>
+<text x="882" y="202" font-size="11.5" fill="#64748b" text-anchor="middle">ASCII 9600</text>
+<text x="882" y="224" font-size="11.5" fill="#64748b" text-anchor="middle">Address 0</text>
+<text x="882" y="248" font-size="11.5" fill="#64748b" text-anchor="middle">12000 half-steps</text>
+
+<path d="M230 178 H306" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#b)"/>
+<text x="268" y="166" font-size="11.5" fill="#2563eb" text-anchor="middle">①~④</text>
+<path d="M502 178 H578" stroke="#15803d" stroke-width="3" fill="none" marker-end="url(#g)"/>
+<text x="540" y="166" font-size="11.5" fill="#15803d" text-anchor="middle">⑤⑥⑦</text>
+<path d="M742 178 H818" stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#k)"/>
+<text x="780" y="166" font-size="11.5" fill="#64748b" text-anchor="middle">Connect</text>
+
+<rect x="578" y="336" width="164" height="72" rx="11" fill="#fef4f4" stroke="#b91c1c" stroke-width="2"/>
+<text x="660" y="366" font-size="13.5" font-weight="700" fill="#b91c1c" text-anchor="middle">24V supply</text>
+<text x="660" y="390" font-size="11.5" fill="#64748b" text-anchor="middle">≥1.5A; separate motor branch</text>
+<path d="M660 336 V268" stroke="#b91c1c" stroke-width="3" fill="none" marker-end="url(#r)"/>
+<text x="676" y="308" font-size="11.5" fill="#b91c1c">⑧⑨ → pin 1 / pin 9</text>
+
+<rect x="34" y="428" width="912" height="40" rx="10" fill="#f2fdf5" stroke="#a7e8bf"/>
+<text x="490" y="454" font-size="12.5" fill="#166534" text-anchor="middle">
+  The pump detects RS232, RS485, or CAN. This installation uses RS485; insulate and retain the unused RS232/CAN wires.</text>
+
+<defs>
+<marker id="b" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#2563eb"/></marker>
+<marker id="g" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#15803d"/></marker>
+<marker id="k" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#64748b"/></marker>
+<marker id="r" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#b91c1c"/></marker>
+</defs>
+</svg>
+<figcaption>Figure 1 · Mega-to-pump communication with a separate 24V power branch</figcaption></figure>
+<div class="ok">The pump's <b>24V power</b> is separate from the Arduino's 5V supply, with a common signal reference at pin 10. Separate power branches reduce startup disturbances.</div>
+
+<h2 id="s2">2. Components</h2>
+<table>
+<tr><th style="width:28%">Component</th><th style="width:12%">Quantity</th><th>Notes</th></tr>
+<tr><td>TTL ↔ RS485 adapter</td><td>1</td><td><b>One dedicated to the syringe pump</b>; separate from the scale adapter</td></tr>
+<tr><td>DB15 female connector and housing</td><td>1</td><td>The pump has a male connector. Use the factory cable when available.</td></tr>
+<tr><td>24V DC supply</td><td>One branch</td><td>≥1.5A. <b>Use a separate branch from the DM542J supply terminals</b>, rather than daisy-chaining</td></tr>
+<tr><td>Female-to-female jumper wires</td><td>4</td><td>Mega ↔ adapter</td></tr>
+<tr><td>20 AWG or heavier wire</td><td>2</td><td>For the two 24V leads. RS485 signal leads may be thinner.</td></tr>
+<tr><td>Soldering iron and multimeter</td><td>—</td><td>For DB15 assembly and continuity checks before power-up</td></tr>
+<tr><td>Optional 120 Ω resistor</td><td>1</td><td>Across A and B if cable length exceeds 2–3 m or signal quality requires termination</td></tr>
+</table>
+
+<h2 id="s3">3. Check the RS485 Adapter Direction Control</h2>
+<table>
+<tr><th style="width:34%">Type</th><th style="width:32%">Adapter pins</th><th>Direction-control connection</th></tr>
+<tr><td><b>Automatic direction</b><span class="sub"><br>For example, MAX13487</span></td>
+    <td><code>VCC GND TXD RXD</code> + <code>A B</code><br>Four TTL-side pins</td>
+    <td><b>Not required.</b> This guide and the current firmware use this type.</td></tr>
+<tr><td>Manual direction<span class="sub"><br>For example, MAX485 or SP3485</span></td>
+    <td>Includes <code>DE</code> and <code>RE</code> pins</td>
+    <td>Join the two pins to a free Mega digital pin and add direction switching in the firmware.</td></tr>
+</table>
+<div class="note">The current syringe pump firmware has <b>no</b> direction-control pin assigned. Use an automatic-direction adapter, or implement direction control in <code>sendAsciiBody()</code>.</div>
+
+<h2 id="s4">4. DB15 Female Connector: Mating and Solder Views</h2>
+<figure><svg viewBox="0 0 980 470" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif">
+<rect width="980" height="470" fill="#fbfcfe"/>
+<text x="490" y="32" font-size="17" font-weight="700" fill="#12263f" text-anchor="middle">Figure 2 · DB15 mating and solder faces are mirror images</text>
+
+<text x="245" y="64" font-size="13.5" font-weight="700" fill="#2563eb" text-anchor="middle">Mating face (front view)</text>
+<text x="245" y="84" font-size="11.5" fill="#64748b" text-anchor="middle">Viewed toward the connector contacts</text>
+<path d="M30 110 L460 110 L436 202 L54 202 Z" fill="#eef2f7" stroke="#2563eb" stroke-width="2"/>
+<circle cx="70" cy="138" r="14" fill="#b91c1c" stroke="#94a3b8"/>
+<text x="70" y="142.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+<circle cx="119" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="119" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">2</text>
+<circle cx="168" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="168" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">3</text>
+<circle cx="217" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="217" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">4</text>
+<circle cx="266" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="266" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">5</text>
+<circle cx="315" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="315" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">6</text>
+<circle cx="364" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="364" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">7</text>
+<circle cx="413" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="413" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">8</text>
+<circle cx="94" cy="176" r="14" fill="#111827" stroke="#94a3b8"/>
+<text x="94" y="180.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">9</text>
+<circle cx="143" cy="176" r="14" fill="#64748b" stroke="#94a3b8"/>
+<text x="143" y="180.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">10</text>
+<circle cx="192" cy="176" r="14" fill="#15803d" stroke="#94a3b8"/>
+<text x="192" y="180.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">11</text>
+<circle cx="241" cy="176" r="14" fill="#2563eb" stroke="#94a3b8"/>
+<text x="241" y="180.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">12</text>
+<circle cx="290" cy="176" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="290" y="180.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">13</text>
+<circle cx="339" cy="176" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="339" y="180.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">14</text>
+<circle cx="388" cy="176" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="388" y="180.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">15</text>
+<text x="735" y="64" font-size="13.5" font-weight="700" fill="#b91c1c" text-anchor="middle">Solder face (rear view)</text>
+<text x="735" y="84" font-size="11.5" fill="#64748b" text-anchor="middle">Use this view when soldering</text>
+<path d="M520 110 L950 110 L926 202 L544 202 Z" fill="#eef2f7" stroke="#b91c1c" stroke-width="2"/>
+<circle cx="560" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="560" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">8</text>
+<circle cx="609" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="609" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">7</text>
+<circle cx="658" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="658" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">6</text>
+<circle cx="707" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="707" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">5</text>
+<circle cx="756" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="756" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">4</text>
+<circle cx="805" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="805" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">3</text>
+<circle cx="854" cy="138" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="854" y="142.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">2</text>
+<circle cx="903" cy="138" r="14" fill="#b91c1c" stroke="#94a3b8"/>
+<text x="903" y="142.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+<circle cx="584" cy="176" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="584" y="180.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">15</text>
+<circle cx="633" cy="176" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="633" y="180.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">14</text>
+<circle cx="682" cy="176" r="14" fill="#fff" stroke="#94a3b8"/>
+<text x="682" y="180.5" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">13</text>
+<circle cx="731" cy="176" r="14" fill="#2563eb" stroke="#94a3b8"/>
+<text x="731" y="180.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">12</text>
+<circle cx="780" cy="176" r="14" fill="#15803d" stroke="#94a3b8"/>
+<text x="780" y="180.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">11</text>
+<circle cx="829" cy="176" r="14" fill="#64748b" stroke="#94a3b8"/>
+<text x="829" y="180.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">10</text>
+<circle cx="878" cy="176" r="14" fill="#111827" stroke="#94a3b8"/>
+<text x="878" y="180.5" font-size="11.5" font-weight="700" fill="#fff" text-anchor="middle">9</text>
+
+<rect x="30" y="252" width="920" height="86" rx="11" fill="#fef4f4" stroke="#f6bcbc"/>
+<text x="52" y="278" font-size="12.5" fill="#b91c1c">Do not solder from the mating-face diagram: pin 1 changes sides, which can put 24V on a signal pin.</text>
+<text x="52" y="300" font-size="12.5" fill="#b91c1c">Check the molded pin numbers 1, 8, 9, and 15 with magnification. Mark the required pins before soldering.</text>
+<text x="52" y="322" font-size="12.5" fill="#b91c1c">After soldering, verify all five cable-to-pin connections and adjacent-pin isolation before connecting the pump.</text>
+
+<text x="46" y="372" font-size="13.5" font-weight="700" fill="#12263f">Five connector pins are used:</text>
+<rect x="46" y="386" width="176" height="58" rx="9" fill="#fef2f2" stroke="#b91c1c"/>
+<text x="134" y="410" font-size="13" font-weight="700" fill="#b91c1c" text-anchor="middle">pin 1 = +24V</text>
+<text x="134" y="431" font-size="11.5" fill="#64748b" text-anchor="middle">Red; 20 AWG or heavier</text>
+<rect x="234" y="386" width="176" height="58" rx="9" fill="#f1f5f9" stroke="#111827"/>
+<text x="322" y="410" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">pin 9 = −V</text>
+<text x="322" y="431" font-size="11.5" fill="#64748b" text-anchor="middle">Black; 20 AWG or heavier</text>
+<rect x="422" y="386" width="176" height="58" rx="9" fill="#f8fafc" stroke="#64748b"/>
+<text x="510" y="410" font-size="13" font-weight="700" fill="#64748b" text-anchor="middle">pin 10 = signal ground</text>
+<text x="510" y="431" font-size="11.5" fill="#64748b" text-anchor="middle">Thin black lead</text>
+<rect x="610" y="386" width="164" height="58" rx="9" fill="#f0fdf4" stroke="#15803d"/>
+<text x="692" y="410" font-size="13" font-weight="700" fill="#15803d" text-anchor="middle">pin 11 = 485 A</text>
+<text x="692" y="431" font-size="11.5" fill="#64748b" text-anchor="middle">Data +</text>
+<rect x="786" y="386" width="164" height="58" rx="9" fill="#eff6ff" stroke="#2563eb"/>
+<text x="868" y="410" font-size="13" font-weight="700" fill="#2563eb" text-anchor="middle">pin 12 = 485 B</text>
+<text x="868" y="431" font-size="11.5" fill="#64748b" text-anchor="middle">Data −</text>
+</svg><figcaption>Figure 2 · The right-hand diagram shows the solder face</figcaption></figure>
+<table>
+<tr><th style="width:16%">Pin</th><th style="width:26%">Function</th><th>Notes</th></tr>
+<tr><td><b style="color:#b91c1c">pin 1</b></td><td>+24V power</td><td>Red; 20 AWG or heavier</td></tr>
+<tr><td><b>pin 9</b></td><td>−V / power ground</td><td>Black; 20 AWG or heavier</td></tr>
+<tr><td><b style="color:#64748b">pin 10</b></td><td>Signal ground</td><td>Thin black lead. <b>Required</b> to establish a common signal reference.</td></tr>
+<tr><td><b style="color:#15803d">pin 11</b></td><td>RS485 A (data +)</td><td>Connect to adapter <code>A</code></td></tr>
+<tr><td><b style="color:#2563eb">pin 12</b></td><td>RS485 B (data −)</td><td>Connect to adapter <code>B</code></td></tr>
+<tr><td>pin 2 / 3</td><td>RS232 TxD / RxD</td><td rowspan="3">Unused here. The pump automatically detects RS232, RS485, or CAN.</td></tr>
+<tr><td>pin 5 / 6</td><td>CAN H / CAN L</td></tr>
+<tr><td>pin 7 / 8 / 13 / 14 / 15</td><td>Auxiliary inputs and outputs</td></tr>
+</table>
+
+<h2 id="s5">5. Identifying the Factory Cable</h2>
+<p>The factory cable typically has three signal bundles. Use the RS485 conductor in each of the first two bundles; insulate and retain all unused conductors.</p>
+<table>
+<tr><th style="width:32%">Bundle</th><th style="width:26%">Conductors</th><th style="width:12%">DB15</th><th>Connection</th></tr>
+<tr><td rowspan="3">First bundle<span class="sub"><br>RS485 A and auxiliary inputs 1–2</span></td>
+    <td><b style="color:#15803d">RS485 A</b></td><td>pin 11</td><td>Connect to adapter <code>A</code></td></tr>
+<tr><td>Auxiliary input #1</td><td>pin 7</td><td>Insulate and retain</td></tr>
+<tr><td>Auxiliary input #2</td><td>pin 8</td><td>Insulate and retain</td></tr>
+<tr><td rowspan="4">Second bundle<span class="sub"><br>RS485 B and auxiliary outputs 1–3</span></td>
+    <td><b style="color:#2563eb">RS485 B</b></td><td>pin 12</td><td>Connect to adapter <code>B</code></td></tr>
+<tr><td>Auxiliary output #1</td><td>pin 13</td><td>Insulate and retain</td></tr>
+<tr><td>Auxiliary output #2</td><td>pin 14</td><td>Insulate and retain</td></tr>
+<tr><td>Auxiliary output #3</td><td>pin 15</td><td>Insulate and retain</td></tr>
+<tr><td>Third bundle<span class="sub"><br>RS232 + CAN</span></td>
+    <td>TxD / RxD / CAN H / CAN L</td><td>2 / 3 / 5 / 6</td><td>Retain the entire unused bundle</td></tr>
+</table>
+<h3>Identifying A and B</h3>
+<table>
+<tr><th style="width:24%">Method</th><th>Procedure</th></tr>
+<tr><td>1. Read the labels</td><td>Check printed wire markings and the factory cable color chart.</td></tr>
+<tr><td><b>2. Continuity test (preferred)</b></td>
+    <td>Disconnect the cable from the pump with power off. Use continuity mode and a suitable fine probe at DB15
+    <b>pin 11</b>. Test the three conductors in the first bundle: <b>the conductor with continuity is A</b>. Repeat at pin 12 to identify B.</td></tr>
+<tr><td>3. Voltage measurement</td>
+    <td>With the pump powered at 24V and idle, the documented auxiliary outputs are near 0V, while A and B may show different bias voltages around 1–3V. Use this only as supporting evidence.</td></tr>
+</table>
+<div class="note"><b>RS485 A/B labeling can differ by manufacturer.</b> If communication fails after checking the wiring, power down and reverse only the identified A and B signal leads, then test again.</div>
+
+<h2 id="s6">6. Connection Tables: Nine Connections</h2>
+<h3>A. Mega → adapter (four connections)</h3>
+<table>
+<tr><th style="width:10%">#</th><th style="width:30%">From</th><th style="width:28%">To</th><th>Notes</th></tr>
+<tr><td>①</td><td>Mega <code>D18</code>(TX1)</td><td>Adapter <code>DI</code> / <code>TXD</code></td><td>Mega transmit</td></tr>
+<tr><td>②</td><td>Mega <code>D19</code>(RX1)</td><td>Adapter <code>RO</code> / <code>RXD</code></td><td>Mega receive</td></tr>
+<tr><td>③</td><td>Mega <code>5V</code></td><td>Adapter <code>VCC</code></td><td>If the adapter is rated only for 3.3V, use <code>3V3</code></td></tr>
+<tr><td>④</td><td>Mega <code>GND</code></td><td>Adapter <code>GND</code></td><td>Required common ground</td></tr>
+</table>
+<h3>B. Adapter → DB15 (three connections)</h3>
+<table>
+<tr><th style="width:10%">#</th><th style="width:30%">From</th><th style="width:28%">To</th><th>Notes</th></tr>
+<tr><td>⑤</td><td>Adapter <code>A</code></td><td>DB15 <b>pin 11</b></td><td>Factory cable: RS485 A in the first bundle</td></tr>
+<tr><td>⑥</td><td>Adapter <code>B</code></td><td>DB15 <b>pin 12</b></td><td>Factory cable: RS485 B in the second bundle</td></tr>
+<tr><td>⑦</td><td>Adapter <code>GND</code></td><td>DB15 <b>pin 10</b></td><td>Signal ground; may join the common 24V −V terminal</td></tr>
+</table>
+<h3>C. 24V supply → DB15 (two connections)</h3>
+<table>
+<tr><th style="width:10%">#</th><th style="width:30%">From</th><th style="width:28%">To</th><th>Notes</th></tr>
+<tr><td>⑧</td><td>24V supply <code>+V</code></td><td>DB15 <b>pin 1</b></td><td>Red; 20 AWG or heavier</td></tr>
+<tr><td>⑨</td><td>24V supply <code>−V</code></td><td>DB15 <b>pin 9</b></td><td>Black; 20 AWG or heavier</td></tr>
+</table>
+<div class="ok"><b>Nine connections in total.</b> The automatic-direction adapter needs no direction-control wire, unlike the scale adapter described separately.</div>
+
+<h2 id="s7">7. Assembly Sequence</h2>
+<table>
+<tr><th style="width:8%">Step</th><th style="width:40%">Action</th><th>Check</th></tr>
+<tr><td>1</td><td>Open the DB15 housing and use the <b>solder-face view</b> in Figure 2 to mark pins 1, 9, 10, 11, and 12.</td>
+    <td>Confirm the molded pin numbers first.</td></tr>
+<tr><td>2</td><td>Solder the two power leads (⑧⑨), leaving adequate length.</td><td>Leave the pump disconnected.</td></tr>
+<tr><td>3</td><td>Solder the three RS485 leads (⑤⑥⑦).</td><td>Keep joints separate and insulate with heat-shrink tubing.</td></tr>
+<tr><td>4</td><td>Check continuity for each cable-to-pin connection.</td><td>All five must match; adjacent pins must not be shorted.</td></tr>
+<tr><td>5</td><td>Apply 24V with <b>the pump disconnected</b> and measure across leads ⑧⑨.</td><td>The reading should be +24V with the red probe on ⑧.</td></tr>
+<tr><td>6</td><td>Power off. Connect the four Mega–adapter leads (①–④), connect USB, and upload the firmware.</td><td>—</td></tr>
+<tr><td>7</td><td>Connect the DB15 to the pump and tighten both retaining screws. <b>Apply 24V last.</b></td><td>—</td></tr>
+</table>
+
+<h2 id="s8">8. Converting Volume to Steps</h2>
+<p>The ASCII (DT) protocol uses <b>half-steps</b> with 12000 steps per full stroke. The backend module
+<code>backend/functions/pump.py</code> converts the volume selected in the console:</p>
+<pre><code>steps = volume (µL) × 12000 ÷ syringe capacity (µL)
+raw speed = flow (mL/s) × 12000 ÷ syringe capacity (mL)</code></pre>
+<table>
+<tr><th style="width:28%">Syringe capacity</th><th style="width:36%">Volume per step</th><th>Maximum speed (raw value 6000)</th></tr>
+<tr><td>5 mL</td><td>0.4167 µL / step</td><td>2.5 mL/s</td></tr>
+<tr><td>2.5 mL</td><td>0.2083 µL / step</td><td>1.25 mL/s</td></tr>
+<tr><td>1.25 mL</td><td>0.1042 µL / step</td><td>0.625 mL/s</td></tr>
+<tr><td>500 µL</td><td>0.0417 µL / step</td><td>0.25 mL/s</td></tr>
+<tr><td>250 µL</td><td>0.0208 µL / step</td><td>0.125 mL/s</td></tr>
+</table>
+<div class="note">Syringe capacities are defined in <code>config/hardware.yaml</code> under
+<code>syringe_pump.syringe_options_ul</code>. The console generates capacity buttons from this list. After changing the configuration, restart the backend; <b>no code change is required</b>.</div>
+
+<h2 id="s9">9. Initial Test</h2>
+<table>
+<tr><th style="width:8%">Step</th><th style="width:34%">Console action</th><th>Expected result</th></tr>
+<tr><td>1</td><td>Run <code>run.bat</code> and wait for the browser to open.</td><td>The connected COM port appears at the top right.</td></tr>
+<tr><td>2</td><td>Syringe Pump → <b>Detect</b></td><td>The syringe pump status becomes <b>Connected</b>. Otherwise, continue to Section 10.</td></tr>
+<tr><td>3</td><td><b>Initialize</b></td><td>The plunger moves to the top and backs off slightly; the log reports <code>PUMP,…,error=0</code></td></tr>
+<tr><td>4</td><td>Select the <b>Syringe Capacity</b>(for example, 5 mL).</td><td>The maximum speed becomes 2.5 mL/s.</td></tr>
+<tr><td>5</td><td>Set the speed to <b>0.2 mL/s</b> → <b>Apply Speed</b></td><td>Use a low speed for the initial test.</td></tr>
+<tr><td>6</td><td><b>Valve Position:</b> select 1.</td><td>The valve moves to the selected position.</td></tr>
+<tr><td>7</td><td>Set volume to <b>10%</b> → <b>↑ Aspirate</b></td><td>The plunger moves downward and draws 500 µL.</td></tr>
+<tr><td>8</td><td>Select valve position 2 → <b>↓ Dispense</b></td><td>Liquid exits through the other port.</td></tr>
+</table>
+<p>The same action is available through the API:</p>
+<pre><code>curl -X POST http://127.0.0.1:8000/fn/pump.aspirate ^
+     -H "Content-Type: application/json" -d "{\"volume_ul\":500}"</code></pre>
+
+<h2 id="s10">10. Troubleshooting</h2>
+<table>
+<tr><th style="width:30%">Symptom</th><th>Checks</th></tr>
+<tr><td>Detect receives no response<br>The log shows <code>ERR,pump_timeout</code></td>
+    <td>① <b>Check A/B polarity</b> and retry after correcting the identified signal pair with power off.<br>
+        ② <code>DI</code>, <code>RO</code> must match D18→DI and D19→RO.<br>
+        ③ Check the 24V supply and pump display.<br>
+        ④ Check signal ground (⑦).<br>
+        ⑤ A DE/RE adapter requires firmware changes; see Section 3.</td></tr>
+<tr><td>Only transmitted data is echoed back</td><td>Check adapter direction control. This installation requires an automatic-direction adapter.</td></tr>
+<tr><td>Unreadable response</td><td>Check the baud rate. The pump default is 9600; restore it through the pump panel if changed.</td></tr>
+<tr><td><code>error=7</code> Device not initialized</td><td>Select <b>Initialize</b></td></tr>
+<tr><td><code>error=9</code> Plunger overload</td><td>Check for blocked tubing or excessive speed. Reduce to 0.1 mL/s, clear the obstruction, then initialize again.</td></tr>
+<tr><td><code>error=10</code> Valve overload</td><td>Check for a stuck valve. Resend the valve-position command to rehome it; repeated faults require valve inspection or replacement.</td></tr>
+<tr><td><code>error=2</code> / <code>3</code></td><td>Parameter out of range, such as a step count exceeding the full stroke.</td></tr>
+<tr><td>Incomplete homing</td><td>Check the homing stall-current setting for the syringe: 25 µL→4, 50 µL–1.25 mL→5, 2.5/5 mL→6.</td></tr>
+<tr><td>Brief command delay while stepper motors run</td><td>The firmware services stepper pulses while waiting for pump responses. Serial handling can still delay command completion.</td></tr>
+<tr><td>Backend command timeout</td><td>Close the Arduino IDE Serial Monitor if it is open. <b>Only one process can open a COM port at a time.</b></td></tr>
+</table>
+
+<h2>Connection Checklist</h2>
+<ul class="chk">
+<li>The adapter uses <b>automatic direction</b>(no DE/RE connection).</li>
+<li>D18 → <code>DI</code>, D19 → <code>RO</code>(correct orientation)</li>
+<li>Adapter VCC → 5V and GND → GND, subject to the adapter voltage rating.</li>
+<li>A → pin 11, B → pin 12, GND → pin 10</li>
+<li>24V: +V → pin 1 and −V → pin 9, on a separate branch from the DM542J.</li>
+<li>The DB15 was wired using the <b>solder-face view</b> and checked for continuity.</li>
+<li>The syringe pump uses Serial1 and a dedicated adapter; the scale uses Serial2 and a separate adapter.</li>
+</ul>
+
+<footer class="doc">RUNZE SY-01B · ASCII 9600 · Address 0 · 12000 half-steps · MAX13487 automatic direction<br>
+<a href="wiring-motors.html">Peristaltic Pump Wiring</a> ‧ <a href="wiring-valves.html">Solenoid Valve Wiring</a> ‧ <a href="wiring-pump.html">Syringe Pump Wiring</a> ‧ <a href="wiring-scale.html">Scale Wiring</a> ‧ <a href="architecture.html">System Architecture</a> ‧ <a href="/">Control Console</a></footer>
+</div></body></html>

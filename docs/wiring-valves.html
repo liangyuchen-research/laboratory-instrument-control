@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solenoid Valve Wiring: LB2HN-24DS, ULN2803, and Arduino Mega</title>
+<style>
+  :root{--navy:#12263f;--acc:#2563eb;--acc2:#60a5fa;--grey:#64748b;--light:#eff4fb;
+        --green:#15803d;--teal:#0f6e56;--purple:#4338ca;--red:#b91c1c;--amber:#b45309;
+        --ink:#1f2937;--line:#dbe3ef;--soft:#f6f9fd}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#e9eef7 0%,#eef1f6 340px);color:var(--ink);
+       font-family:"Segoe UI",system-ui,sans-serif;
+       font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+  .page{max-width:1020px;margin:34px auto 60px;background:#fff;border-radius:18px;
+        box-shadow:0 1px 3px rgba(18,38,63,.06),0 12px 40px rgba(18,38,63,.10);
+        padding:54px 62px 66px}
+  header.doc{text-align:center;padding-bottom:28px;margin-bottom:28px;position:relative}
+  header.doc::after{content:"";position:absolute;left:32%;right:32%;bottom:0;height:3px;
+        border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+  header.doc h1{margin:0 0 12px;font-size:28px;color:var(--navy);letter-spacing:-.4px;line-height:1.35}
+  header.doc .sub{color:var(--grey);font-size:14px;line-height:1.8}
+  nav.toc{background:var(--soft);border:1px solid var(--line);border-radius:12px;
+        padding:16px 24px;margin:0 0 34px;font-size:14px;line-height:2.1}
+  nav.toc b{color:var(--navy);letter-spacing:.5px}
+  nav.toc a{color:var(--acc);text-decoration:none;margin-right:16px;white-space:nowrap;
+        border-bottom:1px solid transparent;transition:.15s}
+  nav.toc a:hover{border-bottom-color:var(--acc)}
+  h2{font-size:21px;color:var(--navy);margin:48px 0 16px;padding:2px 0 2px 15px;
+     border-left:5px solid var(--acc);border-radius:2px;line-height:1.45;letter-spacing:-.2px}
+  h3{font-size:16.5px;color:var(--navy);margin:30px 0 10px;padding-left:2px}
+  h3::before{content:"▸ ";color:var(--acc2)}
+  p{margin:0 0 15px;text-align:left}
+  ul,ol{margin:0 0 16px;padding-left:24px}
+  li{margin-bottom:7px}
+  table{border-collapse:separate;border-spacing:0;width:100%;margin:16px 0 26px;
+        font-size:13.5px;line-height:1.6;border:1px solid var(--line);
+        border-radius:11px;overflow:hidden;box-shadow:0 1px 2px rgba(18,38,63,.04)}
+  th{background:linear-gradient(180deg,#1c3357,#12263f);color:#fff;font-weight:600;
+     padding:11px 13px;text-align:left;font-size:13px;letter-spacing:.3px}
+  td{border-top:1px solid var(--line);padding:10px 13px;vertical-align:top}
+  tr:nth-child(even) td{background:#fafcff}
+  tbody tr:hover td,table tr:hover td{background:#f0f6ff}
+  code{background:var(--light);padding:2px 7px;border-radius:5px;font-size:.88em;
+       color:#1e40af;font-family:Consolas,monospace}
+  pre{background:linear-gradient(180deg,#152238,#0f172a);color:#dbe7ff;border-radius:12px;
+      padding:18px 22px;font-size:12.8px;line-height:1.7;overflow-x:auto;margin:14px 0 24px;
+      font-family:Consolas,monospace;
+      box-shadow:0 4px 16px rgba(15,23,42,.18)}
+  pre code{background:none;color:inherit;padding:0}
+  figure{margin:24px 0 30px;text-align:center}
+  figure svg{width:100%;height:auto;display:block;border:1px solid var(--line);
+             border-radius:14px;box-shadow:0 2px 12px rgba(18,38,63,.07)}
+  figcaption{margin-top:12px;color:var(--grey);font-size:13.5px;font-weight:600}
+  .note,.danger,.ok{border-radius:10px;padding:14px 18px 14px 46px;margin:16px 0 22px;
+       font-size:14.5px;line-height:1.85;position:relative}
+  .note::before,.danger::before,.ok::before{position:absolute;left:16px;top:13px;
+       font-weight:700;font-size:15px}
+  .note{background:#fffbeb;border:1px solid #fcd995;border-left:4px solid var(--amber)}
+  .note::before{content:"!";color:var(--amber);left:19px}
+  .danger{background:#fef4f4;border:1px solid #f6bcbc;border-left:4px solid var(--red)}
+  .danger::before{content:"\26A0";color:var(--red)}
+  .ok{background:#f2fdf5;border:1px solid #a7e8bf;border-left:4px solid var(--green)}
+  .ok::before{content:"\2713";color:var(--green)}
+  .tA{color:var(--teal);font-weight:700}
+  .tB{color:var(--purple);font-weight:700}
+  .tC{color:var(--green);font-weight:700}
+  td .sub{color:var(--grey);font-size:12px}
+  .chk{list-style:none;padding-left:4px;margin:10px 0 20px}
+  .chk li{margin-bottom:9px;padding-left:30px;position:relative}
+  .chk li::before{content:"\2610";position:absolute;left:0;top:-1px;font-size:19px;color:var(--acc)}
+  footer.doc{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);
+             color:var(--grey);font-size:13px;text-align:center;line-height:1.8}
+  a{color:var(--acc)}
+  @media(max-width:820px){.page{padding:28px 18px 40px;margin:0;border-radius:0}
+    header.doc h1{font-size:23px}h2{font-size:19px;margin-top:38px}
+    table{font-size:12.8px}th,td{padding:9px 10px}}
+  @media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:0}
+    nav.toc{display:none}h2{break-after:avoid}table,figure{break-inside:avoid}}
+</style></head><body><div class="page">
+<header class="doc">
+  <h1>Solenoid Valve Wiring</h1>
+  <div class="sub">Each valve has <b>red and black leads</b> and one LB2HN-24DS relay.<br>
+  <b>Motor 2 ↔ valve 1 (water) · Motor 9 ↔ valve 2 (CuSO₄)</b><br>
+  Twelve connections and two 1N4007 diodes · Uses channels 5–6 on ULN2803 #1</div>
+</header>
+<nav class="toc"><b>Contents</b><br>
+<a href="#s1">1. Overview</a><a href="#s2">2. Components</a>
+<a href="#s3">3. Valve Leads</a><a href="#s4">4. Electrical Checks</a>
+<a href="#s5">5. Relay Pinout</a><a href="#s6">6. Optional Relay Feedback</a>
+<a href="#s7">7. Connection Tables</a><a href="#s8">8. 1N4007</a>
+<a href="#s9">9. Firmware</a><a href="#s10">10. Testing</a>
+<a href="#s11">11. Checklist and Troubleshooting</a>
+</nav>
+
+<h2 id="s1">1. Overview</h2>
+<figure><svg viewBox="0 0 1120 470" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC,Microsoft JhengHei,sans-serif"><defs>
+<marker id="g" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#2563eb"/></marker>
+<marker id="gg" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#15803d"/></marker>
+<marker id="gr" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#c02626"/></marker>
+<marker id="gk" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#334155"/></marker></defs>
+<rect width="1120" height="470" fill="#f8fafc"/>
+<text x="560" y="40" text-anchor="middle" font-size="17.5" font-weight="700" fill="#0f2544">Signal chain for two solenoid valves</text>
+<text x="560" y="66" text-anchor="middle" font-size="13.5" fill="#64748b">Twelve base connections; dashed feedback wiring is optional and not implemented in the firmware</text>
+<rect x="18" y="120" width="172" height="300" rx="12" fill="#e0ecff" stroke="#2563eb" stroke-width="2.5"/>
+<text x="104" y="152" text-anchor="middle" font-size="16" font-weight="700" fill="#0f2544">Arduino Mega</text>
+<text x="34" y="188" font-size="13.5" font-weight="700" fill="#1d4ed8">Control outputs</text>
+<text x="34" y="214" font-size="13.5" fill="#1d4ed8">D10 → valve 1</text>
+<text x="34" y="238" font-size="13.5" fill="#1d4ed8">D11 → valve 2</text>
+<text x="34" y="278" font-size="13.5" font-weight="700" fill="#94a3b8">Optional inputs</text>
+<text x="34" y="304" font-size="13.5" fill="#94a3b8">D32 ← relay 1</text>
+<text x="34" y="328" font-size="13.5" fill="#94a3b8">D33 ← relay 2</text>
+<text x="34" y="368" font-size="12.5" fill="#94a3b8">GND ← both pin 12s</text>
+<text x="34" y="396" font-size="12" fill="#64748b">Valve power is external</text>
+<rect x="220" y="120" width="148" height="300" rx="12" fill="#f3f0ff" stroke="#4338ca" stroke-width="2.5"/>
+<text x="294" y="152" text-anchor="middle" font-size="15.5" font-weight="700" fill="#312e81">ULN2803A #1</text>
+<text x="294" y="176" text-anchor="middle" font-size="12" fill="#64748b">Channels 1–4: motors</text>
+<text x="236" y="212" font-size="12.5" fill="#4338ca">IN5 (5) → OUT5 (14)</text>
+<text x="236" y="238" font-size="12.5" fill="#4338ca">IN6 (6) → OUT6 (13)</text>
+<text x="236" y="272" font-size="12.5" fill="#94a3b8">IN7 / IN8 unused</text>
+<text x="236" y="312" font-size="12.5" fill="#c02626">Pin 10 → +24V</text>
+<text x="236" y="338" font-size="12.5" fill="#15803d">Pin 9 → GND</text>
+<text x="236" y="372" font-size="12" fill="#64748b">These connections are</text>
+<text x="236" y="392" font-size="12" fill="#64748b">already wired</text>
+<line x1="190" y1="214" x2="216" y2="214" stroke="#2563eb" stroke-width="2.5" marker-end="url(#g)"/>
+<rect x="418" y="150" width="164" height="104" rx="10" fill="#eef4fd" stroke="#2563eb" stroke-width="2"/>
+<text x="500" y="182" text-anchor="middle" font-size="15" font-weight="700" fill="#0f2544">Relay V1</text>
+<text x="500" y="206" text-anchor="middle" font-size="12.5" fill="#4338ca">Pin 14 ← ULN OUT5</text>
+<text x="500" y="226" text-anchor="middle" font-size="12.5" fill="#7c2d12">Pin 13 ← +24V</text>
+<text x="500" y="246" text-anchor="middle" font-size="12.5" fill="#15803d">Pin 9 → pin 5: 24V contact</text>
+<rect x="654" y="150" width="164" height="104" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="2"/>
+<text x="736" y="182" text-anchor="middle" font-size="15" font-weight="700" fill="#14532d">Solenoid valve 1</text>
+<text x="736" y="208" text-anchor="middle" font-size="13" font-weight="700" fill="#c02626">Red ← pin 5</text>
+<text x="736" y="230" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">Black → 24V −</text>
+<text x="736" y="248" text-anchor="middle" font-size="11.5" fill="#c02626">1N4007 across the leads</text>
+<line x1="582" y1="202" x2="650" y2="202" stroke="#c02626" stroke-width="2.5" marker-end="url(#gr)"/>
+<line x1="368" y1="202" x2="414" y2="202" stroke="#4338ca" stroke-width="2.5" marker-end="url(#g)"/>
+<line x1="500" y1="254" x2="500" y2="274" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="514" y="272" font-size="11.5" fill="#94a3b8">Optional: pins 12/8 → D32</text><rect x="418" y="290" width="164" height="104" rx="10" fill="#eef4fd" stroke="#2563eb" stroke-width="2"/>
+<text x="500" y="322" text-anchor="middle" font-size="15" font-weight="700" fill="#0f2544">Relay V2</text>
+<text x="500" y="346" text-anchor="middle" font-size="12.5" fill="#4338ca">Pin 14 ← ULN OUT6</text>
+<text x="500" y="366" text-anchor="middle" font-size="12.5" fill="#7c2d12">Pin 13 ← +24V</text>
+<text x="500" y="386" text-anchor="middle" font-size="12.5" fill="#15803d">Pin 9 → pin 5: 24V contact</text>
+<rect x="654" y="290" width="164" height="104" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="2"/>
+<text x="736" y="322" text-anchor="middle" font-size="15" font-weight="700" fill="#14532d">Solenoid valve 2</text>
+<text x="736" y="348" text-anchor="middle" font-size="13" font-weight="700" fill="#c02626">Red ← pin 5</text>
+<text x="736" y="370" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">Black → 24V −</text>
+<text x="736" y="388" text-anchor="middle" font-size="11.5" fill="#c02626">1N4007 across the leads</text>
+<line x1="582" y1="342" x2="650" y2="342" stroke="#c02626" stroke-width="2.5" marker-end="url(#gr)"/>
+<line x1="368" y1="342" x2="414" y2="342" stroke="#4338ca" stroke-width="2.5" marker-end="url(#g)"/>
+<line x1="500" y1="394" x2="500" y2="414" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="514" y="412" font-size="11.5" fill="#94a3b8">Optional: pins 12/8 → D33</text>
+<text x="560" y="452" text-anchor="middle" font-size="13.5" fill="#334155">Valve current: +24V → pin 9 → pin 5 → red → valve → black → 24V−. It does not pass through Arduino ground wiring.</text>
+</svg><figcaption>Figure 1 · Control signals to the right; optional relay feedback to the left</figcaption></figure>
+<div class="ok"><b>Why use a relay instead of driving the valve directly from the ULN2803?</b><br>
+The system includes a <b>load cell</b>. Driving the approximately 0.4A valve through the ULN2803 would route its current through the shared control ground, increasing measurement disturbances.<br>
+Relay contacts provide a separate path: +24V → contact → valve → 24V−. <b>The valve current does not flow through the control-ground branch.</b></div>
+
+<h2 id="s2">2. Components</h2>
+<table>
+<tr><th style="width:36%">Component</th><th style="width:10%">Quantity</th><th>Notes</th></tr>
+<tr><td>LB2HN-24DS relay</td><td>2</td><td>24V DC coil with LED, two changeover contacts, documented 10A contact rating</td></tr>
+<tr><td>PYF08A eight-pin socket</td><td>2</td><td>DIN-rail mounting and screw terminals</td></tr>
+<tr><td><b>1N4007</b></td><td>2</td><td>Across each valve's red and black leads</td></tr>
+<tr><td>MUPH 24V DC normally closed valve</td><td>2</td><td>Factory connector and red/black leads attached</td></tr>
+<tr><td>ULN2803A</td><td>0</td><td><b>No additional IC required</b>; use channels 5–6 on ULN2803 #1</td></tr>
+<tr><td>Wire, crimp terminals, and labels</td><td>—</td><td>The documented valve load is approximately 0.4A; 20–22 AWG wiring is specified.</td></tr>
+</table>
+
+<h2 id="s3">3. Red and Black Valve Leads</h2>
+<p>The factory DIN 43650 connector and leads are already assembled, so <b>leave the connector assembled</b>. This installation uses the two supplied coil leads. Follow the valve and power-supply grounding requirements.</p>
+<table>
+<tr><th style="width:16%">Lead color</th><th style="width:30%">Function</th><th>Connection</th></tr>
+<tr><td><b style="color:#c02626">Red</b></td><td>Coil positive (connector terminal 1)</td><td>Relay <b>pin 5</b>(normally open contact, pole 1)</td></tr>
+<tr><td><b>Black</b></td><td>Coil negative (connector terminal 2)</td><td><b>24V negative</b></td></tr>
+</table>
+<div class="ok"><b>Only these two external coil connections are required.</b> The fitted connector already connects to the coil terminals internally.</div>
+
+<h2 id="s4">4. Electrical Checks Before Power-Up</h2>
+
+<h3>4.1 Measure Coil Resistance and Estimate Power</h3>
+<p>For a resistive coil at 24V, estimate its steady-state power and current from the measured resistance:</p>
+<div class="box" style="text-align:center;font-family:Consolas,monospace;font-size:18px;
+     background:#f6f9fd;border:1px solid #dbe3ef;border-radius:10px;padding:14px;margin:12px 0">
+  Power (W) = 576 ÷ resistance (Ω)    Current (A) = 24 ÷ resistance (Ω)
+</div>
+<table>
+<tr><th style="width:30%">Measured resistance</th><th style="width:22%">Power</th><th>Current</th></tr>
+<tr><td>Approximately <b>29 Ω</b></td><td>20 W</td><td>0.83 A</td></tr>
+<tr><td>Approximately <b>58 Ω</b></td><td>10 W</td><td>0.42 A</td></tr>
+<tr><td>Approximately <b>72 Ω</b></td><td>8 W</td><td>0.33 A</td></tr>
+<tr><td>Approximately <b>115 Ω</b></td><td>5 W</td><td>0.21 A</td></tr>
+</table>
+<p>The documented examples are in the <b>tens-of-ohms range</b>. Confirm the installed coil specification and relay DC inductive-load rating; the listed <b>10A contact rating</b> alone does not define switching endurance for an inductive load.</p>
+
+<h3>4.2 Measure Both Polarities to Check for a Diode</h3>
+<table>
+<tr><th style="width:34%">Result</th><th>Interpretation</th></tr>
+<tr><td>The two readings are <b>similar</b></td><td>The coil may have no internal diode. Retain the documented red-positive polarity.</td></tr>
+<tr><td>The readings are <b>substantially different</b></td><td>A diode or LED may be present: <b>red must remain positive</b>. Reversed polarity can produce excessive current.</td></tr>
+</table>
+<div class="note">If a diode is present, use <b>the higher resistance reading</b> as an approximate coil-resistance estimate when the diode is reverse-biased.</div>
+
+<h2 id="s5">5. LB2HN-24DS Eight-Pin Relay</h2>
+<figure><svg viewBox="0 0 1120 490" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC,Microsoft JhengHei,sans-serif">
+<rect width="1120" height="490" fill="#f8fafc"/>
+<rect x="20" y="40" width="620" height="416" rx="12" fill="#eef4fd" stroke="#2563eb" stroke-width="2.5"/>
+<text x="330" y="76" text-anchor="middle" font-size="17" font-weight="700" fill="#0f2544">LB2HN-24DS: two changeover contact sets</text>
+<rect x="40" y="94" width="48" height="30" rx="5" fill="#fff" stroke="#b45309" stroke-width="2"/>
+<text x="64" y="115" text-anchor="middle" font-size="14.5" font-weight="700" fill="#b45309">13</text>
+<text x="98" y="115" font-size="13.5" fill="#475569">Coil A1</text>
+<text x="216" y="115" font-size="14" font-weight="700" fill="#b45309">← +24V</text><rect x="40" y="138" width="48" height="30" rx="5" fill="#fff" stroke="#4338ca" stroke-width="2"/>
+<text x="64" y="159" text-anchor="middle" font-size="14.5" font-weight="700" fill="#4338ca">14</text>
+<text x="98" y="159" font-size="13.5" fill="#475569">Coil A2</text>
+<text x="216" y="159" font-size="14" font-weight="700" fill="#4338ca">← ULN2803 output</text><rect x="40" y="182" width="48" height="30" rx="5" fill="#fff" stroke="#c02626" stroke-width="2"/>
+<text x="64" y="203" text-anchor="middle" font-size="14.5" font-weight="700" fill="#c02626">9</text>
+<text x="98" y="203" font-size="13.5" fill="#475569">Pole 1 common</text>
+<text x="216" y="203" font-size="14" font-weight="700" fill="#c02626">← +24V valve power</text><rect x="40" y="226" width="48" height="30" rx="5" fill="#fff" stroke="#c02626" stroke-width="2"/>
+<text x="64" y="247" text-anchor="middle" font-size="14.5" font-weight="700" fill="#c02626">5</text>
+<text x="98" y="247" font-size="13.5" fill="#475569">Pole 1 normally open</text>
+<text x="216" y="247" font-size="14" font-weight="700" fill="#c02626">→ Red valve lead</text><rect x="40" y="270" width="48" height="30" rx="5" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+<text x="64" y="291" text-anchor="middle" font-size="14.5" font-weight="700" fill="#94a3b8">1</text>
+<text x="98" y="291" font-size="13.5" fill="#475569">Pole 1 normally closed</text>
+<text x="216" y="291" font-size="14" font-weight="400" fill="#94a3b8">Unconnected</text><rect x="40" y="314" width="48" height="30" rx="5" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+<text x="64" y="335" text-anchor="middle" font-size="14.5" font-weight="700" fill="#2563eb">12</text>
+<text x="98" y="335" font-size="13.5" fill="#475569">Pole 4 common</text>
+<text x="216" y="335" font-size="14" font-weight="700" fill="#2563eb">← Arduino GND (optional)</text><rect x="40" y="358" width="48" height="30" rx="5" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+<text x="64" y="379" text-anchor="middle" font-size="14.5" font-weight="700" fill="#2563eb">8</text>
+<text x="98" y="379" font-size="13.5" fill="#475569">Pole 4 normally open</text>
+<text x="216" y="379" font-size="14" font-weight="700" fill="#2563eb">→ D32 / D33 (optional)</text><rect x="40" y="402" width="48" height="30" rx="5" fill="#fff" stroke="#94a3b8" stroke-width="2"/>
+<text x="64" y="423" text-anchor="middle" font-size="14.5" font-weight="700" fill="#94a3b8">4</text>
+<text x="98" y="423" font-size="13.5" fill="#475569">Pole 4 normally closed</text>
+<text x="216" y="423" font-size="14" font-weight="400" fill="#94a3b8">Unconnected</text>
+<rect x="666" y="40" width="434" height="188" rx="12" fill="#f5f8fd" stroke="#94a3b8" stroke-width="2"/>
+<text x="883" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#0f2544">Contact numbering advances by 4</text>
+<text x="690" y="112" font-size="15" fill="#475569">Pole 1: NC <tspan font-weight="700" fill="#2563eb">1</tspan> → NO <tspan font-weight="700" fill="#2563eb">5</tspan> → COM <tspan font-weight="700" fill="#2563eb">9</tspan></text>
+<text x="690" y="144" font-size="15" fill="#475569">Pole 4: NC <tspan font-weight="700" fill="#2563eb">4</tspan> → NO <tspan font-weight="700" fill="#2563eb">8</tspan> → COM <tspan font-weight="700" fill="#2563eb">12</tspan></text>
+<text x="690" y="176" font-size="15" fill="#475569">Coil:<tspan font-weight="700" fill="#b45309">13</tspan>(＋) / <tspan font-weight="700" fill="#b45309">14</tspan>(−)</text>
+<text x="690" y="208" font-size="13.5" fill="#64748b">Same numbering pattern as MY4N-GS, without poles 2–3</text>
+<rect x="666" y="248" width="434" height="208" rx="12" fill="#fef4f4" stroke="#c02626" stroke-width="2"/>
+<text x="883" y="282" text-anchor="middle" font-size="15.5" font-weight="700" fill="#7f1d1d">Keep power and feedback contacts separate</text>
+<text x="690" y="318" font-size="14" fill="#c02626">Pole 1 (9 / 5): <tspan font-weight="700">24V</tspan> to the valve</text>
+<text x="690" y="350" font-size="14" fill="#2563eb">Pole 4 (12 / 8): D32 / D33 (<tspan font-weight="700">optional</tspan>)</text>
+<text x="690" y="388" font-size="13.5" fill="#7f1d1d">Applying 24V to a feedback input can damage the Arduino</text>
+<text x="690" y="416" font-size="13.5" fill="#64748b">Check the socket markings before wiring</text>
+<text x="690" y="442" font-size="13.5" fill="#64748b">Without feedback: leave pins 1, 4, 8, and 12 unconnected</text>
+</svg><figcaption>Figure 2 · Relay coil, valve-power contacts, and optional feedback contacts</figcaption></figure>
+
+<h2 id="s6">6. Optional D32 / D33 Relay Feedback</h2>
+<div class="ok"><b>This feature is not implemented in the current firmware.</b>
+The supplied <code>Arduino.ino</code> uses output control only. Leave relay <b>pins 1, 4, 8, and 12 unconnected</b> in the base installation.<br>
+The optional circuit below senses relay contact closure. It does not directly verify valve motion, valve power, or liquid flow.</div>
+<p>The optional wiring adds two signal returns and one shared ground connection:</p>
+<table>
+<tr><th style="width:12%">#</th><th style="width:34%">From</th><th style="width:26%">To</th><th>Notes</th></tr>
+<tr><td>Option 1</td><td>Relay V1 <b>pin 8</b></td><td>Mega <code>D32</code></td>
+    <td rowspan="2">Configure as <code>INPUT_PULLUP</code>; contact closure reads LOW</td></tr>
+<tr><td>Option 2</td><td>Relay V2 <b>pin 8</b></td><td>Mega <code>D33</code></td></tr>
+<tr><td>Option 3</td><td>Both relays: <b>pin 12</b>(joined)</td><td>Mega <code>GND</code></td><td>One shared ground connection</td></tr>
+</table>
+<p>Firmware comparison and fault handling must be added before using this feedback.</p>
+<figure><svg viewBox="0 0 1120 390" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC,Microsoft JhengHei,sans-serif"><defs>
+<marker id="g" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#2563eb"/></marker>
+<marker id="gg" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#15803d"/></marker>
+<marker id="gr" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#c02626"/></marker>
+<marker id="gk" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#334155"/></marker></defs>
+<rect width="1120" height="390" fill="#f8fafc"/>
+<text x="560" y="38" text-anchor="middle" font-size="17.5" font-weight="700" fill="#0f2544">D32 / D33 are ordinary digital input pins</text>
+<rect x="30" y="76" width="260" height="250" rx="12" fill="#e0ecff" stroke="#2563eb" stroke-width="2.5"/>
+<text x="160" y="110" text-anchor="middle" font-size="15.5" font-weight="700" fill="#0f2544">Arduino Mega</text>
+<text x="48" y="146" font-size="13.5" fill="#475569">Firmware configuration:</text>
+<text x="48" y="176" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">pinMode(32, INPUT_PULLUP)</text>
+<text x="48" y="208" font-size="13.5" fill="#475569">→ Internal pull-up to 5V</text>
+<text x="48" y="234" font-size="13.5" fill="#475569">→ Open contact reads HIGH</text>
+<text x="48" y="276" font-size="13.5" fill="#15803d">D32 ← relay pin 8</text>
+<text x="48" y="302" font-size="13.5" fill="#15803d">GND ← relay pin 12</text>
+<rect x="380" y="76" width="300" height="250" rx="12" fill="#eef4fd" stroke="#2563eb" stroke-width="2.5"/>
+<text x="530" y="110" text-anchor="middle" font-size="15.5" font-weight="700" fill="#0f2544">Relay pole 4 contacts</text>
+<text x="530" y="134" text-anchor="middle" font-size="12.5" fill="#64748b">Dry contacts; no supply connected</text>
+<circle cx="440" cy="196" r="7" fill="#334155"/>
+<text x="420" y="188" text-anchor="end" font-size="14" font-weight="700" fill="#2563eb">Pin 12</text>
+<circle cx="620" cy="196" r="7" fill="#334155"/>
+<text x="640" y="188" font-size="14" font-weight="700" fill="#2563eb">Pin 8</text>
+<line x1="440" y1="196" x2="562" y2="164" stroke="#334155" stroke-width="3"/>
+<text x="530" y="246" text-anchor="middle" font-size="13" fill="#64748b">Coil off → contact open</text>
+<text x="530" y="272" text-anchor="middle" font-size="13.5" font-weight="700" fill="#334155">D32 reads HIGH</text>
+<text x="530" y="304" text-anchor="middle" font-size="13" fill="#15803d">Coil on → contact closed → LOW</text>
+<rect x="770" y="76" width="320" height="250" rx="12" fill="#f0fdf4" stroke="#15803d" stroke-width="2.5"/>
+<text x="930" y="110" text-anchor="middle" font-size="15.5" font-weight="700" fill="#14532d">Equivalent to a switch to ground</text>
+<text x="790" y="150" font-size="13.5" fill="#166534">Reading <tspan font-weight="700">HIGH</tspan> = contact open</text>
+<text x="790" y="180" font-size="13.5" fill="#166534">Reading <tspan font-weight="700">LOW</tspan>　= relay contact closed</text>
+<line x1="790" y1="202" x2="1070" y2="202" stroke="#a7e8bf" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="790" y="234" font-size="13.5" font-weight="700" fill="#7f1d1d">What this feedback measures</text>
+<text x="790" y="262" font-size="13" fill="#475569">It checks relay contact state against the command</text>
+<text x="790" y="286" font-size="13" fill="#475569">It cannot confirm downstream valve motion</text>
+<text x="790" y="310" font-size="13" fill="#475569">or detect every valve-power or flow fault</text>
+<text x="560" y="366" text-anchor="middle" font-size="13.5" fill="#334155">For each relay: pin 12 → Mega GND; pin 8 → D32 (V1) or D33 (V2).</text>
+</svg><figcaption>Figure 3 · Optional relay-contact feedback using pull-up inputs</figcaption></figure>
+
+<h2 id="s7">7. Connection Tables: Twelve Base Connections</h2>
+
+<h3>① Arduino → ULN2803 #1 (two connections)</h3>
+<table>
+<tr><th style="width:8%">#</th><th style="width:30%">From</th><th style="width:32%">To</th><th>Controls</th></tr>
+<tr><td>1</td><td>Mega <code>D10</code></td><td>ULN#1 <b>pin 5</b>(IN5)</td><td>Valve 1</td></tr>
+<tr><td>2</td><td>Mega <code>D11</code></td><td>ULN#1 <b>pin 6</b>(IN6)</td><td>Valve 2</td></tr>
+</table>
+<div class="ok">ULN #1 <b>pin 9 (GND) and pin 10 (COM → +24V) are already wired for the motors</b>. Keep those connections. Use the available IN5 and IN6 channels. <b>IN7 and IN8 remain available</b> for future expansion with corresponding configuration and firmware changes.</div>
+
+<h3>② Relay coil circuit (four connections)</h3>
+<table>
+<tr><th style="width:8%">#</th><th style="width:34%">From</th><th style="width:34%">To</th><th>Notes</th></tr>
+<tr><td>3</td><td>24V <code>＋</code></td><td>Relay V1 <b>pin 13</b>(A1,＋)</td><td rowspan="2">Jumper to V2</td></tr>
+<tr><td>4</td><td>Relay V1 pin 13</td><td>Relay V2 <b>pin 13</b></td></tr>
+<tr><td>5</td><td>ULN#1 <b>pin 14</b>(OUT5)</td><td>Relay V1 <b>pin 14</b>(A2,−)</td>
+    <td rowspan="2">ULN pin 14 and relay terminal 14 are different component connections.</td></tr>
+<tr><td>6</td><td>ULN#1 <b>pin 13</b>(OUT6)</td><td>Relay V2 <b>pin 14</b></td></tr>
+</table>
+
+<h3>③ Valve-power contacts (six connections)</h3>
+<table>
+<tr><th style="width:8%">#</th><th style="width:34%">From</th><th style="width:34%">To</th><th>Notes</th></tr>
+<tr><td>7</td><td>24V <code>＋</code></td><td>Relay V1 <b>pin 9</b>(COM)</td><td rowspan="2">Valve supply to the common contact</td></tr>
+<tr><td>8</td><td>Relay V1 pin 9</td><td>Relay V2 <b>pin 9</b></td></tr>
+<tr><td>9</td><td>Relay V1 <b>pin 5</b>(NO)</td><td>Valve 1 <b style="color:#c02626">red lead</b></td>
+    <td rowspan="2">Powered only when the relay is energized</td></tr>
+<tr><td>10</td><td>Relay V2 <b>pin 5</b>(NO)</td><td>Valve 2 <b style="color:#c02626">red lead</b></td></tr>
+<tr><td>11</td><td>Valve 1 <b>black lead</b></td><td>24V <code>−</code></td><td rowspan="2">Return directly to supply negative</td></tr>
+<tr><td>12</td><td>Valve 2 <b>black lead</b></td><td>24V <code>−</code></td></tr>
+</table>
+<div class="note"><b>Leave pins 1, 4, 8, and 12 unconnected in the base installation</b>. The valves are normally closed when unpowered; neither NC contact is used.</div>
+<div class="danger">Route valve 24V power <b>directly from the supply terminals</b>, not through the Arduino or ULN2803 power branch.</div>
+
+<h2 id="s8">8. Installing the 1N4007 Diodes</h2>
+<figure><svg viewBox="0 0 1120 400" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans TC,Microsoft JhengHei,sans-serif"><defs>
+<marker id="g" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#2563eb"/></marker>
+<marker id="gg" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#15803d"/></marker>
+<marker id="gr" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#c02626"/></marker>
+<marker id="gk" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto"><path d="M0,0 L11,4.5 L0,9 z" fill="#334155"/></marker></defs>
+<rect width="1120" height="400" fill="#f8fafc"/>
+<text x="560" y="38" text-anchor="middle" font-size="17.5" font-weight="700" fill="#0f2544">Valve current path and flyback diode</text>
+<rect x="40" y="80" width="140" height="230" rx="11" fill="#fef3c7" stroke="#b45309" stroke-width="2.5"/>
+<text x="110" y="114" text-anchor="middle" font-size="15" font-weight="700" fill="#7c2d12">24V supply</text>
+<text x="110" y="162" text-anchor="middle" font-size="17" font-weight="700" fill="#c02626">＋</text>
+<text x="110" y="276" text-anchor="middle" font-size="17" font-weight="700" fill="#334155">−</text>
+<rect x="310" y="80" width="200" height="150" rx="11" fill="#eef4fd" stroke="#2563eb" stroke-width="2.5"/>
+<text x="410" y="114" text-anchor="middle" font-size="15" font-weight="700" fill="#0f2544">Relay pole 1</text>
+<text x="410" y="152" text-anchor="middle" font-size="14" fill="#1d4ed8">Common: pin 9</text>
+<text x="410" y="188" text-anchor="middle" font-size="14" fill="#15803d">Normally open: pin 5</text>
+<text x="410" y="214" text-anchor="middle" font-size="12.5" fill="#64748b">Closes when energized</text>
+<rect x="660" y="80" width="200" height="230" rx="11" fill="#ecfdf5" stroke="#15803d" stroke-width="2.5"/>
+<text x="760" y="114" text-anchor="middle" font-size="15" font-weight="700" fill="#14532d">Solenoid valve</text>
+<text x="760" y="158" text-anchor="middle" font-size="15" font-weight="700" fill="#c02626">Red lead</text>
+<text x="760" y="272" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">Black lead</text>
+<text x="760" y="206" text-anchor="middle" font-size="13" fill="#166534">24V DC · Normally closed</text>
+<text x="760" y="228" text-anchor="middle" font-size="13" fill="#166534">Opens when energized</text>
+<line x1="180" y1="156" x2="306" y2="156" stroke="#c02626" stroke-width="2.5" marker-end="url(#gr)"/>
+<line x1="510" y1="184" x2="656" y2="156" stroke="#c02626" stroke-width="2.5" marker-end="url(#gr)"/>
+<line x1="860" y1="268" x2="940" y2="268" stroke="#334155" stroke-width="2.5"/>
+<line x1="940" y1="268" x2="940" y2="344" stroke="#334155" stroke-width="2.5"/>
+<line x1="940" y1="344" x2="110" y2="344" stroke="#334155" stroke-width="2.5"/>
+<line x1="110" y1="344" x2="110" y2="292" stroke="#334155" stroke-width="2.5" marker-end="url(#gk)"/>
+<rect x="900" y="98" width="196" height="126" rx="10" fill="#fef4f4" stroke="#c02626" stroke-width="2.5"/>
+<text x="998" y="130" text-anchor="middle" font-size="15" font-weight="700" fill="#7f1d1d">1N4007</text>
+<text x="998" y="158" text-anchor="middle" font-size="13" fill="#7f1d1d">Across red and black leads</text>
+<text x="998" y="182" text-anchor="middle" font-size="13" fill="#7f1d1d">Banded end (cathode)</text>
+<text x="998" y="204" text-anchor="middle" font-size="13" font-weight="700" fill="#c02626">to the red lead</text>
+<line x1="860" y1="156" x2="896" y2="156" stroke="#c02626" stroke-width="2.5"/>
+<text x="560" y="378" text-anchor="middle" font-size="13.5" fill="#334155">+24V → pin 9 → pin 5 → red → valve → black → 24V−. This current path bypasses Arduino wiring.</text>
+</svg><figcaption>Figure 4 · Valve current path and flyback-diode placement</figcaption></figure>
+<div class="danger"><b>Fit one diode across the red and black leads of each valve.</b><br>
+<b>Connect the banded cathode to red</b> and the anode to black.<br>
+Without suppression, the coil's turn-off transient can arc across relay contacts and couple interference into
+<b>RS485 and load-cell wiring</b>, disturbing scale readings.<br>
+The ULN2803 clamp diodes suppress the relay coils when its COM connection is correctly wired.</div>
+<div class="ok"><b>Mechanical installation:</b> Use appropriate crimp or terminal-block connections to join red with the diode cathode and black with the anode. Insulate exposed leads and prevent shorts.</div>
+
+<h2 id="s9">9. Firmware</h2>
+<p><code>config/hardware.yaml</code> is the hardware configuration source. Run
+<code>python tools/gen_firmware_config.py</code> to generate the following firmware settings:</p>
+<pre>#define VALVE_PIN_LIST { 10, 11 }
+#define MOTOR_VALVE_LIST { 1, 0, 0, 0, 0, 0, 0, 2 }
+#define VALVE_OPEN_BEFORE_MS 1000UL
+#define VALVE_CLOSE_AFTER_MS 1000UL</pre>
+<table>
+<tr><th style="width:28%">Action</th><th>Automatic sequence</th></tr>
+<tr><td>Start motor 2</td><td>Open valve 1 → wait 1 s → start motor 2 (water)</td></tr>
+<tr><td>Start motor 9</td><td>Open valve 2 → wait 1 s → start motor 9 (CuSO₄)</td></tr>
+<tr><td>Stop or finish dosing</td><td>Stop the associated motor → keep the valve open for 1 s → close it</td></tr>
+<tr><td><code>X</code></td><td>Stop All stops motors, the syringe pump, and scale acquisition, and closes both valves <b>immediately</b></td></tr>
+<tr><td><code>?</code></td><td>The report contains <code>valves=10</code>: the first bit is valve 1, the second is valve 2; <code>1</code> means open.</td></tr>
+</table>
+<div class="ok"><b>Manual valve control is not exposed.</b> The console has no open/close/pulse buttons, and the HTTP API has no
+<code>valves.*</code> functions. The valves follow motors 2 and 9 to maintain the required timing and route selection.</div>
+<div class="note"><b>Valve current bypasses Arduino ground wiring.</b> The path is +24V → relay contact → valve → 24V−. Separate power branches and correctly oriented flyback diodes reduce interference with weighing and stepper control.</div>
+
+<h2 id="s10">10. Test Sequence</h2>
+<table>
+<tr><th style="width:10%">Step</th><th style="width:38%">Action</th><th>Expected result</th></tr>
+<tr><td>1</td><td>Measure coil resistance in both polarities and estimate power; check for an internal diode.</td>
+    <td>Record each value and compare with the valve specification.</td></tr>
+<tr><td>2</td><td>Check each relay coil with a correctly polarized 24V supply at pins 13/14.</td><td>The relay operates and its LED lights. Verify polarity before applying power.</td></tr>
+<tr><td>3</td><td>With power off, wire all twelve connections and both diodes. Route motor 2 to water, motor 8 to OUT, and motor 9 to CuSO₄.</td><td>Tubing agrees with labels.</td></tr>
+<tr><td>4</td><td>Generate <code>hw_config.h</code>, upload the firmware, and start the backend.</td><td>Self-test passes; the console has no manual valve buttons.</td></tr>
+<tr><td>5</td><td>Select motor 2 and press Forward.</td><td>Valve 1 opens; motor 2 starts after 1 s.</td></tr>
+<tr><td>6</td><td>Stop motor 2.</td><td>The motor stops immediately; valve 1 closes after 1 s.</td></tr>
+<tr><td>7</td><td>Start and stop motor 9.</td><td>Only valve 2 follows, with the same timing.</td></tr>
+<tr><td>8</td><td>Observe scale readings while motors and valves operate.</td><td><b>Check for switching disturbances</b>. Inspect diode polarity, grounding, and cable routing if readings jump.</td></tr>
+<tr><td>9</td><td>Press Stop All while running.</td><td>Pumps stop and both valves close immediately.</td></tr>
+</table>
+<div class="note"><b>The firmware implements the 1 s normal-operation delays.</b> Do not add manual valve switching or use the removed legacy
+<code>E,&lt;valve&gt;,&lt;0|1&gt;</code> command.</div>
+
+<h2 id="s11">11. Checklist and Troubleshooting</h2>
+<ul class="chk">
+<li>Both valve coil resistances and power estimates have been recorded.</li>
+<li>Both relay coil polarities are confirmed: pin 13 positive, LED operating.</li>
+<li>ULN #1 OUT5 and OUT6 are <b>pins 14 and 13</b> respectively, distinct from relay terminal numbers.</li>
+<li>Relay pins 1, 4, 8, and 12 are unconnected; feedback is not implemented.</li>
+<li>Each valve has a 1N4007 across its red and black leads,<b>with the banded end connected to red</b></li>
+<li>. NC pins 1 and 4 remain unconnected.</li>
+<li>Valve power comes directly from the supply, not the Arduino or ULN branch.</li>
+<li>Prime the fluid path before operating the valves, as specified for the installed hardware.</li>
+</ul>
+<table>
+<tr><th style="width:34%">Symptom</th><th>Checks</th></tr>
+<tr><td>Relay does not operate</td><td>Check the ULN output connection: <b>OUT5 is pin 14, not pin 5</b>. Check relay coil polarity and LED indication.</td></tr>
+<tr><td>Relay operates but valve does not</td>
+    <td>Check continuity between pins 9 and 5 when energized, terminal contact with the conductors, and the valve's 24V supply.</td></tr>
+<tr><td>Slow valve response</td><td>Measure across the valve leads while energized; the voltage should be close to 24V.</td></tr>
+<tr><td>No valve response when starting motor 2 or 9</td><td>Check D10/D11 connections to ULN #1 <b>pins 5/6</b> and ULN pin 9 (GND) and pin 10 (+24V).</td></tr>
+<tr><td>Scale readings jump during switching</td><td><b>Check the 1N4007 installation and polarity</b>, followed by grounding and cable routing.</td></tr>
+<tr><td>Arduino resets during valve switching</td><td>Separate valve and control power branches using star wiring from the supply terminals.</td></tr>
+<tr><td>Valve does not seal fully</td><td>Inspect and clean the valve seat for particles. Consider an inlet filter suitable for the fluid path.</td></tr>
+</table>
+
+<footer class="doc">2 × MUPH 24V DC normally closed valves · 2 × LB2HN-24DS with PYF08A sockets · 2 × 1N4007<br>
+<a href="wiring-motors.html">Peristaltic Pump Wiring</a> ‧ <a href="wiring-valves.html">Solenoid Valve Wiring</a> ‧ <a href="wiring-pump.html">Syringe Pump Wiring</a> ‧ <a href="wiring-scale.html">Scale Wiring</a> ‧ <a href="architecture.html">System Architecture</a> ‧ <a href="/">Control Console</a></footer>
+</div></body></html>

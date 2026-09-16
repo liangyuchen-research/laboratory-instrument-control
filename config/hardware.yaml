@@ -1,0 +1,203 @@
+# =====================================================================
+#  hardware.yaml - shared hardware and service configuration
+# ---------------------------------------------------------------------
+#  Update this file to configure the system:
+#  The backend reads serial settings, conversion factors and devices at startup.
+#  The frontend builds its controls from GET /api/config.
+#  tools/gen_firmware_config.py generates pin assignments and constants in
+#  firmware/Arduino/hw_config.h for compilation with the Arduino sketch.
+#
+#  After pin changes, regenerate and upload the firmware, then restart the backend.
+# =====================================================================
+
+meta:
+  name: Autonomous Laboratory v6
+  description: Eight peristaltic pumps, automated cleaning, syringe pump, two valves and 10 Hz gravimetric feedback
+
+# ---------------------------------------------------------------------
+# Backend service
+# ---------------------------------------------------------------------
+server:
+  host: 127.0.0.1          # Loopback access by default.
+  port: 8000
+  cors_origins: ["*"]
+
+# ---------------------------------------------------------------------
+# Arduino Mega serial connection
+# ---------------------------------------------------------------------
+link:
+  # Use COM3 on Windows or /dev/ttyACM0 on Linux; auto selects a compatible port.
+  port: auto
+  baud: 115200
+  # Public checkouts use the built-in simulator without opening a hardware port.
+  simulate: true
+  # Allow the Arduino to finish setup after the USB connection resets it.
+  boot_delay_s: 2.5
+  command_timeout_s: 3.0
+  # Diagnostic scans may take about 40 seconds.
+  long_command_timeout_s: 60.0
+  # Simulator acceleration for self-tests only; physical hardware ignores this value.
+  simulation_speedup: 1
+
+# ---------------------------------------------------------------------
+# Relay-selected peristaltic pumps with shared stepper drivers
+# ---------------------------------------------------------------------
+motors:
+  # The two drivers use the same switch settings:
+  # SW1~8 = ON,OFF,ON,OFF,OFF,OFF,ON,ON
+  # Approximately 1.9 A peak / 1.4 A RMS, 50% idle current, 8 microsteps, 1600 pulses/rev.
+  driver_model: DM542J
+  driver_switches: ["ON", "OFF", "ON", "OFF", "OFF", "OFF", "ON", "ON"]
+  motor_full_steps_per_rev: 200
+  microsteps: 8
+  pulses_per_rev: 1600
+
+  # RUNZE RZ1030B-8, eight rollers, 3.0 mm ID x 1.0 mm wall silicone tubing.
+  # The source specification lists a reference maximum of 114 mL/min at 400 rpm:
+  # 1600 pulses/rev / (114 mL/min / 400 rev/min) = 5614.035 pulses/mL.
+  # This is an initial reference; tubing, compression, backpressure and wear affect flow.
+  pump_head_model: RZ1030B-8
+  rollers: 8
+  tube_inner_diameter_mm: 3.0
+  tube_wall_thickness_mm: 1.0
+  reference_max_rpm: 400
+  reference_max_flow_ml_min: 114
+  # Motor n uses a MY4N-GS relay controlled by Arduino D<n>, n = 2-9.
+  driver_settle_ms: 60
+  max_sps: 8000
+  # Retain the reference for 3 mm tubing. Measured motor 2 (water) dispensed
+  # 13.25 mL for a 10 mL setting, giving the shared speed conversion:
+  # 5614.03508772 x 10 / 13.25 = 4237.00761337 pulses/mL.
+  # All channels use this speed conversion to maintain equal step frequencies
+  # at the same requested flow rate. Per-channel overrides are not supported.
+  reference_pulses_per_ml: 5614.03508772
+  pulses_per_ml: 4237.00761337
+  # Finite dosing uses a separate shared conversion based on motor 2:
+  # 50 mL requested, 46.469 mL measured, yielding 4237.00761337 x 50 / 46.469.
+  # Equal target volumes therefore produce equal step counts and frequencies.
+  dose_pulses_per_ml: 4558.96147256
+  # Maximum UI flow setting (mL/min).
+  # 80 mL/min x 4237.008 pulses/mL / 60 = 5649 steps/s, below the 8000 steps/s limit.
+  max_flow_ml_min: 80
+  # Default flow for continuous manual motion (motors.run).
+  # Finite and gravimetric dosing use their fixed speeds below.
+  default_flow_ml_min: 40
+  # Fixed finite-dose speed (motors.dose), independent of the manual flow slider.
+  dose_flow_ml_min: 40.0
+  default_dose_ml: 10.0
+
+  # The interface supports two separate dosing modes:
+  # 1. Step-count dosing converts volume with the shared dose_pulses_per_ml,
+  #    using equal step counts, frequencies and durations across channels.
+  # 2. Gravimetric dosing controls dispensed mass without a density conversion.
+  # The controller uses the starting weight as its baseline; the container need not read 0 g.
+  gravimetric_dose:
+    enabled: true
+    default_target_g: 10.0
+    # Three flow stages are converted with the shared pulses_per_ml value.
+    # Motors 2-9 therefore receive the same 2825 / 706 / 212 steps/s setpoints.
+    fast_flow_ml_min: 40.0
+    approach_flow_ml_min: 10.0
+    trim_flow_ml_min: 3.0
+    # Retained for the legacy volume_ml API; the current interface sends target_g directly.
+    trigger_volume_ml: 10.0
+    density_g_ml: 1.0
+    tolerance_percent: 0.5
+    slow_zone_g: 2.0
+    trim_zone_g: 0.5
+    baseline_samples: 5
+    final_samples: 7
+    # Wait 5 s after stopping before the final reading, allowing residual CuSO4 drops to fall.
+    settle_s: 5.0
+    scale_ready_timeout_s: 4.0
+    # Dry tubing is primed at the fast speed. At 40 mL/min, 30 s corresponds to about
+    # 20 mL or 2.8 m of straight 3 mm ID tubing. A timeout still stops the motor.
+    no_gain_timeout_s: 30.0
+    minimum_gain_g: 0.05
+    timeout_s: 300.0
+  groups:
+    - id: A
+      label: Group A
+      color: blue
+      driver: { pul: 22, dir: 23, ena: 24 }
+      channels:
+        - { id: 2, pin: 2, label: Motor 2 · Water, fluid: Water }
+        - { id: 3, pin: 3, label: Motor 3 }
+        - { id: 4, pin: 4, label: Motor 4 }
+        - { id: 5, pin: 5, label: Motor 5 }
+    - id: B
+      label: Group B
+      color: purple
+      driver: { pul: 25, dir: 26, ena: 27 }
+      channels:
+        - { id: 6, pin: 6, label: Motor 6 }
+        - { id: 7, pin: 7, label: Motor 7 }
+        - { id: 8, pin: 8, label: Motor 8 · OUT, fluid: OUT }
+        - { id: 9, pin: 9, label: Motor 9 · CuSO₄, fluid: CuSO₄ }
+
+# ---------------------------------------------------------------------
+# Cleaning schedule, excluding the 1 s valve lead time for motor 2:
+# t = 0-30 s: water motor 2 only.
+# t = 30-75 s: water motor 2 and outlet motor 8 together.
+# t = 75-120 s: outlet motor 8 only.
+# ---------------------------------------------------------------------
+cleaning:
+  water_motor: 2
+  out_motor: 8
+  flow_ml_min: 40.0
+  water_lead_s: 30.0
+  overlap_s: 45.0
+  out_tail_s: 45.0
+
+# ---------------------------------------------------------------------
+# Normally closed solenoid valves via ULN2803A and LB2HN-24DS relays
+# ---------------------------------------------------------------------
+valves:
+  # Valves follow linked motors: open 1 s before motion and close 1 s after it stops.
+  # No manual valve switching is exposed. Stop All closes valves immediately.
+  open_before_ms: 1000
+  close_after_ms: 1000
+  motor_links:
+    - { motor: 2, valve: 1, fluid: Water }
+    - { motor: 9, valve: 2, fluid: CuSO₄ }
+  channels:
+    - { id: 1, pin: 10, label: Valve 1 · Water }
+    - { id: 2, pin: 11, label: Valve 2 · CuSO₄ }
+
+# ---------------------------------------------------------------------
+# Syringe pump (RUNZE SY-01B, ASCII protocol on Arduino Serial1)
+# ---------------------------------------------------------------------
+syringe_pump:
+  serial: Serial1
+  tx_pin: 18
+  rx_pin: 19
+  baud: 9600
+  address: 0
+  full_stroke_steps: 12000
+  default_syringe_ul: 5000
+  syringe_options_ul: [5000, 1250]
+  valve_positions: 3       # Number of pump-head valve positions (firmware supports up to 15).
+
+# ---------------------------------------------------------------------
+# RS485 weighing transmitter (Modbus RTU on Arduino Serial2)
+# ---------------------------------------------------------------------
+scale:
+  serial: Serial2
+  tx_pin: 16
+  rx_pin: 17
+  de_pin: 36               # Connect DE and RE here; automatic-direction adapters may omit it.
+  stream_hz: 10            # Target weight stream frequency in samples/s.
+  # 1 uses unaveraged readings for rapid detection of small mass changes; noise is more visible.
+  average_samples: 1
+  display_decimals: 3      # Display precision only; this does not establish 0.001 g accuracy.
+  stable_threshold_g: 0.015
+  chart_points: 300
+  calibration_presets_g: [10, 50, 100, 200]
+  default_calibration_g: 100
+  modbus:                  # Use W,SCAN to identify settings if readings are unavailable.
+    baud: 9600
+    address: 1
+    function_code: 3       # 3 = holding registers, 4 = input registers
+    register: 0
+    format: 1              # 0 int16 / 1 int32 high word first / 2 int32 low word first
+                           # 3 float ABCD / 4 float CDAB

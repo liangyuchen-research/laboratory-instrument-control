@@ -3,3 +3,6 @@
 *.h5 binary
 *.npy binary
 *.zcos binary
+
+# Treat preserved Windows CRLF line endings as valid whitespace.
+* whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

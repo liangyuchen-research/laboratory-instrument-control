@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scale Wiring: Load Cell, Weighing Transmitter, RS485, and Arduino Mega</title>
+<style>
+  :root{--navy:#12263f;--acc:#2563eb;--acc2:#60a5fa;--grey:#64748b;--light:#eff4fb;
+        --green:#15803d;--teal:#0f6e56;--purple:#4338ca;--red:#b91c1c;--amber:#b45309;
+        --ink:#1f2937;--line:#dbe3ef;--soft:#f6f9fd}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#e9eef7 0%,#eef1f6 340px);color:var(--ink);
+       font-family:"Segoe UI",system-ui,sans-serif;
+       font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+  .page{max-width:1020px;margin:34px auto 60px;background:#fff;border-radius:18px;
+        box-shadow:0 1px 3px rgba(18,38,63,.06),0 12px 40px rgba(18,38,63,.10);
+        padding:54px 62px 66px}
+  header.doc{text-align:center;padding-bottom:28px;margin-bottom:28px;position:relative}
+  header.doc::after{content:"";position:absolute;left:32%;right:32%;bottom:0;height:3px;
+        border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+  header.doc h1{margin:0 0 12px;font-size:28px;color:var(--navy);letter-spacing:-.4px;line-height:1.35}
+  header.doc .sub{color:var(--grey);font-size:14px;line-height:1.8}
+  nav.toc{background:var(--soft);border:1px solid var(--line);border-radius:12px;
+        padding:16px 24px;margin:0 0 34px;font-size:14px;line-height:2.1}
+  nav.toc b{color:var(--navy);letter-spacing:.5px}
+  nav.toc a{color:var(--acc);text-decoration:none;margin-right:16px;white-space:nowrap;
+        border-bottom:1px solid transparent;transition:.15s}
+  nav.toc a:hover{border-bottom-color:var(--acc)}
+  h2{font-size:21px;color:var(--navy);margin:48px 0 16px;padding:2px 0 2px 15px;
+     border-left:5px solid var(--acc);border-radius:2px;line-height:1.45;letter-spacing:-.2px}
+  h3{font-size:16.5px;color:var(--navy);margin:30px 0 10px;padding-left:2px}
+  h3::before{content:"▸ ";color:var(--acc2)}
+  p{margin:0 0 15px;text-align:left}
+  ul,ol{margin:0 0 16px;padding-left:24px}
+  li{margin-bottom:7px}
+  table{border-collapse:separate;border-spacing:0;width:100%;margin:16px 0 26px;
+        font-size:13.5px;line-height:1.6;border:1px solid var(--line);
+        border-radius:11px;overflow:hidden;box-shadow:0 1px 2px rgba(18,38,63,.04)}
+  th{background:linear-gradient(180deg,#1c3357,#12263f);color:#fff;font-weight:600;
+     padding:11px 13px;text-align:left;font-size:13px;letter-spacing:.3px}
+  td{border-top:1px solid var(--line);padding:10px 13px;vertical-align:top}
+  tr:nth-child(even) td{background:#fafcff}
+  tbody tr:hover td,table tr:hover td{background:#f0f6ff}
+  code{background:var(--light);padding:2px 7px;border-radius:5px;font-size:.88em;
+       color:#1e40af;font-family:Consolas,monospace}
+  pre{background:linear-gradient(180deg,#152238,#0f172a);color:#dbe7ff;border-radius:12px;
+      padding:18px 22px;font-size:12.8px;line-height:1.7;overflow-x:auto;margin:14px 0 24px;
+      font-family:Consolas,monospace;
+      box-shadow:0 4px 16px rgba(15,23,42,.18)}
+  pre code{background:none;color:inherit;padding:0}
+  figure{margin:24px 0 30px;text-align:center}
+  figure svg{width:100%;height:auto;display:block;border:1px solid var(--line);
+             border-radius:14px;box-shadow:0 2px 12px rgba(18,38,63,.07)}
+  figcaption{margin-top:12px;color:var(--grey);font-size:13.5px;font-weight:600}
+  .note,.danger,.ok{border-radius:10px;padding:14px 18px 14px 46px;margin:16px 0 22px;
+       font-size:14.5px;line-height:1.85;position:relative}
+  .note::before,.danger::before,.ok::before{position:absolute;left:16px;top:13px;
+       font-weight:700;font-size:15px}
+  .note{background:#fffbeb;border:1px solid #fcd995;border-left:4px solid var(--amber)}
+  .note::before{content:"!";color:var(--amber);left:19px}
+  .danger{background:#fef4f4;border:1px solid #f6bcbc;border-left:4px solid var(--red)}
+  .danger::before{content:"\26A0";color:var(--red)}
+  .ok{background:#f2fdf5;border:1px solid #a7e8bf;border-left:4px solid var(--green)}
+  .ok::before{content:"\2713";color:var(--green)}
+  .tA{color:var(--teal);font-weight:700}
+  .tB{color:var(--purple);font-weight:700}
+  .tC{color:var(--green);font-weight:700}
+  td .sub{color:var(--grey);font-size:12px}
+  .chk{list-style:none;padding-left:4px;margin:10px 0 20px}
+  .chk li{margin-bottom:9px;padding-left:30px;position:relative}
+  .chk li::before{content:"\2610";position:absolute;left:0;top:-1px;font-size:19px;color:var(--acc)}
+  footer.doc{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);
+             color:var(--grey);font-size:13px;text-align:center;line-height:1.8}
+  a{color:var(--acc)}
+  @media(max-width:820px){.page{padding:28px 18px 40px;margin:0;border-radius:0}
+    header.doc h1{font-size:23px}h2{font-size:19px;margin-top:38px}
+    table{font-size:12.8px}th,td{padding:9px 10px}}
+  @media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:0}
+    nav.toc{display:none}h2{break-after:avoid}table,figure{break-inside:avoid}}
+</style></head><body><div class="page">
+<header class="doc">
+  <h1>Scale Wiring</h1>
+  <p class="sub">Load cell → weighing transmitter → TTL↔RS485 adapter → Arduino Mega <b>D17 / D16 / D36</b><br>
+  Fourteen base connections · Shares the Mega and 24V supply with eight motors and two valves</p>
+</header>
+
+<nav class="toc"><b>Contents</b><br>
+<a href="#s1">1. Overview</a><a href="#s2">2. Components</a><a href="#s3">3. Load-Cell Leads</a>
+<a href="#s4">4. Resistance Checks</a><a href="#s5">5. Transmitter Power</a><a href="#s6">6. RS485 Connections</a>
+<a href="#s7">7. Adapter-to-Mega Wiring</a><a href="#s8">8. Connection Tables</a>
+<a href="#s9">9. Firmware and Commands</a><a href="#s10">10. Initial Calibration</a><a href="#s11">11. Troubleshooting</a>
+</nav>
+
+<h2 id="s1">1. Overview</h2>
+<p>The scale uses <b>a separate serial interface</b> from the motors and valves: Mega
+<code>Serial2</code>(D16/D17). Motors use D2–D9 and D22–D27; valves use D10/D11. The
+<b>syringe pump occupies <code>Serial1</code>(D18 / D19)</b>, so the scale uses Serial2. The scale adapter's <b>RS485 direction-control pin is D36</b>. D26, used by an earlier standalone scale setup, is already assigned to driver 2 DIR in this system.</p>
+
+<div class="ok">The chain uses <b>two supply levels</b>: 24V for the transmitter and 5V for the specified adapter. The load cell receives excitation from the transmitter's E+/E− terminals. <b>Never connect 12V or 24V directly to E+/E−.</b></div>
+
+<figure><svg viewBox="0 0 980 520" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif">
+<rect width="980" height="520" fill="#fbfcfe"/>
+<text x="490" y="32" font-size="17" font-weight="700" fill="#12263f" text-anchor="middle">Figure 2 · Scale signal chain: fourteen base connections and one optional lead</text>
+
+<!-- Subsystem blocks -->
+<rect x="30" y="150" width="152" height="128" rx="12" fill="#eef4ff" stroke="#2563eb" stroke-width="2"/>
+<text x="106" y="196" font-size="14" font-weight="700" fill="#12263f" text-anchor="middle">Load cell</text>
+<text x="106" y="220" font-size="12" fill="#64748b" text-anchor="middle">Red · Black · Green · White</text>
+<text x="106" y="244" font-size="11.5" fill="#94a3b8" text-anchor="middle">Millivolt-level signal</text>
+
+<rect x="262" y="130" width="176" height="168" rx="12" fill="#f3fbf6" stroke="#15803d" stroke-width="2"/>
+<text x="350" y="163" font-size="14" font-weight="700" fill="#12263f" text-anchor="middle">Weighing transmitter</text>
+<text x="350" y="186" font-size="11.5" fill="#64748b" text-anchor="middle">E+ E− S+ S−</text>
+<text x="350" y="212" font-size="11.5" fill="#64748b" text-anchor="middle">12–24V supply</text>
+<text x="350" y="238" font-size="11.5" fill="#64748b" text-anchor="middle">RS485 A/B output</text>
+<text x="350" y="268" font-size="11.5" fill="#b45309" text-anchor="middle">Modbus RTU slave</text>
+
+<rect x="518" y="130" width="164" height="168" rx="12" fill="#f5f3ff" stroke="#4338ca" stroke-width="2"/>
+<text x="600" y="163" font-size="14" font-weight="700" fill="#12263f" text-anchor="middle">TTL↔RS485 adapter</text>
+<text x="600" y="186" font-size="11.5" fill="#64748b" text-anchor="middle">A/B (RS485 side)</text>
+<text x="600" y="212" font-size="11.5" fill="#64748b" text-anchor="middle">VCC GND</text>
+<text x="600" y="238" font-size="11.5" fill="#64748b" text-anchor="middle">RO(RXD) DI(TXD)</text>
+<text x="600" y="264" font-size="11.5" fill="#64748b" text-anchor="middle">DE + RE (joined)</text>
+
+<rect x="762" y="130" width="188" height="168" rx="12" fill="#eef4ff" stroke="#2563eb" stroke-width="2"/>
+<text x="856" y="163" font-size="14" font-weight="700" fill="#12263f" text-anchor="middle">Arduino Mega</text>
+<text x="856" y="188" font-size="12" fill="#1f2937" text-anchor="middle">D17 = RX2</text>
+<text x="856" y="212" font-size="12" fill="#1f2937" text-anchor="middle">D16 = TX2</text>
+<text x="856" y="236" font-size="12" fill="#1f2937" text-anchor="middle">D36 = DE / RE</text>
+<text x="856" y="262" font-size="12" fill="#1f2937" text-anchor="middle">5V ‧ GND</text>
+
+<!-- Connections -->
+<path d="M182 214 H262" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#ar)"/>
+<text x="222" y="204" font-size="11.5" fill="#2563eb" text-anchor="middle">①~④</text>
+<path d="M438 214 H518" stroke="#15803d" stroke-width="3" fill="none" marker-end="url(#ar2)"/>
+<text x="478" y="204" font-size="11.5" fill="#15803d" text-anchor="middle">⑦⑧</text>
+<text x="478" y="232" font-size="11" fill="#64748b" text-anchor="middle">A→A, B→B</text>
+<path d="M682 214 H762" stroke="#4338ca" stroke-width="3" fill="none" marker-end="url(#ar3)"/>
+<text x="722" y="204" font-size="11.5" fill="#4338ca" text-anchor="middle">⑩~⑭</text>
+
+<!-- 24V -->
+<rect x="262" y="368" width="176" height="72" rx="11" fill="#fef4f4" stroke="#b91c1c" stroke-width="2"/>
+<text x="350" y="399" font-size="13.5" font-weight="700" fill="#b91c1c" text-anchor="middle">24V power supply</text>
+<text x="350" y="422" font-size="11.5" fill="#64748b" text-anchor="middle">(shared with motors and valves)</text>
+<path d="M350 368 V298" stroke="#b91c1c" stroke-width="3" fill="none" marker-end="url(#ar4)"/>
+<text x="366" y="336" font-size="11.5" fill="#b91c1c">⑤⑥ 12~24V</text>
+
+<!-- Common ground -->
+<path d="M438 404 H856 V298" stroke="#111827" stroke-width="2.6" fill="none" stroke-dasharray="7 5" marker-end="url(#ar5)"/>
+<text x="700" y="396" font-size="12" font-weight="700" fill="#111827" text-anchor="middle">⑮ Common ground: 24V negative → Mega GND</text>
+
+<rect x="120" y="462" width="740" height="42" rx="9" fill="#f2fdf5" stroke="#a7e8bf"/>
+<text x="490" y="489" font-size="12.5" fill="#166534" text-anchor="middle">The transmitter amplifies and digitizes the load-cell signal. Arduino reads it through Modbus; verify power and signal wiring separately.</text>
+
+<defs>
+<marker id="ar"  markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#2563eb"/></marker>
+<marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#15803d"/></marker>
+<marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#4338ca"/></marker>
+<marker id="ar4" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#b91c1c"/></marker>
+<marker id="ar5" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#111827"/></marker>
+</defs>
+</svg>
+<figcaption>Figure 2 · Complete chain from the load cell to Arduino</figcaption></figure>
+
+<h2 id="s2">2. Components</h2>
+<table>
+<tr><th style="width:26%">Component</th><th style="width:14%">Quantity</th><th>Notes</th></tr>
+<tr><td>Load cell / weighing platform</td><td>1</td><td>Four leads: red, black, green, and white</td></tr>
+<tr><td>Weighing transmitter</td><td>1</td><td>E+/E−/S+/S− inputs, RS485 output, supply <b>12~24V</b>(the documented module is marked 12–24V)</td></tr>
+<tr><td>TTL↔RS485 adapter</td><td>1</td><td><b>One dedicated adapter</b> for Serial2; do not share the syringe pump's Serial1 adapter.</td></tr>
+<tr><td>24V supply</td><td>Shared</td><td>The transmitter can share the system supply on a separate branch; the source notes describe a load of tens of milliamps.</td></tr>
+<tr><td>Jumper and terminal wiring</td><td>Approximately fourteen connections</td><td>Use suitable jumper leads on the TTL side and crimped terminals for 24V wiring.</td></tr>
+<tr><td>Known reference mass</td><td>1</td><td>For calibration. A <b>container weighed on a reference balance</b> can serve as a practical check; its uncertainty limits the resulting calibration.</td></tr>
+</table>
+
+<h2 id="s3">3. The Four Load-Cell Leads</h2>
+<p>The load cell contains a four-strain-gauge <b>Wheatstone bridge</b>. E+/E− carry excitation <b>from the transmitter</b>, while S+/S− carry the bridge's <b>differential output</b> of only a few millivolts.</p>
+<table>
+<tr><th style="width:16%">Lead color</th><th style="width:22%">Transmitter terminal</th><th>Function</th></tr>
+<tr><td><b style="color:#b91c1c">Red</b></td><td><code>E+</code></td><td>Excitation positive (EXC+)</td></tr>
+<tr><td><b>Black</b></td><td><code>E−</code></td><td>Excitation negative (EXC−)</td></tr>
+<tr><td><b style="color:#15803d">Green</b></td><td><code>S+</code></td><td>Signal positive (SIG+)</td></tr>
+<tr><td><b style="color:#64748b">White</b></td><td><code>S−</code></td><td>Signal negative (SIG−)</td></tr>
+</table>
+
+<figure><svg viewBox="0 0 940 430" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif">
+<rect width="940" height="430" fill="#fbfcfe"/>
+<text x="470" y="32" font-size="17" font-weight="700" fill="#12263f" text-anchor="middle">Figure 1 · Four load-cell leads to the weighing transmitter</text>
+
+<!-- Load cell -->
+<rect x="46" y="86" width="230" height="196" rx="13" fill="#eef4ff" stroke="#2563eb" stroke-width="2.2"/>
+<text x="161" y="116" font-size="15" font-weight="700" fill="#12263f" text-anchor="middle">Load cell / weighing platform</text>
+<text x="161" y="139" font-size="12" fill="#64748b" text-anchor="middle">Wheatstone bridge · Four leads</text>
+<rect x="74" y="156" width="174" height="104" rx="8" fill="#fff" stroke="#c7d6ee"/>
+<text x="161" y="182" font-size="12.5" fill="#1f2937" text-anchor="middle">Red = excitation +</text>
+<text x="161" y="203" font-size="12.5" fill="#1f2937" text-anchor="middle">Black = excitation −</text>
+<text x="161" y="224" font-size="12.5" fill="#1f2937" text-anchor="middle">Green = signal +</text>
+<text x="161" y="245" font-size="12.5" fill="#1f2937" text-anchor="middle">White = signal −</text>
+
+<!-- Transmitter -->
+<rect x="640" y="86" width="252" height="230" rx="13" fill="#f3fbf6" stroke="#15803d" stroke-width="2.2"/>
+<text x="766" y="116" font-size="15" font-weight="700" fill="#12263f" text-anchor="middle">Weighing transmitter</text>
+<text x="766" y="139" font-size="12" fill="#64748b" text-anchor="middle">Load-cell input terminals</text>
+<rect x="664" y="152" width="204" height="34" rx="6" fill="#fff" stroke="#bfe3cc"/>
+<text x="678" y="174" font-size="13" font-weight="700" fill="#b91c1c">E+</text>
+<text x="722" y="174" font-size="12" fill="#64748b">EXC+ / excitation +</text>
+<rect x="664" y="188" width="204" height="34" rx="6" fill="#fff" stroke="#bfe3cc"/>
+<text x="678" y="210" font-size="13" font-weight="700" fill="#1f2937">E−</text>
+<text x="722" y="210" font-size="12" fill="#64748b">EXC− / excitation −</text>
+<rect x="664" y="224" width="204" height="34" rx="6" fill="#fff" stroke="#bfe3cc"/>
+<text x="678" y="246" font-size="13" font-weight="700" fill="#15803d">S+</text>
+<text x="722" y="246" font-size="12" fill="#64748b">SIG+ / signal +</text>
+<rect x="664" y="260" width="204" height="34" rx="6" fill="#fff" stroke="#bfe3cc"/>
+<text x="678" y="282" font-size="13" font-weight="700" fill="#94a3b8">S−</text>
+<text x="722" y="282" font-size="12" fill="#64748b">SIG− / signal −</text>
+
+<!-- Four leads -->
+<path d="M276 170 H420 V169 H640" stroke="#dc2626" stroke-width="3.4" fill="none"/>
+<path d="M276 190 H452 V205 H640" stroke="#111827" stroke-width="3.4" fill="none"/>
+<path d="M276 210 H484 V241 H640" stroke="#15803d" stroke-width="3.4" fill="none"/>
+<path d="M276 230 H516 V277 H640" stroke="#94a3b8" stroke-width="3.4" fill="none"/>
+<circle cx="352" cy="169" r="12" fill="#dc2626"/><text x="352" y="174" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+<circle cx="352" cy="190" r="12" fill="#111827"/><text x="352" y="195" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+<circle cx="352" cy="210" r="12" fill="#15803d"/><text x="352" y="215" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+<circle cx="352" cy="230" r="12" fill="#94a3b8"/><text x="352" y="235" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">4</text>
+
+<rect x="300" y="340" width="340" height="66" rx="9" fill="#fffbeb" stroke="#fcd995"/>
+<text x="470" y="363" font-size="12.5" fill="#92400e" text-anchor="middle">Check bridge pairs against the load-cell specification.</text>
+<text x="470" y="384" font-size="12.5" fill="#92400e" text-anchor="middle">Cross-pair resistance: about ¾ of E–E here.</text>
+</svg>
+<figcaption>Figure 1 · Match each load-cell lead to its designated terminal</figcaption></figure>
+
+<div class="note"><b>Reversed Bridge Polarity</b>
+Reversing E+/E− can invert the signal or produce an unexpected zero reading. Reversing S+/S− makes the reading move <b>negative</b> when a mass is added. Check the identified pair and <b>correct its polarity with power off</b> before repeating the test.</div>
+
+<h2 id="s4">4. Resistance Checks Before Power-Up</h2>
+<p>Wire colors vary by load-cell manufacturer. Confirm the datasheet and use resistance checks on the disconnected load cell as supporting evidence:</p>
+<table>
+<tr><th style="width:34%">Resistance pattern</th><th>Interpretation</th></tr>
+<tr><td><b>Highest-resistance</b> pair (for example, 1000 Ω)</td><td>may identify <b>E+ and E−</b>(input resistance)</td></tr>
+<tr><td>Another pair near the rated resistance (1000 Ω or slightly lower in the source example)</td><td>may identify <b>S+ and S−</b>(output resistance)</td></tr>
+<tr><td>An excitation-to-signal measurement near <b>3/4</b></td><td>is consistent with a bridge-arm path rather than a short.</td></tr>
+</table>
+<p>Resistance alone may not distinguish equal bridge pairs; verify the load-cell specification. If loading produces a negative reading after correct pair identification,<b>reverse S+ and S−</b> with power off, then test again.</p>
+
+<h2 id="s5">5. Transmitter Power (⑤⑥)</h2>
+<table>
+<tr><th style="width:10%">#</th><th style="width:36%">From</th><th>To</th></tr>
+<tr><td>⑤</td><td>24V supply <b>+V</b></td><td>Transmitter <code>V+</code> / <code>PWR+</code> / <code>12~24V</code></td></tr>
+<tr><td>⑥</td><td>24V supply <b>−V(GND)</b></td><td>Transmitter <code>V−</code> / <code>PWR−</code> / <code>GND</code></td></tr>
+</table>
+<div class="danger"><b>Do not connect these power leads to E+/E−.</b>
+E+/E− are load-cell excitation outputs, not power inputs. Applying supply voltage there can damage the analog front end. Use the labeled power-input terminals and check the indicator after power-up.</div>
+
+<h2 id="s6">6. RS485 Pair (⑦⑧) and Optional Signal Ground (⑨)</h2>
+<table>
+<tr><th style="width:10%">#</th><th style="width:38%">From transmitter</th><th>To adapter RS485 side</th></tr>
+<tr><td>⑦</td><td><code>A</code> / <code>485+</code> / <code>D+</code></td><td><code>A</code>(sometimes labeled <code>A+</code>)</td></tr>
+<tr><td>⑧</td><td><code>B</code> / <code>485−</code> / <code>D−</code></td><td><code>B</code>(sometimes labeled <code>B−</code>)</td></tr>
+<tr><td>⑨<span class="sub">(optional)</span></td><td><code>GND</code> / <code>SG</code></td><td>Adapter <code>GND</code></td></tr>
+</table>
+<p>Lead ⑨ is <b>redundant in the documented short-cable topology</b> because transmitter ground reaches 24V negative through ⑥, and connection ⑮ joins that node to Mega and adapter ground. Longer runs above 2–3 m or noisy installations require a considered signal-ground and shielding arrangement.</p>
+<div class="note"><b>RS485 A/B labels differ between manufacturers.</b> If communication fails after checking the identified signal leads,<b>power down and reverse A and B</b>, then test again. Do not interchange power and signal connections.</div>
+
+<h2 id="s7">7. Adapter → Arduino Mega (⑩–⑭)</h2>
+<figure><svg viewBox="0 0 980 470" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, sans-serif">
+<rect width="980" height="470" fill="#fbfcfe"/>
+<text x="490" y="32" font-size="17" font-weight="700" fill="#12263f" text-anchor="middle">Figure 3 · Five TTL-side connections from the RS485 adapter to Mega</text>
+
+<!-- Adapter -->
+<rect x="58" y="72" width="300" height="330" rx="13" fill="#f5f3ff" stroke="#4338ca" stroke-width="2.2"/>
+<text x="208" y="102" font-size="15" font-weight="700" fill="#12263f" text-anchor="middle">TTL↔RS485 adapter</text>
+<text x="208" y="124" font-size="11.5" fill="#64748b" text-anchor="middle">TTL side: five connections</text>
+<rect x="86" y="140" width="244" height="36" rx="7" fill="#fff" stroke="#cfc9f5"/>
+<text x="102" y="163" font-size="13" font-weight="700" fill="#b91c1c">VCC</text>
+<text x="186" y="163" font-size="11.5" fill="#64748b">Supply: check adapter rating</text>
+<rect x="86" y="180" width="244" height="36" rx="7" fill="#fff" stroke="#cfc9f5"/>
+<text x="102" y="203" font-size="13" font-weight="700" fill="#111827">GND</text>
+<text x="186" y="203" font-size="11.5" fill="#64748b">Common ground with Mega</text>
+<rect x="86" y="220" width="244" height="36" rx="7" fill="#fff" stroke="#cfc9f5"/>
+<text x="102" y="243" font-size="13" font-weight="700" fill="#15803d">RO</text>
+<text x="186" y="243" font-size="11.5" fill="#64748b">To Mega RX</text>
+<rect x="86" y="260" width="244" height="36" rx="7" fill="#fff" stroke="#cfc9f5"/>
+<text x="102" y="283" font-size="13" font-weight="700" fill="#2563eb">DI</text>
+<text x="186" y="283" font-size="11.5" fill="#64748b">From Mega TX</text>
+<rect x="86" y="300" width="244" height="56" rx="7" fill="#fff" stroke="#cfc9f5"/>
+<text x="102" y="323" font-size="13" font-weight="700" fill="#b45309">DE</text>
+<text x="102" y="345" font-size="13" font-weight="700" fill="#b45309">RE</text>
+<text x="186" y="334" font-size="11.5" fill="#64748b">Join DE and RE</text>
+<path d="M138 318 H160 V342 H138" stroke="#b45309" stroke-width="2.4" fill="none"/>
+<text x="208" y="380" font-size="11.5" fill="#4338ca" text-anchor="middle">RS485 A/B connect to the transmitter (⑦⑧)</text>
+
+<!-- Mega -->
+<rect x="622" y="72" width="300" height="330" rx="13" fill="#eef4ff" stroke="#2563eb" stroke-width="2.2"/>
+<text x="772" y="102" font-size="15" font-weight="700" fill="#12263f" text-anchor="middle">Arduino Mega 2560</text>
+<text x="772" y="124" font-size="11.5" fill="#64748b" text-anchor="middle">POWER and communication/digital headers</text>
+<rect x="650" y="140" width="244" height="36" rx="7" fill="#fff" stroke="#c7d6ee"/>
+<text x="666" y="163" font-size="13" font-weight="700" fill="#b91c1c">5V</text>
+<text x="740" y="163" font-size="11.5" fill="#64748b">POWER header</text>
+<rect x="650" y="180" width="244" height="36" rx="7" fill="#fff" stroke="#c7d6ee"/>
+<text x="666" y="203" font-size="13" font-weight="700" fill="#111827">GND</text>
+<text x="740" y="203" font-size="11.5" fill="#64748b">Any POWER-header GND</text>
+<rect x="650" y="220" width="244" height="36" rx="7" fill="#fff" stroke="#c7d6ee"/>
+<text x="666" y="243" font-size="13" font-weight="700" fill="#15803d">D17</text>
+<text x="740" y="243" font-size="11.5" fill="#64748b">RX2: Mega receive</text>
+<rect x="650" y="260" width="244" height="36" rx="7" fill="#fff" stroke="#c7d6ee"/>
+<text x="666" y="283" font-size="13" font-weight="700" fill="#2563eb">D16</text>
+<text x="740" y="283" font-size="11.5" fill="#64748b">TX2: Mega transmit</text>
+<rect x="650" y="300" width="244" height="56" rx="7" fill="#fff" stroke="#c7d6ee"/>
+<text x="666" y="334" font-size="13" font-weight="700" fill="#b45309">D36</text>
+<text x="740" y="326" font-size="11.5" fill="#64748b">Transmit/receive direction</text>
+<text x="740" y="346" font-size="11.5" fill="#64748b"> (automatic: omit)</text>
+<text x="772" y="380" font-size="11.5" fill="#2563eb" text-anchor="middle">Reserve D16/D17 for this interface</text>
+
+<!-- Five connections -->
+<path d="M358 158 H622" stroke="#b91c1c" stroke-width="3" fill="none"/>
+<path d="M358 198 H622" stroke="#111827" stroke-width="3" fill="none"/>
+<path d="M358 238 H490 V238 H622" stroke="#15803d" stroke-width="3" fill="none"/>
+<path d="M358 278 H490 V278 H622" stroke="#2563eb" stroke-width="3" fill="none"/>
+<path d="M358 330 H622" stroke="#b45309" stroke-width="3" fill="none"/>
+<circle cx="490" cy="158" r="13" fill="#b91c1c"/><text x="490" y="163" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">10</text>
+<circle cx="490" cy="198" r="13" fill="#111827"/><text x="490" y="203" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">11</text>
+<circle cx="470" cy="238" r="13" fill="#15803d"/><text x="470" y="243" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">12</text>
+<circle cx="470" cy="278" r="13" fill="#2563eb"/><text x="470" y="283" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">13</text>
+<circle cx="490" cy="330" r="13" fill="#b45309"/><text x="490" y="335" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">14</text>
+<text x="537" y="230" font-size="11" fill="#15803d">RO→D17</text>
+<text x="537" y="270" font-size="11" fill="#2563eb">DI→D16</text>
+
+<rect x="120" y="418" width="740" height="40" rx="9" fill="#fef4f4" stroke="#f6bcbc"/>
+<text x="490" y="444" font-size="12.5" fill="#b91c1c" text-anchor="middle">RO must connect to D17 and DI to D16. Reversing them prevents communication.</text>
+</svg>
+<figcaption>Figure 3 · RO → D17, DI → D16, and joined DE/RE → D36</figcaption></figure>
+<table>
+<tr><th style="width:10%">#</th><th style="width:32%">Adapter TTL side</th><th style="width:26%">Arduino Mega</th><th>Notes</th></tr>
+<tr><td>⑩</td><td><code>VCC</code></td><td><code>5V</code></td><td>For an adapter rated only for 3.3V, connect to <code>3V3</code> rather than 5V; also verify logic-level compatibility.</td></tr>
+<tr><td>⑪</td><td><code>GND</code></td><td><code>GND</code></td><td>Any POWER-header GND</td></tr>
+<tr><td>⑫</td><td><code>RO</code>(sometimes labeled RXD)</td><td><code>D17</code> = RX2</td><td>To Mega RX</td></tr>
+<tr><td>⑬</td><td><code>DI</code>(sometimes labeled TXD)</td><td><code>D16</code> = TX2</td><td>From Mega TX</td></tr>
+<tr><td>⑭</td><td><code>DE</code> + <code>RE</code> joined together</td><td><code>D36</code></td><td>Firmware controls transmit/receive direction.</td></tr>
+</table>
+<div class="note"><b>An adapter without DE/RE</b> and with only VCC/GND/TXD/RXD may use <b>automatic direction</b>. In that case, connection ⑭ is <b>not required</b>; firmware toggles an unconnected D36 pin.</div>
+<div class="danger"><b>D26 is already assigned to driver 2 DIR</b>, so scale direction control uses <b>D36</b>. Earlier standalone <code>scale_test.ino</code> files may use D26; <b>do not copy that assignment</b>.</div>
+
+<h2 id="s8">8. Connection Tables: Fourteen Base Connections</h2>
+<h3>A. Load cell → transmitter (four connections)</h3>
+<table>
+<tr><th style="width:10%">#</th><th style="width:32%">From</th><th style="width:32%">To</th><th>Notes</th></tr>
+<tr><td>①</td><td>Load cell <b style="color:#b91c1c">red</b></td><td>Transmitter <code>E+</code></td><td rowspan="4">Secure the four existing signal leads in the corresponding terminals.</td></tr>
+<tr><td>②</td><td>Load cell <b>black</b></td><td>Transmitter <code>E−</code></td></tr>
+<tr><td>③</td><td>Load cell <b style="color:#15803d">green</b></td><td>Transmitter <code>S+</code></td></tr>
+<tr><td>④</td><td>Load cell <b style="color:#64748b">white</b></td><td>Transmitter <code>S−</code></td></tr>
+</table>
+<h3>B. Transmitter power (two connections)</h3>
+<table>
+<tr><th style="width:10%">#</th><th style="width:32%">From</th><th style="width:32%">To</th><th>Notes</th></tr>
+<tr><td>⑤</td><td>24V supply <code>+V</code></td><td>Transmitter <code>V+</code></td><td>The documented module accepts 12–24V; this installation uses 24V.</td></tr>
+<tr><td>⑥</td><td>24V supply <code>−V</code></td><td>Transmitter <code>V−</code></td><td>Check the power indicator after connection.</td></tr>
+</table>
+<h3>C. RS485 pair (two connections)</h3>
+<table>
+<tr><th style="width:10%">#</th><th style="width:32%">From</th><th style="width:32%">To</th><th>Notes</th></tr>
+<tr><td>⑦</td><td>Transmitter <code>A</code></td><td>Adapter <code>A</code></td><td rowspan="2">Check A/B polarity if communication fails.</td></tr>
+<tr><td>⑧</td><td>Transmitter <code>B</code></td><td>Adapter <code>B</code></td></tr>
+</table>
+<h3>D. Adapter → Mega (five connections)</h3>
+<table>
+<tr><th style="width:10%">#</th><th style="width:32%">From</th><th style="width:32%">To</th><th>Notes</th></tr>
+<tr><td>⑩</td><td>Adapter <code>VCC</code></td><td>Mega <code>5V</code></td><td>For a 3.3V-only adapter, use <code>3V3</code></td></tr>
+<tr><td>⑪</td><td>Adapter <code>GND</code></td><td>Mega <code>GND</code></td><td></td></tr>
+<tr><td>⑫</td><td>Adapter <code>RO</code></td><td>Mega <code>D17</code></td><td>Match transmit and receive directions correctly.</td></tr>
+<tr><td>⑬</td><td>Adapter <code>DI</code></td><td>Mega <code>D16</code></td><td></td></tr>
+<tr><td>⑭</td><td>Adapter <code>DE</code>+<code>RE</code></td><td>Mega <code>D36</code></td><td>Not required with an automatic-direction adapter.</td></tr>
+</table>
+<h3>E. Common ground (one connection)</h3>
+<table>
+<tr><th style="width:10%">#</th><th style="width:32%">From</th><th style="width:32%">To</th><th>Notes</th></tr>
+<tr><td>⑮</td><td>24V supply <code>−V</code></td><td>Mega <code>GND</code></td><td>If this common-ground link was already installed for the motors or valves,<b>do not add a duplicate return path</b></td></tr>
+</table>
+<div class="ok"><b>Total: ①–⑧ plus ⑩–⑮ = fourteen connections.</b> Connection ⑨ is the optional additional signal-ground lead discussed in Section 6.</div>
+
+<h2 id="s9">9. Firmware and Commands</h2>
+<p>Scale support is <b>integrated into <code>firmware/Arduino/Arduino.ino</code></b> and requires no additional Arduino. The startup message is <code>READY,arduino+pump+2valves+scale</code>.</p>
+<pre><code>#define SCALE_SERIAL  Serial2     // D16 = TX2, D17 = RX2
+#define SCALE_DE_PIN  36          // Joined DE/RE connection</code></pre>
+<table>
+<tr><th style="width:34%">Command</th><th>Effect</th></tr>
+<tr><td><code>W,READ</code></td><td>Read once (the console normally uses the 10 Hz stream) → <code>WEIGHT,&lt;grams&gt;,RAW,&lt;raw&gt;,ST,&lt;1=stable/0=changing&gt;</code></td></tr>
+<tr><td><code>W,STREAM,&lt;Hz&gt;</code></td><td>Enable continuous reporting; <b>10 Hz at startup</b>(<code>W,STREAM,0</code> disables it)</td></tr>
+<tr><td><code>W,TARE</code></td><td>Tare with the empty container in place.</td></tr>
+<tr><td><code>W,CAL,100</code></td><td>Calibrate the scale after placing a 100 g reference mass.</td></tr>
+<tr><td><code>W,SCAN</code></td><td>Scan baud rates, addresses, and registers; <b>useful when the transmitter does not respond</b></td></tr>
+<tr><td><code>W,SET,1,3,0,2</code></td><td>Apply scan results: address, function code, register, and format.</td></tr>
+<tr><td><code>W,SNIFF</code> / <code>W,LOOP</code></td><td>Listen-only and adapter diagnostic modes for investigating communication faults.</td></tr>
+<tr><td><code>W,CFG</code></td><td>Print the current settings.</td></tr>
+</table>
+<div class="ok"><b>Stepper service continues during scale reads.</b> A Modbus read may wait up to 250 ms. The firmware continues calling <code>serviceMotors()</code> inside the wait loop to service motor pulses. Physical timing and missed-step behavior still require hardware validation.</div>
+<div class="note"><b>Continuous acquisition starts at 10 Hz.</b> The firmware default for <code>wStreamHz</code> is 10. After three consecutive read failures, streaming stops and reports <code>ERR,stream_stopped_no_reply</code>. The console displays a warning. Correct the wiring, then select Restart Acquisition.<br>
+<code>W,SCAN</code>, <code>W,SET</code> The console has no buttons for these low-level settings, but the backend exposes
+<code>scale.diagnose</code> and <code>scale.modbus</code> through <code>POST /fn/…</code>. Alternatively, stop the backend and use the Arduino IDE Serial Monitor; only one process can open the port at a time.</div>
+
+<h2 id="s10">10. Initial Calibration</h2>
+<table>
+<tr><th style="width:8%">Step</th><th style="width:34%">Action</th><th>Expected result</th></tr>
+<tr><td>1</td><td>With power off, connect load-cell leads ①–④ and power leads ⑤⑥; verify terminals before applying power.</td><td>The transmitter power indicator lights.</td></tr>
+<tr><td>2</td><td>With power off, complete ⑦⑧ and ⑩–⑮, then connect Mega USB.</td><td>—</td></tr>
+<tr><td>3</td><td>Run <code>run.bat</code> to open the console.</td><td>The scale starts streaming at 10 Hz; initial readings are not yet calibrated.</td></tr>
+<tr><td>4</td><td>If no data arrives, call <code>POST /fn/scale.diagnose {"mode":"scan"}</code> or stop the backend and send <code>W,SCAN</code></td><td>through the Serial Monitor. Record the baud rate, address, and register; use <code>W,SET</code> to apply them.</td></tr>
+<tr><td>5</td><td>With an empty container, select <b>Tare Empty Container</b></td><td>The reading approaches zero.</td></tr>
+<tr><td>6</td><td>Place the reference mass, select its value, then select <b>Calibrate with Reference Mass</b></td><td>The reading matches the reference mass within the measurement uncertainty.</td></tr>
+<tr><td>7</td><td>Remove the reference mass.</td><td>The reading returns near zero.</td></tr>
+</table>
+<div class="ok"><b>Calibration settings are saved.</b> Console calibration overwrites <code>config/scale_calibration.json</code> and loads it at the next startup or reconnection. The software restores calibration after a reset; verify tare and accuracy whenever the mechanical setup or reference conditions change.</div>
+<div class="note"><b>Response to Small Mass Changes:</b> The current configuration is <code>W,AVG,1</code>, so live readings use no moving average and display three decimal places. This improves responsiveness but exposes vibration and electrical noise. Display precision is not measurement accuracy.</div>
+
+<h2 id="s11">11. Troubleshooting</h2>
+<table>
+<tr><th style="width:30%">Symptom</th><th>Checks</th></tr>
+<tr><td>Transmitter power indicator is off</td><td>① Verify that supply power is on V+/V−, not E+/E−.<br>② Check supply polarity.<br>③ Measure the 24V supply.</td></tr>
+<tr><td>Console reports Scale not responding<br>or <code>ERR,timeout</code></td><td>① <b>Check A/B polarity</b> and correct the identified pair with power off before retrying.<br>② Verify RO→D17 and DI→D16.<br>③ Check joined DE/RE → <b>D36</b><br>④ Run <code>W,SCAN</code> to scan baud rates and addresses.<br>⑤ Use <code>W,LOOP</code> only with an appropriate isolated adapter diagnostic setup. An A/B short is not a valid general proof of adapter operation; do not short the active transmitter bus.</td></tr>
+<tr><td>Readings arrive but do not change under load</td><td>Check S+/S− connections and damaged or pinched load-cell leads.</td></tr>
+<tr><td>One or two drops produce no visible change</td><td>Check <b>RAW</b> first. If raw counts change but grams do not, recalibrate with a suitable reference mass. If raw counts do not change, inspect transmitter filtering/resolution, mechanical binding, contact with external tubing, and load-cell range.</td></tr>
+<tr><td>Added mass produces a <b>negative</b> change</td><td>With power off,<b>reverse the identified S+/S− pair</b></td></tr>
+<tr><td>Unstable readings</td><td>① Increase averaging using <code>W,AVG,8</code>(Serial Monitor).<br>② Adjust the stability threshold with <code>W,STABLE,0.5</code><br>③ Route load-cell leads away from 24V motor wiring.</td></tr>
+<tr><td>Readings become noisy when a motor starts</td><td>Check signal routing, supply transients, and grounding. Separate load-cell and motor wiring and avoid duplicate ground-return paths.</td></tr>
+<tr><td>Reading remains 0.000</td><td>Check calibration and the <code>scaleDiv</code> setting; then repeat the tare and calibration steps.</td></tr>
+</table>
+
+<h2>Connection Checklist</h2>
+<ul class="chk">
+<li>Load cell: red→E+, black→E−, green→S+, white→S−, verified for the installed cell.</li>
+<li>24V connects to V+/V−,<b>not</b> E+ / E−</li>
+<li>Transmitter A→adapter A and B→B, with polarity checked.</li>
+<li>Adapter VCC→rated supply voltage and GND→GND.</li>
+<li>RO→<b>D17</b>, DI→<b>D16</b>(correct direction)</li>
+<li>Joined DE/RE connects to <b>D36</b>(unconnected for an automatic-direction adapter).</li>
+<li>24V negative and Mega GND share the documented common-ground link.</li>
+<li>Upload <code>firmware/Arduino/Arduino.ino</code> and verify that the startup message contains <code>+scale</code></li>
+<li>Tare and reference-mass calibration have been completed.</li>
+</ul>
+
+<footer class="doc">Load cell · 12–24V Modbus RTU weighing transmitter · TTL↔RS485 adapter · Arduino Mega 2560<br>
+<a href="wiring-motors.html">Peristaltic Pump Wiring</a> ‧ <a href="wiring-valves.html">Solenoid Valve Wiring</a> ‧ <a href="wiring-pump.html">Syringe Pump Wiring</a> ‧ <a href="wiring-scale.html">Scale Wiring</a> ‧ <a href="architecture.html">System Architecture</a> ‧ <a href="/">Control Console</a></footer>
+</div></body></html>

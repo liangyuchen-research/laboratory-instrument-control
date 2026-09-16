@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Autonomous Laboratory v6 · Control Console</title>
+<style>
+:root{
+  --bg:#070d15;--panel:#101b28;--panel2:#162434;--line:#26374b;--fg:#eef5fd;--mut:#8ea1b6;--dim:#5b6d82;
+  --blue:#4da3ff;--blue2:#2179cf;--green:#39d98a;--purple:#c18cff;--red:#ef5350;--amber:#f4b34c;
+  --cyan:#5ed7d0;--gold:#ffd07a;--shadow:0 12px 34px rgba(0,0,0,.34)
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);
+  font-family:"Segoe UI",system-ui,sans-serif}
+body{touch-action:manipulation;background:radial-gradient(1100px 620px at 50% -12%,#16293f 0%,var(--bg) 64%);padding-bottom:30px}
+button,input,select{font:inherit}
+button{border:1px solid transparent;border-radius:14px;min-height:56px;padding:11px 16px;color:var(--fg);
+  background:#22344a;font-weight:700;font-size:15.5px;cursor:pointer;transition:filter .12s,transform .08s}
+button:hover:not(:disabled){filter:brightness(1.15)}
+button:active:not(:disabled){transform:scale(.985)}
+button:disabled{opacity:.3;cursor:not-allowed}
+button.primary{background:linear-gradient(180deg,var(--blue),var(--blue2));color:#04141f}
+button.good{background:linear-gradient(180deg,#49e39a,#27b96e);color:#04220f}
+button.purple{background:linear-gradient(180deg,#d2a6ff,#a768e6);color:#190a2c}
+button.danger{background:linear-gradient(180deg,#ff6a66,#d63b37);color:#fff}
+button.warn{background:#6d4a14;color:#ffe3a5}
+button.soft{background:#172636;border-color:#2f465e}
+button.sm,.doclink{min-height:42px;padding:8px 14px;font-size:13.5px;border-radius:11px}
+.doclink{display:inline-flex;align-items:center;background:#172636;border:1px solid #2f465e;
+  color:var(--fg);text-decoration:none;font-weight:700;transition:filter .12s}
+.doclink:hover{filter:brightness(1.15)}
+button.active{box-shadow:inset 0 0 0 2px currentColor}
+
+header{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;padding:12px 18px;
+  background:rgba(8,16,26,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(14px);flex-wrap:wrap}
+header h1{font-size:18px;margin:0;line-height:1.25;font-weight:750}
+header h1 small{display:block;margin-top:3px;color:var(--mut);font-size:11.5px;font-weight:500}
+.spacer{flex:1}
+.conn{display:flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;
+  background:#0a1420;color:var(--mut);font-size:12.5px;white-space:nowrap}
+.conn b{color:var(--fg);font-family:Consolas,monospace}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--red);flex:none}
+.dot.ok{background:var(--green);box-shadow:0 0 0 5px rgba(57,217,138,.13)}
+.dot.sim{background:var(--amber);box-shadow:0 0 0 5px rgba(244,179,76,.13)}
+#stopAll{min-height:50px;font-size:15px}
+
+.statusbar{max-width:1420px;margin:14px auto 0;padding:0 16px;display:grid;
+  grid-template-columns:repeat(6,1fr);gap:10px}
+.metric{padding:11px 13px;border:1px solid var(--line);border-radius:13px;background:#0c1826;min-width:0}
+.metric span{display:block;color:var(--mut);font-size:11px;margin-bottom:3px}
+.metric b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+main{max-width:1420px;margin:0 auto;padding:14px 16px 30px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{position:relative;background:linear-gradient(155deg,var(--panel2),var(--panel));border:1px solid var(--line);
+  border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--accent,#2c3d51)}
+.card.blue{--accent:linear-gradient(90deg,#2c7ed6,#7fc1ff)}
+.card.purple{--accent:linear-gradient(90deg,#8b5cf6,#d5b0ff)}
+.card.amber{--accent:linear-gradient(90deg,#c9871f,#ffcf70)}
+.card.cyan{--accent:linear-gradient(90deg,#249b93,#76dfd7)}
+.card.gold{--accent:linear-gradient(90deg,#c98f22,#ffd07a)}
+.card.cleaning{--accent:linear-gradient(90deg,#48e5d1,#4da3ff,#c18cff);
+  background:linear-gradient(145deg,#133344,#121d2c 55%,#1b1834)}
+.card.cleaning .head h2{color:#99f5eb;font-size:20px}
+.clean-grid{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.clean-state{padding:13px 15px;border:1px solid #31566b;border-radius:14px;background:rgba(4,18,28,.58)}
+.clean-state b{display:block;color:#91eee4;font-size:17px;margin-bottom:4px}
+.clean-state span{color:var(--mut);font-size:12px;line-height:1.65}
+.clean-start{min-width:210px;min-height:72px;font-size:18px}
+.clean-timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.clean-timeline div{padding:10px 12px;border-radius:11px;background:#0a1724;border:1px solid #294055;
+  color:var(--mut);font-size:12px;line-height:1.55}
+.clean-timeline b{display:block;color:var(--fg);font-size:13px}
+.head{padding:19px 18px 8px}
+.head h2{margin:0;font-size:17px;font-weight:750}
+.card.blue .head h2{color:#8ec8ff}.card.purple .head h2{color:#d9b7ff}
+.card.amber .head h2{color:#ffcf70}.card.cyan .head h2{color:#7fe3dc}.card.gold .head h2{color:var(--gold)}
+.head p{margin:5px 0 0;color:var(--mut);font-size:12px;line-height:1.6}
+.body{padding:10px 18px 18px}
+.span2{grid-column:1/-1}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.tile{min-height:72px;background:#1a2b3d;border:2px solid transparent;font-size:16px}
+.tile small{display:block;font-size:10.5px;color:var(--dim);font-weight:500;margin-top:4px;font-family:Consolas,monospace}
+.tile.on-blue{background:rgba(77,163,255,.2);border-color:var(--blue);color:#bfe0ff}
+.tile.on-blue small{color:#7fb6ee}
+.tile.on-purple{background:rgba(193,140,255,.18);border-color:var(--purple);color:#e6ceff}
+.tile.on-purple small{color:#b393dd}
+
+.block{padding:14px;border:1px solid var(--line);border-radius:15px;background:rgba(5,12,20,.42);margin-top:12px}
+.lrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+.lrow span{color:#c6d6e6;font-size:13.5px}
+.big{font-size:21px;font-weight:900;white-space:nowrap}
+input[type=range]{width:100%;height:40px;margin:0;accent-color:var(--blue);touch-action:pan-x}
+.purple input[type=range]{accent-color:var(--purple)}
+.presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:9px}
+.presets.six{grid-template-columns:repeat(6,1fr)}
+.presets button{min-height:46px;padding:8px;font-size:13.5px}
+.dose-add{color:#9af1c9}.dose-sub{color:#ffb2b2}
+.jog{display:grid;grid-template-columns:1fr .7fr 1fr;gap:10px;margin-top:12px}
+.jog button{min-height:66px;font-size:16px}
+.stepper{display:grid;grid-template-columns:72px 1fr 72px;gap:9px;align-items:center}
+.stepper button{min-height:60px;font-size:22px}
+.readbox{min-height:60px;border:1px solid #2f465e;border-radius:13px;background:#081320;display:grid;place-items:center;text-align:center}
+.readbox b{font-size:21px;font-variant-numeric:tabular-nums}
+.readbox .unit{display:block;color:#c6d6e6;font-size:13px;margin-top:-2px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.dose-mode+.dose-mode{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.mode-action{width:100%;margin-top:12px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.hint{font-size:12px;color:var(--mut);line-height:1.7;margin:10px 0 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Mass */
+.wtop{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+.wread{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:22px 16px;
+  border:1px solid var(--line);border-radius:16px;background:radial-gradient(120% 140% at 50% 0%,#0c1c2a 0%,#060e17 72%)}
+.wnum{display:flex;align-items:baseline;gap:8px}
+.wnum b{font-size:60px;font-weight:900;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums;transition:color .18s}
+.wnum b.stable{color:#7cf0b8}
+.wnum small{font-size:20px;color:var(--mut)}
+.wmeta{display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:center}
+.badge{display:inline-block;padding:3px 11px;border-radius:999px;border:1px solid var(--line);font-size:11.5px;color:var(--mut)}
+.badge.stable{background:#17412c;border-color:var(--green);color:#a9f1cb}
+.badge.moving{background:#3f3313;border-color:var(--amber);color:#ffe3a5}
+.raw{font-size:12px;color:var(--mut)}.raw b{color:#c6d6e6;font-variant-numeric:tabular-nums}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--mut)}
+.live i{width:8px;height:8px;border-radius:50%;background:#33485e}
+.live.on i{background:var(--green);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(57,217,138,.55)}70%{box-shadow:0 0 0 7px rgba(57,217,138,0)}100%{box-shadow:0 0 0 0 rgba(57,217,138,0)}}
+.alert{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:13px 16px;margin-bottom:13px;
+  border-radius:14px;background:#3a2410;border:1px solid #7a5220}
+.alert b{display:block;color:#ffd9a0;font-size:14px}
+.alert span{display:block;color:#d9b98a;font-size:12px;margin-top:3px;line-height:1.6}
+.alert>div{flex:1;min-width:200px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.chip{display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--line);
+  border-radius:999px;background:#0a1420;font-size:12px;color:var(--mut)}
+.chip b{color:var(--fg);font-size:13px;font-variant-numeric:tabular-nums}
+#chart{width:100%;height:220px;display:block;margin-top:12px;border:1px solid var(--line);
+  border-radius:13px;background:#050b12}
+
+/* Log */
+#log{height:170px;overflow:auto;background:#040a10;border:1px solid var(--line);border-radius:12px;
+  padding:10px 13px;font:11.5px/1.6 Consolas,monospace;color:#8fa2b4;white-space:pre-wrap}
+#log .t{color:#3d4c5e}#log .tx{color:#78bdff}#log .rx{color:#69dfa0}#log .er{color:#ff8587}#log .sys{color:#7e91a5}
+details{margin-top:12px}
+summary{cursor:pointer;color:var(--mut);font-size:13px;padding:8px 0}
+#fnlist{font:11.5px/1.7 Consolas,monospace;color:#8fa2b4;max-height:210px;overflow:auto;
+  background:#040a10;border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin-top:8px}
+#fnlist b{color:#9fd0ff}#fnlist i{color:var(--dim);font-style:normal}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);z-index:60;max-width:calc(100vw - 30px);
+  padding:12px 18px;border-radius:13px;background:#173049;border:1px solid #365a78;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:.18s;font-size:14px}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:#3a1c20;border-color:#7b373c;color:#ffc5c7}
+.boot{max-width:640px;margin:80px auto;padding:26px;text-align:center;color:var(--mut);font-size:14px;line-height:1.9}
+
+@media(max-width:1080px){
+  main{grid-template-columns:1fr}.span2{grid-column:auto}
+  .statusbar{grid-template-columns:repeat(3,1fr)}.wtop{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+  header{padding:10px 12px}header h1{flex:1 0 100%}
+  .statusbar{grid-template-columns:1fr 1fr;padding:0 10px}
+  main{padding:10px}.tiles{grid-template-columns:1fr 1fr}
+  .jog{grid-template-columns:1fr}.presets{grid-template-columns:1fr 1fr}
+  .presets.six{grid-template-columns:repeat(3,1fr)}
+  .trio{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}
+  .clean-grid{grid-template-columns:1fr}.clean-start{width:100%;min-width:0}
+  .clean-timeline{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Autonomous Laboratory <span id="hTitle">v6</span><small id="hSub">Control Console</small></h1>
+  <div class="spacer"></div>
+  <div class="conn"><span class="dot" id="dot"></span><b id="portName">Connecting…</b></div>
+  <a class="soft sm doclink" href="/docs" target="_blank" rel="noopener">Wiring Guide</a>
+  <button class="soft sm" onclick="reconnect()">Reconnect</button>
+  <button class="danger" id="stopAll" onclick="stopEverything()">■ Stop All</button>
+</header>
+
+<div class="statusbar" id="statusbar"></div>
+<main id="main"><div class="boot" id="boot">Loading <code>config/hardware.yaml</code> …</div></main>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const el = (tag, cls, html) => { const n = document.createElement(tag);
+  if (cls) n.className = cls; if (html !== undefined) n.innerHTML = html; return n; };
+
+let CFG = null, LINK = {}, STATE = {}, FNS = [];
+let sel = {};                       // {groupId: motorId}
+let flow = {};                      // {groupId: mL/min}
+let dose = {};                      // {groupId: mL}
+let weightTarget = {};              // {groupId: g}, independent of volume dosing in mL
+let doseBusy = {};                  // {groupId: dose operation in progress}
+let pump = { syringe: 5000, valve: 1, speed: 0.4, volume: 1000, max: 2.5 };
+let calG = 100, wData = [], toastTimer = 0, es = null;
+
+/* ---------------- Utilities ---------------- */
+function toast(msg, err) {
+  clearTimeout(toastTimer);
+  const t = $("toast"); t.textContent = msg; t.className = "toast show" + (err ? " err" : "");
+  toastTimer = setTimeout(() => t.className = "toast", 2800);
+}
+function log(text, kind) {
+  const d = $("log"); if (!d) return;
+  const line = el("div", kind || "sys");
+  line.textContent = new Date().toLocaleTimeString("en-GB", { hour12: false }) + "  " + text;
+  d.appendChild(line);
+  while (d.childNodes.length > 400) d.removeChild(d.firstChild);
+  d.scrollTop = d.scrollHeight;
+}
+async function call(name, params) {
+  log("→ " + name + (params && Object.keys(params).length ? " " + JSON.stringify(params) : ""), "tx");
+  let res;
+  try {
+    res = await fetch("/fn/" + name, { method: "POST",
+      headers: { "Content-Type": "application/json" }, body: JSON.stringify(params || {}) });
+  } catch (e) { toast("Cannot connect to the backend", true); log("Network error: " + e.message, "er"); throw e; }
+  let body = null;
+  try { body = await res.json(); } catch (e) { body = null; }
+  if (!res.ok) {
+    const detail = (body && body.detail) || res.statusText;
+    toast(detail, true); log("✗ " + name + ":" + detail, "er");
+    throw new Error(detail);
+  }
+  return body.result;
+}
+const fmt = (v, n) => (v === null || v === undefined || Number.isNaN(v)) ? "—" : Number(v).toFixed(n === undefined ? 2 : n);
+const fmtMl = v => v < 1 ? v.toFixed(2) : (v % 1 ? v.toFixed(2) : v.toFixed(0));
+
+/* ---------------- Startup ---------------- */
+async function boot() {
+  let payload;
+  try {
+    payload = await (await fetch("/api/config")).json();
+  } catch (e) {
+    $("boot").innerHTML = "<b>Cannot connect to the backend</b><br>Check that <code>run.bat</code> is running, " +
+      "then reload this page.";
+    return;
+  }
+  CFG = payload.config; LINK = payload.link;
+  document.title = CFG.meta.name + " · Control Console";
+  $("hTitle").textContent = (CFG.meta.name || "v6").replace(/^Autonomous Laboratory\s*/, "");
+  $("hSub").textContent = CFG.meta.description || "Control Console";
+
+  CFG.motors.groups.forEach(g => {
+    sel[g.id] = null;
+    flow[g.id] = CFG.motors.default_flow_ml_min;
+    dose[g.id] = CFG.motors.default_dose_ml;
+    weightTarget[g.id] = Number(CFG.motors.gravimetric_dose.default_target_g);
+    doseBusy[g.id] = false;
+  });
+  pump.syringe = CFG.syringe_pump.default_syringe_ul;
+  pump.volume = Math.round(pump.syringe / 5);
+  calG = CFG.scale.default_calibration_g;
+
+  try { FNS = (await (await fetch("/fn")).json()).functions; } catch (e) { FNS = []; }
+
+  buildStatusbar(); buildMain(); connectStream();
+  try { const st = await (await fetch("/api/state")).json(); applyState(st); } catch (e) {}
+  drawChart();
+  const saved = payload.calibration || {};
+  if (saved.loaded) {
+    toast(saved.offset_loaded ? "Saved calibration loaded" : "Calibration divisor loaded; zero offset not restored", !saved.offset_loaded);
+    log(saved.message + " (" + saved.file + ")", saved.offset_loaded ? "sys" : "er");
+  }
+}
+
+/* ---------------- Status bar ---------------- */
+function buildStatusbar() {
+  const bar = $("statusbar"); bar.innerHTML = "";
+  const items = [];
+  CFG.motors.groups.forEach(g => items.push([g.id, g.label, "m-" + g.id]));
+  items.push(["pump", "Syringe Pump", "m-pump"], ["valves", "Interlocked Valves", "m-valves"],
+             ["weight", "Mass", "m-weight"], ["link", "Connection", "m-link"]);
+  bar.style.gridTemplateColumns = `repeat(${Math.min(items.length, 6)},1fr)`;
+  items.forEach(([, label, id]) => {
+    const m = el("div", "metric", `<span>${label}</span><b id="${id}">—</b>`);
+    bar.appendChild(m);
+  });
+}
+
+/* ---------------- Main layout ---------------- */
+function buildMain() {
+  const main = $("main"); main.innerHTML = "";
+  main.appendChild(cleaningCard());
+  CFG.motors.groups.forEach(g => main.appendChild(motorCard(g)));
+  main.appendChild(pumpCard());
+  main.appendChild(scaleCard());
+  main.appendChild(logCard());
+  CFG.motors.groups.forEach(g => renderMotor(g.id));
+  renderPump();
+  setCal(calG);
+}
+
+/* ---- Cleaning sequence ---- */
+function cleaningCard() {
+  const c = CFG.cleaning;
+  const card = el("section", "card cleaning span2");
+  card.appendChild(el("div", "head",
+    `<h2>Automatic cleaning · Water → OUT</h2>
+     <p>Runs a timed cleaning sequence. Manual peristaltic controls are locked during cleaning. Stop All remains available.</p>`));
+  const body = el("div", "body");
+  body.innerHTML =
+    `<div class="clean-grid">
+       <div class="clean-state"><b id="cleanState">Ready</b><span id="cleanDetail">Ready: water inlet on motor ${c.water_motor}, outlet on motor ${c.out_motor}.</span></div>
+       <button class="good clean-start" id="cleanStart" onclick="startCleaning()">Start Cleaning</button>
+     </div>
+     <div class="clean-timeline">
+       <div><b>0 s after water starts</b>Motor ${c.water_motor} (water) starts at ${Number(c.flow_ml_min).toFixed(0)} mL/min</div>
+       <div><b>${Number(c.water_lead_s).toFixed(0)} s</b>Motor ${c.out_motor} (OUT) starts. Both run for ${Number(c.overlap_s).toFixed(0)} s</div>
+       <div><b>${Number(c.water_lead_s + c.overlap_s).toFixed(0)} s</b>Water stops; OUT continues draining</div>
+       <div><b>${Number(c.water_lead_s + c.overlap_s + c.out_tail_s).toFixed(0)} s</b>OUT stops after ${Number(c.out_tail_s).toFixed(0)} s of final draining</div>
+     </div>`;
+  card.appendChild(body);
+  return card;
+}
+
+async function startCleaning() {
+  try {
+    const r = await call("motors.clean", {});
+    if (r.state) applyState(r.state);
+    toast(`Cleaning started: fill ${r.water_lead_s} s, overlap ${r.overlap_s} s, drain ${r.out_tail_s} s`);
+  } catch (e) { }
+}
+
+function renderCleaning() {
+  if (!CFG || !CFG.cleaning || !$("cleanState")) return;
+  const active = !!STATE.cleaning;
+  const c = CFG.cleaning;
+  const groupFor = motor => CFG.motors.groups.find(g => g.channels.some(ch => ch.id === motor));
+  const waterGroup = groupFor(c.water_motor), outGroup = groupFor(c.out_motor);
+  const waterState = waterGroup && ((STATE.motors || {})[waterGroup.id] || {}).state;
+  const outState = outGroup && ((STATE.motors || {})[outGroup.id] || {}).state;
+  let title = "Ready", detail = `Ready: water inlet on motor ${c.water_motor}, outlet on motor ${c.out_motor}.`;
+  if (active && waterState === "wait") {
+    title = "Opening water valve";
+    detail = `Valve 1 opens ${CFG.valves.open_before_ms / 1000} s before motor ${c.water_motor}. The timer starts with the motor.`;
+  } else if (active && waterState === "run" && outState !== "run") {
+    title = "Filling";
+    detail = `Motor ${c.water_motor} fills for ${c.water_lead_s} s before motor ${c.out_motor} starts.`;
+  } else if (active && waterState === "run" && outState === "run") {
+    title = "Filling and draining";
+    detail = `Motor ${c.water_motor} (water) and motor ${c.out_motor} (OUT) are running together.`;
+  } else if (active && waterState === "idle" && outState === "run") {
+    title = "Final drain";
+    detail = `Water is off. Motor ${c.out_motor} runs for another ${c.out_tail_s} s to drain residual water.`;
+  }
+  $("cleanState").textContent = title;
+  $("cleanDetail").textContent = detail;
+  $("cleanStart").disabled = active || Object.values(doseBusy).some(Boolean);
+  $("cleanStart").textContent = active ? "Cleaning…" : "Start Cleaning";
+}
+
+/* ---- Peristaltic Pumps ---- */
+function motorCard(g) {
+  const color = g.color === "purple" ? "purple" : "blue";
+  const card = el("section", "card " + color);
+  const ids = g.channels.map(c => c.id).join(", ");
+  card.appendChild(el("div", "head",
+    `<h2>${g.label} · Peristaltic Pumps ${ids}</h2>`));
+  const body = el("div", "body");
+
+  const tiles = el("div", "tiles");
+  g.channels.forEach(ch => {
+    const b = el("button", "tile", ch.label);
+    b.id = `tile-${ch.id}`;
+    b.onclick = () => selectMotor(g.id, ch.id);
+    tiles.appendChild(b);
+  });
+  body.appendChild(tiles);
+
+  const run = el("div", "block");
+  run.innerHTML =
+    `<div class="lrow"><span>Continuous Flow</span><b class="big" id="flowLabel-${g.id}"></b></div>
+     <input type="range" id="flow-${g.id}" min="1" max="${CFG.motors.max_flow_ml_min}" step="1"
+            title="Applies only to manual forward/reverse motion. Dosing uses the configured fixed flow rates.">
+     <div class="presets" id="flowPresets-${g.id}"></div>
+     <div class="jog">
+       <button class="${color === 'purple' ? 'purple' : 'good'}" id="fwd-${g.id}">◀ Forward</button>
+       <button class="danger" id="stp-${g.id}">■ Stop</button>
+       <button class="${color === 'purple' ? 'purple' : 'primary'}" id="rev-${g.id}">Reverse ▶</button>
+     </div>`;
+  body.appendChild(run);
+
+  const ds = el("div", "block");
+  ds.innerHTML =
+    `<div class="dose-mode">
+       <div class="lrow"><span>Volume Dose</span><b class="big" id="doseLabel-${g.id}"></b></div>
+       <div class="stepper">
+         <button class="soft" id="doseDn-${g.id}">−</button>
+         <div class="readbox"><div><b id="doseVal-${g.id}"></b><span class="unit">mL</span></div></div>
+         <button class="soft" id="doseUp-${g.id}">＋</button>
+       </div>
+       <div class="presets six" id="dosePresets-${g.id}"></div>
+       <div class="pair">
+         <button class="${color === 'purple' ? 'purple' : 'good'}" id="goVolume-${g.id}">Dose Forward</button>
+         <button class="soft" id="goRev-${g.id}">Dose Reverse</button>
+       </div>
+     </div>
+     <div class="dose-mode">
+        <div class="lrow"><span>Mass Feedback</span><b class="big" id="weightLabel-${g.id}"></b></div>
+        <div class="stepper">
+          <button class="soft" id="weightDn-${g.id}">−</button>
+          <div class="readbox"><div><b id="weightVal-${g.id}"></b><span class="unit">g</span></div></div>
+          <button class="soft" id="weightUp-${g.id}">＋</button>
+        </div>
+        <div class="presets six" id="weightPresets-${g.id}"></div>
+        <button class="primary mode-action" id="goWeight-${g.id}">Start Mass Dose</button>
+     </div>`;
+  body.appendChild(ds);
+  card.appendChild(body);
+
+  setTimeout(() => {
+    const top = CFG.motors.max_flow_ml_min;
+    [10, 25, 50, 100].forEach(pct => {
+      const v = Math.max(1, Math.round(top * pct / 100));
+      const b = el("button", "soft", `${v}`);
+      b.onclick = () => { flow[g.id] = v; renderMotor(g.id); };
+      $(`flowPresets-${g.id}`).appendChild(b);
+    });
+    [10, 5, 1, -10, -5, -1].forEach(v => {
+      const sign = v > 0 ? "+" : "−";
+      const b = el("button", `soft ${v > 0 ? "dose-add" : "dose-sub"}`,
+                   `${sign}${Math.abs(v)} mL`);
+      b.onclick = () => {
+        dose[g.id] = Math.max(0.1, Math.min(1000,
+          Math.round((dose[g.id] + v) * 10) / 10));
+        renderMotor(g.id);
+      };
+      $(`dosePresets-${g.id}`).appendChild(b);
+    });
+    [10, 5, 1, -10, -5, -1].forEach(v => {
+      const sign = v > 0 ? "+" : "−";
+      const b = el("button", `soft ${v > 0 ? "dose-add" : "dose-sub"}`,
+                   `${sign}${Math.abs(v)} g`);
+      b.onclick = () => {
+        weightTarget[g.id] = Math.max(0.1, Math.min(1000,
+          Math.round((weightTarget[g.id] + v) * 10) / 10));
+        renderMotor(g.id);
+      };
+      $(`weightPresets-${g.id}`).appendChild(b);
+    });
+    $(`flow-${g.id}`).oninput = e => { flow[g.id] = Number(e.target.value); renderMotor(g.id); };
+    $(`doseDn-${g.id}`).onclick = () => { dose[g.id] = Math.max(0.1, Math.round((dose[g.id] - 0.1) * 10) / 10); renderMotor(g.id); };
+    $(`doseUp-${g.id}`).onclick = () => { dose[g.id] = Math.min(1000, Math.round((dose[g.id] + 0.1) * 10) / 10); renderMotor(g.id); };
+    $(`weightDn-${g.id}`).onclick = () => { weightTarget[g.id] = Math.max(0.1, Math.round((weightTarget[g.id] - 0.1) * 10) / 10); renderMotor(g.id); };
+    $(`weightUp-${g.id}`).onclick = () => { weightTarget[g.id] = Math.min(1000, Math.round((weightTarget[g.id] + 0.1) * 10) / 10); renderMotor(g.id); };
+    $(`fwd-${g.id}`).onclick = () => jog(g.id, 1);
+    $(`rev-${g.id}`).onclick = () => jog(g.id, -1);
+    $(`stp-${g.id}`).onclick = () => stopMotor(g.id);
+    $(`goVolume-${g.id}`).onclick = () => doseMove(g.id, 1, "volume");
+    $(`goRev-${g.id}`).onclick = () => doseMove(g.id, -1, "volume");
+    $(`goWeight-${g.id}`).onclick = () => doseMove(g.id, 1, "weight");
+    renderMotor(g.id);              // Apply selection styling for the default mass target.
+  }, 0);
+  return card;
+}
+
+function renderMotor(gid) {
+  const g = CFG.motors.groups.find(x => x.id === gid);
+  const f = flow[gid], d = dose[gid];
+  $(`flow-${gid}`).value = f;
+  $(`flowLabel-${gid}`).textContent = `${f} mL/min`;
+  $(`doseVal-${gid}`).textContent = fmtMl(d);
+  $(`doseLabel-${gid}`).textContent = `${fmtMl(d)} mL`;
+  const grav = CFG.motors.gravimetric_dose || {};
+  const targetG = Number(weightTarget[gid] || grav.default_target_g || 10);
+  $(`goVolume-${gid}`).textContent = `Volume Dose ${fmtMl(d)} mL`;
+  $(`weightLabel-${gid}`).textContent = `${targetG.toFixed(2)} g`;
+  $(`weightVal-${gid}`).textContent = fmtMl(targetG);
+  $(`goWeight-${gid}`).textContent = `Dose to ${targetG.toFixed(2)} g`;
+  g.channels.forEach(ch => {
+    const b = $(`tile-${ch.id}`);
+    b.className = "tile" + (sel[gid] === ch.id ? (g.color === "purple" ? " on-purple" : " on-blue") : "");
+    b.disabled = !!STATE.cleaning || !!doseBusy[gid];
+  });
+  const has = sel[gid] !== null && sel[gid] !== undefined;
+  const cleaning = !!STATE.cleaning;
+  [`fwd-${gid}`, `rev-${gid}`, `goVolume-${gid}`, `goRev-${gid}`].forEach(
+    i => $(i).disabled = !has || !!doseBusy[gid] || cleaning);
+  $(`stp-${gid}`).disabled = cleaning;
+  $(`goWeight-${gid}`).disabled = !has || !!doseBusy[gid] || !grav.enabled || cleaning;
+  renderCleaning();
+}
+
+async function selectMotor(gid, motor) {
+  sel[gid] = motor; renderMotor(gid);
+  try { await call("motors.select", { motor }); } catch (e) { }
+}
+async function jog(gid, direction) {
+  if (sel[gid] == null) return toast("Select a motor first", true);
+  const r = await call("motors.run", { motor: sel[gid], flow_ml_min: flow[gid], direction });
+  toast(`Motor ${sel[gid]} ${direction > 0 ? "Forward" : "Reverse"} ${flow[gid]} mL/min`);
+}
+async function stopMotor(gid) {
+  if (sel[gid] == null) return stopEverything();
+  await call("motors.stop", { motor: sel[gid] });
+  toast(`Motor ${sel[gid]} stopped`);
+}
+async function doseMove(gid, direction, mode) {
+  if (sel[gid] == null) return toast("Select a motor first", true);
+  const grav = CFG.motors.gravimetric_dose || {};
+  doseBusy[gid] = true; renderMotor(gid);
+  try {
+    if (mode === "weight") {
+      const targetG = Number(weightTarget[gid] || grav.default_target_g || 10);
+      toast(`Motor ${sel[gid]} dosing to ${targetG.toFixed(2)} g. Keep the scale undisturbed…`);
+      const r = await call("motors.dose_by_weight",
+        { motor: sel[gid], target_g: targetG, direction });
+      const msg = `Dispensed ${r.dispensed_g.toFixed(3)} g, error ${r.error_g >= 0 ? "+" : ""}${r.error_g.toFixed(3)} g`;
+      toast(msg, !r.within_tolerance);
+      log(`${msg} (target ${r.target_g.toFixed(2)} g ± ${r.tolerance_percent.toFixed(2)}%, flow ${r.fast_flow_ml_min} → ${r.approach_flow_ml_min} → ${r.trim_flow_ml_min} mL/min, step rate ${r.fast_sps} → ${r.approach_sps} → ${r.trim_sps}, ${r.elapsed_s} s)`,
+          r.within_tolerance ? "sys" : "er");
+    } else {
+      // Dosing uses configured flow rates, independent of the manual slider.
+      const r = await call("motors.dose",
+        { motor: sel[gid], volume_ml: dose[gid], direction });
+      toast(`Dose ${fmtMl(dose[gid])} mL at ${r.flow_ml_min} mL/min, approximately ${r.eta_s} s including valve timing`);
+    }
+  } finally {
+    doseBusy[gid] = false; renderMotor(gid);
+  }
+}
+
+/* ---- Syringe Pump ---- */
+function pumpCard() {
+  const p = CFG.syringe_pump;
+  const card = el("section", "card cyan span2");
+  card.appendChild(el("div", "head",
+    `<h2>Syringe Pump · ${p.serial} (D${p.tx_pin} / D${p.rx_pin})</h2>
+     <p>ASCII protocol, ${p.baud} baud, address ${p.address}, ${p.full_stroke_steps} steps per full stroke.
+        Touch controls are available for every numeric setting.</p>`));
+  const body = el("div", "body");
+  const grid = el("div", "grid2");
+
+  const b1 = el("div", "block"); b1.style.marginTop = "0";
+  b1.innerHTML = `<div class="lrow"><span>1. Connection and Homing</span></div>
+    <div class="trio">
+      <button class="primary" id="pDetect">Detect</button>
+      <button class="warn" id="pInit">Initialize</button>
+      <button class="danger" id="pStop">Stop</button>
+    </div>
+    <div class="lrow" style="margin-top:14px"><span>Syringe Capacity</span><b class="big" id="pSyrLabel"></b></div>
+    <div class="presets" id="pSyr"></div>
+    <div class="lrow" style="margin-top:14px"><span>Valve Position</span><b class="big" id="pValveLabel"></b></div>
+    <div class="presets" id="pValve"></div>`;
+  grid.appendChild(b1);
+
+  const b2 = el("div", "block"); b2.style.marginTop = "0";
+  b2.innerHTML = `<div class="lrow"><span>2. Speed</span><b class="big" id="pSpeedLabel"></b></div>
+    <input type="range" id="pSpeed" min="0.001" step="0.001">
+    <button class="primary" id="pSpeedApply" style="width:100%;margin-top:9px">Apply Speed</button>
+    <div class="lrow" style="margin-top:16px"><span>3. Aspiration / Dispensing</span><b class="big" id="pVolLabel"></b></div>
+    <div class="stepper">
+      <button class="soft" id="pVolDn">−</button>
+      <div class="readbox"><div><b id="pVolVal"></b><small>µL</small></div></div>
+      <button class="soft" id="pVolUp">＋</button>
+    </div>
+    <div class="presets" id="pVolPresets"></div>
+    <div class="pair">
+      <button class="good" id="pAsp">↑ Aspirate</button>
+      <button class="primary" id="pDisp">↓ Dispense</button>
+    </div>`;
+  grid.appendChild(b2);
+  body.appendChild(grid);
+  card.appendChild(body);
+
+  setTimeout(() => {
+    p.syringe_options_ul.forEach(v => {
+      const b = el("button", "soft", v >= 1000 ? `${v / 1000} mL` : `${v} µL`);
+      b.id = "syr-" + v;
+      b.onclick = async () => { await call("pump.set_syringe", { volume_ul: v });
+        pump.syringe = v; pump.volume = Math.min(pump.volume, v); await refreshPump(); };
+      $("pSyr").appendChild(b);
+    });
+    for (let i = 1; i <= p.valve_positions; i++) {
+      const b = el("button", "soft", String(i)); b.id = "pv-" + i;
+      b.onclick = async () => { await call("pump.set_valve", { position: i }); pump.valve = i; renderPump(); };
+      $("pValve").appendChild(b);
+    }
+    [10, 25, 50, 100].forEach(pct => {
+      const b = el("button", "soft", pct + "%");
+      b.onclick = () => { pump.volume = Math.max(1, Math.round(pump.syringe * pct / 100)); renderPump(); };
+      $("pVolPresets").appendChild(b);
+    });
+    const step = () => pump.syringe <= 1250 ? 10 : 50;
+    $("pVolDn").onclick = () => { pump.volume = Math.max(1, pump.volume - step()); renderPump(); };
+    $("pVolUp").onclick = () => { pump.volume = Math.min(pump.syringe, pump.volume + step()); renderPump(); };
+    $("pSpeed").oninput = e => { pump.speed = Number(e.target.value); renderPump(); };
+    $("pDetect").onclick = async () => { const r = await call("pump.detect", {});
+      toast(r.online ? "Syringe pump connected" : "Syringe pump not found", !r.online); };
+    $("pInit").onclick = () => call("pump.init", {}).then(() => toast("Initialization command sent"));
+    $("pStop").onclick = () => call("pump.stop", {}).then(() => toast("Syringe pump stopped"));
+    $("pSpeedApply").onclick = async () => { const r = await call("pump.set_speed", { speed_ml_s: pump.speed });
+      toast(`Speed ${r.speed_ml_s} mL/s (raw ${r.raw})`); };
+    $("pAsp").onclick = () => call("pump.aspirate", { volume_ul: pump.volume })
+      .then(() => toast(`Aspirate ${pump.volume} µL`));
+    $("pDisp").onclick = () => call("pump.dispense", { volume_ul: pump.volume })
+      .then(() => toast(`Dispense ${pump.volume} µL`));
+    refreshPump();
+  }, 0);
+  return card;
+}
+
+async function refreshPump() {
+  try {
+    const s = await call("pump.status", {});
+    pump.syringe = s.syringe_ul; pump.max = s.max_speed_ml_s;
+  } catch (e) { }
+  renderPump();
+}
+function renderPump() {
+  const p = CFG.syringe_pump;
+  pump.volume = Math.max(1, Math.min(pump.syringe, Math.round(pump.volume)));
+  pump.speed = Math.min(pump.speed, pump.max);
+  const sp = $("pSpeed"); if (sp) { sp.max = pump.max.toFixed(3); sp.value = pump.speed; }
+  $("pSyrLabel").textContent = pump.syringe >= 1000 ? `${pump.syringe / 1000} mL` : `${pump.syringe} µL`;
+  $("pValveLabel").textContent = `Position ${pump.valve}`;
+  $("pSpeedLabel").textContent = `${pump.speed.toFixed(2)} mL/s`;
+  $("pVolLabel").textContent = `${pump.volume} µL`;
+  $("pVolVal").textContent = pump.volume;
+  p.syringe_options_ul.forEach(v => { const b = $("syr-" + v); if (b) b.classList.toggle("active", v === pump.syringe); });
+  for (let i = 1; i <= p.valve_positions; i++) { const b = $("pv-" + i); if (b) b.classList.toggle("active", i === pump.valve); }
+}
+
+/* ---- Mass ---- */
+function scaleCard() {
+  const s = CFG.scale;
+  const card = el("section", "card gold span2");
+  card.appendChild(el("div", "head",
+    `<h2>Scale · Live at ${s.stream_hz} Hz</h2>
+     <p>Load cell → weighing transmitter → RS485 (${s.serial}/D${s.rx_pin} · D${s.tx_pin}).
+        Continuous acquisition starts on connection while stepper pulses remain active. Filter: ${s.average_samples} sample${s.average_samples === 1 ? " (no moving average)" : " moving average"}.</p>`));
+  const body = el("div", "body");
+  body.innerHTML = `
+    <div class="alert" id="wAlert" hidden>
+      <div><b>Scale not responding</b><span>Acquisition stopped after repeated timeouts. Check RS485 A/B polarity, module power, and common ground.</span></div>
+      <button class="warn" id="wRetry">Restart Acquisition</button>
+    </div>
+    <div class="wtop">
+      <div class="wread">
+        <div class="wnum"><b id="wVal">—</b><small>g</small></div>
+        <div class="wmeta">
+          <span class="badge" id="wSt">Waiting for data</span>
+          <span class="raw">RAW <b id="wRaw">—</b></span>
+          <span class="live" id="wLive"><i></i>${s.stream_hz} Hz</span>
+        </div>
+        <p class="hint">Displays ${s.display_decimals || 3} decimal places to show small changes. Display resolution does not imply measurement accuracy.</p>
+      </div>
+      <div class="block" style="margin-top:0">
+        <button class="primary" id="wTare" style="width:100%">Tare Empty Container</button>
+        <div class="stepper" style="margin-top:11px">
+          <button class="soft" id="wCalDn">−</button>
+          <div class="readbox"><div><b id="wCalVal"></b><small>Reference Mass (g)</small></div></div>
+          <button class="soft" id="wCalUp">＋</button>
+        </div>
+        <div class="presets" id="wCalPresets"></div>
+        <button class="good" id="wCal" style="width:100%;margin-top:10px">Calibrate with Reference Mass</button>
+        <p class="hint">Tare → place the reference mass → select its value → calibrate. Settings overwrite
+        <code>config/scale_calibration.json</code> and load automatically at the next startup.</p>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip">Min <b id="wMin">—</b></span>
+      <span class="chip">Max <b id="wMax">—</b></span>
+      <span class="chip">Range <b id="wSpan">—</b></span>
+      <span class="chip">Mean <b id="wAvg">—</b></span>
+      <span class="chip">Samples <b id="wN">0</b></span>
+      <div class="spacer"></div>
+      <button class="soft sm" id="wClear">Clear History</button>
+      <button class="soft sm" id="wCsv">Download CSV</button>
+    </div>
+    <canvas id="chart" width="1240" height="220"></canvas>`;
+  card.appendChild(body);
+  setTimeout(() => {
+    (CFG.scale.calibration_presets_g || []).forEach(v => {
+      const b = el("button", "soft", v + " g"); b.onclick = () => setCal(v);
+      $("wCalPresets").appendChild(b);
+    });
+    $("wCalDn").onclick = () => setCal(calG - 10);
+    $("wCalUp").onclick = () => setCal(calG + 10);
+    $("wTare").onclick = async () => { await call("scale.tare", {}); wData = []; drawChart(); toast("Tare complete"); };
+    $("wCal").onclick = async () => {
+      const r = await call("scale.calibrate", { grams: calG });
+      wData = []; drawChart();
+      toast("Calibration settings saved");
+      log(`Calibrated with ${calG} g; settings saved to ${r.calibration.file}`, "sys");
+    };
+    $("wRetry").onclick = async () => { $("wAlert").hidden = true; await call("scale.restart", {}); toast("Acquisition restarted"); };
+    $("wClear").onclick = async () => { await call("scale.clear", {}); wData = []; updateStats(); drawChart(); toast("History cleared"); };
+    $("wCsv").onclick = downloadCsv;
+    loadSeries();
+  }, 0);
+  return card;
+}
+
+function setCal(v) {
+  calG = Math.max(1, Math.min(20000, Math.round(v)));
+  $("wCalVal").textContent = calG;
+}
+async function loadSeries() {
+  try {
+    const r = await call("scale.read", { points: CFG.scale.chart_points });
+    wData = (r.series || []).map(p => p.g).filter(v => typeof v === "number");
+    applyWeight({ grams: r.grams, raw: r.raw, stable: r.stable, online: r.online }, false);
+    updateStats(); drawChart();
+  } catch (e) { }
+}
+function applyWeight(w, push) {
+  if (w.grams === null || w.grams === undefined) return;
+  const stable = !!w.stable;
+  const decimals = Number(CFG.scale.display_decimals || 3);
+  $("wVal").textContent = fmt(w.grams, decimals);
+  $("wVal").className = stable ? "stable" : "";
+  $("wRaw").textContent = w.raw === null || w.raw === undefined ? "—" : w.raw;
+  $("wSt").textContent = stable ? "Stable" : "Changing";
+  $("wSt").className = "badge " + (stable ? "stable" : "moving");
+  $("wLive").className = "live on";
+  $("wAlert").hidden = true;
+  $("m-weight").textContent = fmt(w.grams, decimals) + " g";
+  if (push !== false) {
+    wData.push(w.grams);
+    if (wData.length > CFG.scale.chart_points) wData.shift();
+    updateStats(); drawChart();
+  }
+}
+function weightOffline() {
+  $("wLive").className = "live"; $("wAlert").hidden = false;
+  $("wSt").textContent = "No response"; $("wSt").className = "badge moving";
+}
+function updateStats() {
+  if (!wData.length) { ["wMin", "wMax", "wSpan", "wAvg"].forEach(i => $(i).textContent = "—");
+    $("wN").textContent = "0"; return; }
+  const mn = Math.min(...wData), mx = Math.max(...wData);
+  const decimals = Number(CFG.scale.display_decimals || 3);
+  $("wMin").textContent = fmt(mn, decimals) + " g"; $("wMax").textContent = fmt(mx, decimals) + " g";
+  $("wSpan").textContent = fmt(mx - mn, decimals) + " g";
+  $("wAvg").textContent = fmt(wData.reduce((a, b) => a + b, 0) / wData.length, decimals) + " g";
+  $("wN").textContent = wData.length;
+}
+function drawChart() {
+  const cv = $("chart"); if (!cv) return;
+  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, PAD = 28, L = 68;
+  const N = CFG ? CFG.scale.chart_points : 300;
+  ctx.clearRect(0, 0, W, H);
+  if (wData.length < 2) {
+    ctx.fillStyle = "#33465c"; ctx.font = "15px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("Waiting for data…", W / 2, H / 2); ctx.textAlign = "left"; return;
+  }
+  let mn = Math.min(...wData), mx = Math.max(...wData);
+  if (mx - mn < 0.5) { const c = (mx + mn) / 2; mn = c - 0.25; mx = c + 0.25; }
+  const pad = (mx - mn) * 0.12; mn -= pad; mx += pad;
+  const X = i => L + (W - L - 16) * i / (N - 1), Y = v => PAD + (H - 2 * PAD) * (mx - v) / (mx - mn);
+  ctx.strokeStyle = "#1c2a3a"; ctx.lineWidth = 1; ctx.fillStyle = "#7e91a5"; ctx.font = "12px Consolas";
+  for (let i = 0; i <= 4; i++) {
+    const y = PAD + (H - 2 * PAD) * i / 4;
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - 10, y); ctx.stroke();
+    ctx.fillText((mx - (mx - mn) * i / 4).toFixed(Number(CFG.scale.display_decimals || 3)), 8, y + 4);
+  }
+  const grd = ctx.createLinearGradient(0, PAD, 0, H - PAD);
+  grd.addColorStop(0, "rgba(255,208,122,.26)"); grd.addColorStop(1, "rgba(255,208,122,0)");
+  ctx.beginPath(); ctx.moveTo(X(0), H - PAD);
+  wData.forEach((v, i) => ctx.lineTo(X(i), Y(v)));
+  ctx.lineTo(X(wData.length - 1), H - PAD); ctx.closePath(); ctx.fillStyle = grd; ctx.fill();
+  ctx.beginPath(); ctx.strokeStyle = "#ffd07a"; ctx.lineWidth = 2; ctx.lineJoin = "round";
+  wData.forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)));
+  ctx.stroke();
+  ctx.fillStyle = "#ffd07a"; ctx.beginPath();
+  ctx.arc(X(wData.length - 1), Y(wData[wData.length - 1]), 4.5, 0, 7); ctx.fill();
+}
+async function downloadCsv() {
+  const r = await call("scale.csv", { points: 0 });
+  if (!r.content || r.content.split("\n").length < 2) return toast("No data available", true);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([r.content], { type: "text/csv" }));
+  a.download = r.filename; a.click();
+  toast("Downloaded " + r.filename);
+}
+
+/* ---- Log ---- */
+function logCard() {
+  const card = el("section", "card span2");
+  card.appendChild(el("div", "head",
+    `<h2>Communication Log</h2><p>Commands and responses between the backend and Arduino. Routine weight samples are omitted here.</p>`));
+  const body = el("div", "body");
+  body.innerHTML = `<div id="log"></div>
+    <details><summary>Available API Functions (GET /fn)</summary><div id="fnlist"></div></details>`;
+  card.appendChild(body);
+  setTimeout(() => {
+    const box = $("fnlist");
+    FNS.forEach(f => {
+      const args = f.params.map(p => p.name + (p.required ? "" : "?")).join(", ");
+      box.appendChild(el("div", null,
+        `<b>${f.name}</b>(${args})　<i>${f.summary}</i>`));
+    });
+    if (!FNS.length) box.textContent = "(Function list unavailable)";
+  }, 0);
+  return card;
+}
+
+/* ---------------- Live stream ---------------- */
+function connectStream() {
+  if (es) es.close();
+  es = new EventSource("/api/stream");
+  es.onmessage = ev => {
+    let msg; try { msg = JSON.parse(ev.data); } catch (e) { return; }
+    if (msg.type === "weight") applyWeight(msg.data, true);
+    else if (msg.type === "state") applyState(msg.data);
+    else if (msg.type === "log") {
+      const t = msg.data.text;
+      if (t.startsWith("WEIGHT,")) return;
+      log((msg.data.kind === "tx" ? "→ " : "← ") + t,
+          t.startsWith("ERR") ? "er" : msg.data.kind);
+      if (t.startsWith("ERR,stream_stopped") || t.startsWith("ERR,timeout")) weightOffline();
+    }
+  };
+  es.onerror = () => { $("dot").className = "dot"; $("portName").textContent = "Stream disconnected"; };
+}
+
+function applyState(st) {
+  STATE = st;
+  const okDot = $("dot"), name = $("portName");
+  okDot.className = "dot" + (st.connected ? (st.simulated ? " sim" : " ok") : "");
+  name.textContent = st.connected ? (st.simulated ? "Simulator" : st.port) : (st.last_error || "Disconnected");
+  const link = $("m-link"); if (link) link.textContent = st.connected ? (st.simulated ? "Simulated" : "Connected") : "Disconnected";
+
+  const tr = { idle: "Idle", wait: "Valve lead", run: "Running", move: "Dosing" };
+  CFG.motors.groups.forEach(g => {
+    const slot = (st.motors || {})[g.id] || {};
+    if (slot.selected !== undefined && slot.selected !== sel[g.id]) {
+      sel[g.id] = slot.selected;
+    }
+    const m = $("m-" + g.id);
+    if (m) m.textContent = slot.selected ? `Motor ${slot.selected}・${tr[slot.state] || slot.state || ""}` : "None selected";
+    renderMotor(g.id);
+  });
+
+  const vs = st.valves || {};
+  const mv = $("m-valves");
+  if (mv) mv.textContent = CFG.valves.channels
+    .map(c => `${c.id} ${vs[c.id] ? "Open" : "Closed"}`).join(" · ");
+
+  const mp = $("m-pump");
+  if (mp) mp.textContent = (st.pump && st.pump.online) ? "Connected" : "Not detected";
+  if (st.pump && st.pump.syringe_ul && st.pump.syringe_ul !== pump.syringe) {
+    pump.syringe = st.pump.syringe_ul; renderPump();
+  }
+  const sc = st.scale || {};
+  if (sc.stream_hz === 0) weightOffline();
+  renderCleaning();
+}
+
+/* ---------------- Global actions ---------------- */
+async function stopEverything() {
+  try {
+    await call("motors.stop_all", {});
+    toast("All motors, syringe pump, and scale acquisition stopped. Solenoid valves closed.");
+  } catch (e) { }
+}
+async function reconnect() {
+  toast("Reconnecting…");
+  try {
+    const r = await (await fetch("/api/reconnect", { method: "POST" })).json();
+    toast(r.connected ? "Connected to " + r.port : "Connection failed", !r.connected);
+  } catch (e) { toast("Connection failed", true); }
+  connectStream();
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { e.preventDefault(); stopEverything(); }
+});
+window.addEventListener("resize", () => drawChart());
+boot();
+</script>
+</body>
+</html>
