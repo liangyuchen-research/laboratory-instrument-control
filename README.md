@@ -2,20 +2,16 @@
 
 [![checks](https://github.com/liangyuchen-research/laboratory-instrument-control/actions/workflows/checks.yml/badge.svg)](https://github.com/liangyuchen-research/laboratory-instrument-control/actions/workflows/checks.yml)
 
-Laboratory automation for liquid preparation, gravimetric dosing and instrument control, developed at the Plasma Engineering Laboratory, National Taiwan University. **Autonomous Laboratory v6** is a FastAPI service, a browser console designed for a touchscreen, and Arduino Mega 2560 firmware that together drive eight peristaltic pumps, a syringe pump, two interlocked solenoid valves and a weighing transmitter over one serial link — with mass-feedback dosing closed around a 10 Hz scale stream.
+Laboratory automation for liquid preparation and coordinated instrument control, developed at the Plasma Engineering Laboratory, National Taiwan University. **Autonomous Laboratory v6** combines a FastAPI control service with Arduino Mega 2560 firmware to operate eight peristaltic pumps, a syringe pump, two interlocked solenoid valves, and a weighing transmitter over one serial link.
 
-**Stack:** Python / FastAPI, server-sent events, HTML/CSS/JavaScript, Arduino C++, YAML, RS485, Modbus RTU.
-
-![Touch console of Autonomous Laboratory v6 running against the built-in simulator](docs/figures/console.png)
-
-*The console (here on the built-in device simulator, so no hardware is needed to try it): status strip, the timed cleaning sequence, and the two pump groups with continuous-flow, volume-dose and mass-feedback controls.*
+**Stack:** Python / FastAPI, Arduino C++, YAML, RS485, Modbus RTU, and server-sent events.
 
 ## System overview
 
 ```mermaid
 flowchart LR
-    UI[Browser console] -->|HTTP commands| API[FastAPI and registered handlers]
-    API -->|State and weight events| UI
+    CLIENT[Local clients and automation scripts] -->|HTTP commands| API[FastAPI and registered handlers]
+    API -->|State and measurement events| CLIENT
     CFG[Hardware YAML] --> API
     CFG --> GEN[Firmware header generator]
     GEN --> MCU[Arduino Mega 2560]
@@ -30,18 +26,14 @@ flowchart LR
 - **Liquid handling:** continuous pumping, calibrated step-count dosing, and mass-feedback dosing. Two driver groups each select one of four peristaltic pumps through relays, so one pump per group can run at a time.
 - **Feedback control:** 10 Hz weight updates, baseline-relative dispensed mass, staged flow reduction (40 → 10 → 3 mL/min), settled final measurements, and aborts on stale readings, stalled delivery, timeout or a global stop.
 - **Coordinated operations:** firmware valve interlocks and a water → OUT cleaning sequence; conflicting operations are blocked while cleaning.
-- **Service architecture:** 26 registered operations with parameter validation, a single serial owner, cached device state, and live SSE updates to every connected console.
+- **Service architecture:** 26 registered operations with parameter validation, a single serial owner, cached device state, and live SSE updates to connected clients.
 - **Configuration:** one YAML file drives the backend, the startup pin-conflict check and the generated firmware header, so device definitions and wiring stay consistent.
-
-![Dispensed mass versus time during a simulated 10 g gravimetric dose](docs/figures/gravimetric_dose_trace.png)
-
-*A 10 g mass-feedback dose on the simulator, recorded with `tools/record_dose_trace.py` and plotted with `tools/plot_dose_trace.py`: fast fill at 40 mL/min, approach at 10 mL/min from 2 g before target, trim at 3 mL/min from 0.5 g before target, then settling and final sampling (−0.044 g, inside the ±0.05 g tolerance). The simulator validates the control logic, not the physical dosing accuracy.*
 
 The earlier Raspberry Pi / STM32 pulse-control and spectrometer-acquisition system is preserved as a separate implementation in [`legacy/instrument-control`](legacy/instrument-control/README.md). Spectrometer acquisition is not yet integrated into the v6 API.
 
-## Try the console
+## Run locally
 
-The public configuration defaults to **simulation on localhost**; no Arduino is needed to explore the console or run the checks.
+The public configuration defaults to **simulation on localhost**; no Arduino is needed to start the service or run the checks.
 
 ```bash
 python -m venv .venv && source .venv/bin/activate      # .venv\Scripts\activate on Windows
@@ -49,14 +41,7 @@ python -m pip install -r requirements.txt
 python -m backend.main
 ```
 
-Then open the [console](http://127.0.0.1:8000/), the [wiring and architecture pages](http://127.0.0.1:8000/docs) or the [API documentation](http://127.0.0.1:8000/api/docs); stop with `Ctrl+C`. On Windows, `run.bat` does the same (creates the environment, installs the pinned dependencies, generates the firmware header and opens the console; Python ≥ 3.9). `LAB_CONFIG` selects another YAML file and `SCALE_CALIBRATION_FILE` a separate calibration file.
-
-To reproduce the dosing figure while the service is running:
-
-```bash
-python tools/record_dose_trace.py --motor 4 --target-g 10 --out docs/figures/gravimetric_dose_trace.json
-python tools/plot_dose_trace.py docs/figures/gravimetric_dose_trace.json
-```
+Use the [API documentation](http://127.0.0.1:8000/api/docs) to inspect and invoke operations, and the [wiring and architecture pages](http://127.0.0.1:8000/docs) for hardware setup; stop the service with `Ctrl+C`. On Windows, `run.bat` creates the environment, installs the pinned dependencies, generates the firmware header, and starts the local service (Python ≥ 3.9). `LAB_CONFIG` selects another YAML file and `SCALE_CALIBRATION_FILE` a separate calibration file.
 
 ## Control behavior
 
@@ -71,7 +56,7 @@ python tools/plot_dose_trace.py docs/figures/gravimetric_dose_trace.json
 | Global stop | Stops both driver groups, the syringe pump and weight streaming, and closes both valves immediately |
 | Scale processing | 10 Hz streaming, averaging set to one sample, calibration persistence, CSV export, communication diagnostics |
 
-The mass-feedback tolerance of ±0.5 % is a configured control target, not a measured hardware accuracy. Mass targets are in grams and do not imply the same volume for a liquid of unknown density; three decimals in the console are display precision. The controller waits up to 4 s for a new weight sample, aborts after 30 s without increasing delivered mass, and applies a 300 s deadline to the pumping and top-up phases (baseline collection precedes it; settling and final sampling can extend beyond it). The settling delay after pumping is 5 s. Measurement history lives in backend memory and survives a page refresh, not a restart.
+The mass-feedback tolerance of ±0.5 % is a configured control target, not a measured hardware accuracy. Mass targets are in grams and do not imply the same volume for a liquid of unknown density; three decimal places are display precision. The controller waits up to 4 s for a new weight sample, aborts after 30 s without increasing delivered mass, and applies a 300 s deadline to the pumping and top-up phases (baseline collection precedes it; settling and final sampling can extend beyond it). The settling delay after pumping is 5 s. Measurement history lives in backend memory and survives a page refresh, not a restart.
 
 ## Hardware configuration
 
@@ -99,7 +84,7 @@ The source assembly uses RUNZE RZ1030B-8 pump heads and DM542J drivers at 8 micr
 - A subsequent 50 mL setting delivered 46.469 mL → finite-dose conversion 4,558.961 pulses/mL.
 - A 50 mL dose therefore uses 227,948 steps at 2,825 steps/s: nominally 80.69 s, excluding acceleration, deceleration and valve sequencing.
 
-These coefficients give equal command timing across channels; they do not establish equal delivered volumes across unmeasured pumps or different tubing and backpressure. The measurements are inherited experiment records and were not repeated for this release. Scale tare and calibration are saved to an untracked `config/scale_calibration.json` and restored at startup; establish them from the console for the connected weighing assembly.
+These coefficients give equal command timing across channels; they do not establish equal delivered volumes across unmeasured pumps or different tubing and backpressure. The measurements are inherited experiment records and were not repeated for this release. Scale tare and calibration are saved to an untracked `config/scale_calibration.json` and restored at startup; establish them for the connected weighing assembly before measurement.
 
 ## API
 
@@ -107,7 +92,7 @@ These coefficients give equal command timing across channels; they do not establ
 | --- | --- |
 | `GET /fn` | Registered operations and parameter schemas |
 | `POST /fn/{name}` | Invoke an operation with a JSON body |
-| `GET /api/config` | Configuration used by the console |
+| `GET /api/config` | Configuration used by local clients |
 | `GET /api/state` | Cached device state |
 | `GET /api/stream` | SSE state, weight and serial events |
 | `POST /api/reconnect` | Reconnect the controller and restore scale settings |
