@@ -1,0 +1,2 @@
+# OES-C225 spectrometer (USB 0638:0aac): allow plugdev group (user pi) to open it
+SUBSYSTEM=="usb", ATTR{idVendor}=="0638", ATTR{idProduct}=="0aac", GROUP="plugdev", MODE="0660"

@@ -1,0 +1,46 @@
+# Runtime data and site settings created by the program and the installer (connection
+# settings and token, PIN hash, recipes, spectra, round records, logs). Never commit them.
+pc/data/
+pc/data-demo/
+rpi/tcpd/sim-data/
+rpi/tcpd/config.json
+installer/site.json
+
+# Bundled Python runtime and third-party binaries that travel with the laboratory
+# folder but are not committed (see README, "Third-party files not in this repository").
+pc/runtime/
+nano/tools/avrdude/
+nano/drivers/
+rpi/app/lib_linux_ARM_*.so
+rpi/drivers/*.deb
+
+# Backups and historical development notes from the laboratory folder
+docs/backup/
+docs/Inbox/
+docs/Work record.md
+docs/1-*.txt
+docs/2-*.txt
+historical-development-notes.md
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Logs, editors, OS
+*.log
+*.log.[0-9]
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# legacy/autonomous-laboratory-v6 (unchanged from its own layout)
+legacy/autonomous-laboratory-v6/config/.selftest.yaml
+legacy/autonomous-laboratory-v6/config/.bad.yaml
+legacy/autonomous-laboratory-v6/config/scale_calibration.json
+legacy/autonomous-laboratory-v6/config/scale_calibration.json.tmp
+legacy/autonomous-laboratory-v6/config/.selftest-scale-calibration.json
+legacy/autonomous-laboratory-v6/python-path.txt

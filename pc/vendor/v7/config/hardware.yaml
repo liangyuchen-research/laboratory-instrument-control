@@ -1,0 +1,219 @@
+# =====================================================================
+#  hardware.yaml — The only ”source of truth” for the entire system(Infrastructure as Code)
+# ---------------------------------------------------------------------
+#  Just change this file,Do not change the code:
+#    • rear end  backend/  Read here when booting → determines the serial port, conversion, and what devices are there
+#    • front end  frontend/index.html use GET /api/config Take the content here to draw the interface
+#    • firmware execution tools/gen_firmware_config.py will write the pin position as
+#            firmware/Arduino/hw_config.h,reuse Arduino IDE Burn
+#
+#  After changing the foot position, you must do two things:① Regenerate hw_config.h and burn ② Restart the backend
+# =====================================================================
+
+meta:
+  name: independent laboratory v5
+  description: 8 grain RZ1030B-8 peristaltic pump + automatic cleaning + syringe pump + 2 solenoid valve + 10 Hz Weight closed loop
+
+# ---------------------------------------------------------------------
+# Backend services
+# ---------------------------------------------------------------------
+server:
+  host: 127.0.0.1          # Only allows this machine to connect. If you want the tablet to be connected, change it 0.0.0.0
+  port: 8000
+  cors_origins: ["*"]
+
+# ---------------------------------------------------------------------
+# and Arduino Mega connection
+# ---------------------------------------------------------------------
+link:
+  # Windows fill "COM3";Linux fill "/dev/ttyACM0";fill "auto" will automatically find
+  port: auto
+  baud: 115200
+  # Can’t find the board or want to see the interface first true,backend will use the built-in simulator
+  simulate: false
+  # Arduino plug in USB will reboot,Have to wait until it runs out setup()
+  boot_delay_s: 2.5
+  command_timeout_s: 3.0
+  # Scanning instructions are very slow(W,SCAN about 40 Second)
+  long_command_timeout_s: 60.0
+  # only for selftest ’s built-in emulator acceleration; real hardware will not read this value
+  simulation_speedup: 1
+
+# ---------------------------------------------------------------------
+# relay + peristaltic pump(stepper motor)
+# ---------------------------------------------------------------------
+motors:
+  # The two drives have the same dialing code.TB6600 only 6 grain DIP,And the meaning is the same as DM542J on the contrary
+  #  (TB6600 The first three are subdivision and the last three are current;DM542J The first three are the current),
+  # So it is ”converted based on numerical value”, not based on location.
+  #
+  #   S1 S2 S3 = OFF, ON, OFF   → 8 subdivision,1600 pulses/rev
+  #   S4 S5 S6 = ON,  ON, OFF   → 1.5 A (peak 1.7 A) 
+  #
+  # old DM542J settings (reserved for traceability):
+  #   SW1~8 = ON,OFF,ON,OFF,OFF,OFF,ON,ON
+  #   → 1.91 A peak / 1.36 A RMS, Standby half stream, 8 subdivision,1600 pulses/rev
+  # subdivision is also 8,so pulses_per_ml / dose_pulses_per_ml No need to move at all.
+  # current 1.91 A peak exist TB6600 does not have a completely corresponding gear (1.7 or 2.2) ,
+  # Whichever is lower 1.7 —— Setting it low will only reduce the torque, setting it high will fry the motor;
+  # and MY4N-GS The contacts are only 3 A,There should always be some margin.
+  driver_model: TB6600
+  driver_switches: ["OFF", "ON", "OFF", "ON", "ON", "OFF"]   # S1~S6
+  driver_current_a: 1.5
+  driver_current_peak_a: 1.7
+  # TB6600 module DM542J is slow, and the pulse will be missed if the pulse is too narrow.
+  # maximum 5649 sps time period 177 us,5 us The pulse width only accounts for 3%,does not affect the speed limit.
+  min_pulse_us: 5
+  motor_full_steps_per_rev: 200
+  microsteps: 8
+  pulses_per_rev: 1600
+
+  # RUNZE RZ1030B-8,8 roller. official 3.0 mm ID × 1.0 mm WT Silicone tube
+  # exist 400 rpm is Checklist for 114 mL/min: 
+  # 1600 pulses/rev ÷ (114 mL/min ÷ 400 rev/min) = 5614.035 pulses/mL.
+  # This is just the factory starting value; pipe material, compression amount, back pressure and aging will all change the actual flow rate.
+  pump_head_model: RZ1030B-8
+  rollers: 8
+  tube_inner_diameter_mm: 3.0
+  tube_wall_thickness_mm: 1.0
+  reference_max_rpm: 400
+  reference_max_flow_ml_min: 114
+  # each motor n of MY4N-GS relay is made of Arduino of D<n> control(n = 2~9)
+  driver_settle_ms: 60
+  max_sps: 8000
+  # 3 mm tubes is retained for traceability. motor Section 2 (water) actual measurement
+  # “settings 10 mL → 13.25 mL”,Therefore, the unified correction coefficient is changed to:
+  # 5614.03508772 × 10 ÷ 13.25 = 4237.00761337 pulses/mL.
+  # This is the ”speed conversion coefficient”. To ensure 2-9 has exactly the same speed at the same flow rate.
+  # All channels use this value and overwriting of individual channels is not allowed.
+  reference_pulses_per_ml: 5614.03508772
+  pulses_per_ml: 4237.00761337
+  # The rotational speed of all motors must also be determined at the same time: according to the motor 2“settings 50 mL → actual measurement
+  # 46.469 mL”unified revised to 4237.00761337 × 50 ÷ 46.469.
+  # Therefore 2-9 number is set to the same volume, the same total number of steps and the same cadence will be received.
+  dose_pulses_per_ml: 4558.96147256
+  # Upper limit of front-end flow slider(mL/min)
+  # 80 mL/min × 4237.008 pulses/mL ÷ 60 = 5649 sps,lower than 8000 sps upper limit.
+  max_flow_ml_min: 80
+  # Manual continuous operation (motors.run) . The slider only affects manual inching.
+  # does not affect the rationing and weighing - the two must use the following fixed speeds to be consistent every time.
+  default_flow_ml_min: 40
+  # quantitative rotation (motors.dose) fixedly uses this speed and does not use the flow slider.
+  dose_flow_ml_min: 40.0
+  default_dose_ml: 10.0
+
+  # front-end provides two independent methods at the same time: All continuously operating pumps must be stopped before
+  # ① Rotation quantity: all based on shared dose_pulses_per_ml output designation mL,
+  #    All pumps use the same cadence, the same total number of steps and the same rotation time.
+  # ② Scale re-closed loop: directly targets weight and does not depend on whether the pipeline is full or the density of the liquid.
+  # The controller will take the weight of the moment the button is pressed as the zero point, and does not require the container itself to be The files owned by 0 g.
+  gravimetric_dose:
+    enabled: true
+    default_target_g: 10.0
+    # The three speeds are mL/min means, then use the one shared by all pulses_per_ml Conversion.
+    # 2-9 number will therefore receive exactly the same 2825 / 706 / 212 step/Second.
+    fast_flow_ml_min: 40.0
+    approach_flow_ml_min: 10.0
+    trim_flow_ml_min: 3.0
+    # Reserved for older versions API Will volume_ml is converted into weight; the new version of the front end directly transmits Also included in target_g.
+    trigger_volume_ml: 10.0
+    density_g_ml: 1.0
+    tolerance_percent: 0.5
+    slow_zone_g: 2.0
+    trim_zone_g: 0.5
+    baseline_samples: 5
+    final_samples: 7
+    # according to UV-Vis verification process, etc. after stopping the pump 5 Seconds and then take the final weight,let CuSO₄ Hanging beads fall.
+    settle_s: 5.0
+    scale_ready_timeout_s: 4.0
+    # When drying the pipe, first use the quick turn to fill the pipe.30 seconds in 40 mL/min Can be filled in for next appointment 20 mL,
+    # Equivalent to about 2.8 m of 3 mm ID Straight pipe; the pump will still be stopped to protect the equipment after timeout.
+    no_gain_timeout_s: 30.0
+    minimum_gain_g: 0.05
+    timeout_s: 300.0
+  groups:
+    - id: A
+      label: A Group
+      color: blue
+      driver: { pul: 22, dir: 23, ena: 24 }
+      channels:
+        - { id: 2, pin: 2, label: motor 2 · water, fluid: water }
+        - { id: 3, pin: 3, label: motor 3 }
+        - { id: 4, pin: 4, label: motor 4 }
+        - { id: 5, pin: 5, label: motor 5 }
+    - id: B
+      label: B Group
+      color: purple
+      driver: { pul: 25, dir: 26, ena: 27 }
+      channels:
+        - { id: 6, pin: 6, label: motor 6 }
+        - { id: 7, pin: 7, label: motor 7 }
+        - { id: 8, pin: 8, label: motor 8 · OUT, fluid: OUT }
+        - { id: 9, pin: 9, label: motor 9 · CuSO₄, fluid: CuSO₄ }
+
+# ---------------------------------------------------------------------
+# Automatic cleaning: actual pump rotation sequence (excluding motor 2 valve pre-opening 1 seconds)
+#   t=0~30 s    only motor 2 (water)
+#   t=30~75 s   motor 2 (water) and motor 8 (OUT) operates simultaneously
+#   t=75~120 s  only motor 8 (OUT) Empty
+# ---------------------------------------------------------------------
+cleaning:
+  water_motor: 2
+  out_motor: 8
+  flow_ml_min: 40.0
+  water_lead_s: 30.0
+  overlap_s: 45.0
+  out_tail_s: 45.0
+
+# ---------------------------------------------------------------------
+# solenoid valve(Normally closed type,through ULN2803A → LB2HN-24DS relay)
+# ---------------------------------------------------------------------
+valves:
+  # valve is completely linked by a peristaltic pump and does not provide a manual switch: open the valve first 1 seconds to start the motor.
+  # Wait until the motor stops or the rationing is completed. 1 Close the valve in seconds. Emergency ”all stop” will immediately close the valve.
+  open_before_ms: 1000
+  close_after_ms: 1000
+  motor_links:
+    - { motor: 2, valve: 1, fluid: water }
+    - { motor: 9, valve: 2, fluid: CuSO₄ }
+  channels:
+    - { id: 1, pin: 10, label: solenoid valve 1 · water }
+    - { id: 2, pin: 11, label: solenoid valve 2 · CuSO₄ }
+
+# ---------------------------------------------------------------------
+# syringe pump(RUNZE SY-01B,ASCII protocol,Walk Arduino of Serial1)
+# ---------------------------------------------------------------------
+syringe_pump:
+  serial: Serial1
+  tx_pin: 18
+  rx_pin: 19
+  baud: 9600
+  address: 0
+  full_stroke_steps: 12000
+  default_syringe_ul: 5000
+  syringe_options_ul: [5000, 1250]
+  valve_positions: 3       # Number of diverter valve positions on the pump head itself(firmware supports the most 15)
+
+# ---------------------------------------------------------------------
+# weight module(RS485 weighing transmitter,Modbus RTU,Walk Arduino of Serial2)
+# ---------------------------------------------------------------------
+scale:
+  serial: Serial2
+  tx_pin: 16
+  rx_pin: 17
+  de_pin: 36               # DE and RE Short circuit and then connect this;automatic transceiver board can not be connected
+  stream_hz: 10            # Returns per second 10 pen weight
+  # 1 = real-time original value, without moving average, let 1~2 changes are reflected the fastest; numbers will also jump more easily.
+  average_samples: 1
+  display_decimals: 3      # only affects the screen display and does not mean that the hardware has 0.001 g accuracy
+  stable_threshold_g: 0.015
+  chart_points: 300
+  calibration_presets_g: [10, 50, 100, 200]
+  default_calibration_g: 100
+  modbus:                  # Used when the value cannot be read W,SCAN Find it and fill it back here
+    baud: 9600
+    address: 1
+    function_code: 3       # 3 = holding register, 4 = input register
+    register: 0
+    format: 1              # 0 int16 / 1 int32 High character first / 2 int32 low word first
+                           # 3 float ABCD / 4 float CDAB

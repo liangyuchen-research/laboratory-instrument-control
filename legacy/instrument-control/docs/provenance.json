@@ -1,0 +1,604 @@
+[
+  {
+    "source_id": "LC-001",
+    "repository_path": "desktop/control_gui.py",
+    "source_bytes": 37702,
+    "source_sha256": "d0f8d99ccb0a6555ab65673fea894d42b37e264842dcc5e52bbdbe3fad16eeb4",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-002",
+    "repository_path": "desktop/control_gui_support.py",
+    "source_bytes": 43155,
+    "source_sha256": "fb13c84728b44f9de5c4d7104bb949c1ae5d0f89045eb67d2833a930f14794fb",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-003",
+    "repository_path": "raspberry_pi/stm32_spectrometer_controller.py",
+    "source_bytes": 9263,
+    "source_sha256": "1096b3368c1378e895006101b251b79ee13fb71cd9e53996b997c54a1c8b42db",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-004",
+    "repository_path": "firmware/contributed_rs485_pulser/rs485_pulser/rs485_pulser.ino",
+    "source_bytes": 6089,
+    "source_sha256": "6b14f584b42074d3eda6ceaf1a9918089b2d3994d8f0fedc05bc10c9efb1fa86",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-005",
+    "repository_path": "models/process_feedback_control.zcos",
+    "source_bytes": 19125,
+    "source_sha256": "49a09a643b1a6b0c03d24f7d4248bda2d23a970f3c6b830972d16c5b7423a3aa",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-006",
+    "repository_path": "firmware/stm32/Core/Inc/main.h",
+    "source_bytes": 2003,
+    "source_sha256": "26dd85c94b1ffe18472bd53bd920ca8e4f12ebb23841b822dd9ed673b1b56c69",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-007",
+    "repository_path": "firmware/stm32/Core/Inc/stm32f1xx_hal_conf.h",
+    "source_bytes": 15720,
+    "source_sha256": "e8b55f7310fd4fd5ad32e4db19336c822f2fbf615b80feedf184faf14c797bae",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-008",
+    "repository_path": "firmware/stm32/Core/Inc/stm32f1xx_it.h",
+    "source_bytes": 2018,
+    "source_sha256": "57dea3d13f9041d28fba8ea3c30c2bf47f004f1acff13d7cf91a06b4b8577c3f",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-009",
+    "repository_path": "firmware/stm32/Core/Src/main.c",
+    "source_bytes": 10831,
+    "source_sha256": "6260df5764cb896aa90438f0cfea85752df1a7d092c5347cf0e248d146898e01",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-010",
+    "repository_path": "firmware/stm32/Core/Src/stm32f1xx_hal_msp.c",
+    "source_bytes": 6901,
+    "source_sha256": "bd735f00fb49dd7b676afc88545370508b6e9ef7a9da29b815d3ac9fdc973761",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-011",
+    "repository_path": "firmware/stm32/Core/Src/stm32f1xx_it.c",
+    "source_bytes": 6386,
+    "source_sha256": "fddb91557e9b6d9de16bf4cd62068f493854a45a42ef4c80e5c4cfda020e538d",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-012",
+    "repository_path": "firmware/stm32/Core/Src/syscalls.c",
+    "source_bytes": 2847,
+    "source_sha256": "f772e8cdb32eb5216a3be61596216fcfee47e93202e644bea879f745c4db77b1",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-013",
+    "repository_path": "firmware/stm32/Core/Src/sysmem.c",
+    "source_bytes": 2726,
+    "source_sha256": "ca25d4ef17f7fb7b281008f3373bd280b662e60b5f0738e484ebe0192c3d1e8d",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-014",
+    "repository_path": "firmware/stm32/Core/Src/system_stm32f1xx.c",
+    "source_bytes": 14575,
+    "source_sha256": "6f13b57054f33b4dcb8f3f23fa05b2942d9dca8abd9a2a08ecde6f99693505a5",
+    "transformation": "English translation, source formatting, and documented configuration cleanup"
+  },
+  {
+    "source_id": "LC-015",
+    "repository_path": "firmware/stm32/Core/Startup/startup_stm32f103c8tx.s",
+    "source_bytes": 9725,
+    "source_sha256": "a9a5fc7ed5ff617527dd98b3092830f4d17ed4bf57c99eac2c53bdb514ce138c",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-016",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h",
+    "source_bytes": 842883,
+    "source_sha256": "d9c7c613d9fea74220892b4fbc3e80617493acad82a04bafadab2b4a7198399c",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-017",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f1xx.h",
+    "source_bytes": 10110,
+    "source_sha256": "05e93fa3ddefb2e83d762b9ca4de36e3bba9cd8e9690400fe9f2c11fc0a3cef5",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-018",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h",
+    "source_bytes": 1758,
+    "source_sha256": "a54dfbb3480c672f532d472a6e84bcf34df6551771d2e9966c5a3503c676b6ab",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-019",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Device/ST/STM32F1xx/LICENSE.txt",
+    "source_bytes": 369,
+    "source_sha256": "b616ef9c1ae02a5da902bc4a3efb48a8a3170308b30fc09bfda77ba712f49f95",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-020",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/cmsis_armcc.h",
+    "source_bytes": 28208,
+    "source_sha256": "57b8d88cd03152f60bf74de0149ec979ae20210d86ab06e837aa69c66f27d615",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-021",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/cmsis_armclang.h",
+    "source_bytes": 56497,
+    "source_sha256": "da29dbad3cf27f6c86437af6bd0b302e105210742ad7a602bea51b104f1661c9",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-022",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/cmsis_compiler.h",
+    "source_bytes": 9014,
+    "source_sha256": "cd3cbd1c771a5252827a14c75a12e7ed975f76b9fc1577d53a74ba0e7c1af6c3",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-023",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/cmsis_gcc.h",
+    "source_bytes": 62344,
+    "source_sha256": "8c16d51f7884a9fc07c5cbe6f2bcd24e5e092ddc519f71d36740c2d2e2ff6a27",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-024",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/cmsis_iccarm.h",
+    "source_bytes": 28414,
+    "source_sha256": "a600765888c69ee60cd2d01d77356902d4ae5fa98aa7e1d73703663c96b7f87a",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-025",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/cmsis_version.h",
+    "source_bytes": 1716,
+    "source_sha256": "280b9fc8739aefa878d47e68d7adbd4908a15f98ec193cdba1a4b514133f5c34",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-026",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_armv8mbl.h",
+    "source_bytes": 97995,
+    "source_sha256": "220d90f3f99126e656c31c32f099ff766b32cf487f7dd77388e4c9a78e1898c8",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-027",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_armv8mml.h",
+    "source_bytes": 168914,
+    "source_sha256": "825a8799d71f3fa29690b1597dfc2dfb660b103d44e20b8185f26b4f3b4ffdf0",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-028",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_cm0.h",
+    "source_bytes": 42208,
+    "source_sha256": "1beaa04c859225f75142d055e9c5dacfc9ac1d88c82934177f745b9c5f3f4094",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-029",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_cm0plus.h",
+    "source_bytes": 50464,
+    "source_sha256": "c953256e1c1b1cd6accbbfca5d47c09a9b0534f3147b125e17e59c0ae6c30ed7",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-030",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_cm1.h",
+    "source_bytes": 43456,
+    "source_sha256": "460281028a261740cd5ec86840bed01c480d70ba5b54a0f9938d4cefadfd486b",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-031",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_cm23.h",
+    "source_bytes": 104628,
+    "source_sha256": "6303efec943ca0f9eccdab8fc39200d6f95dc943d4051198e0d49f24395028a5",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-032",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_cm3.h",
+    "source_bytes": 111854,
+    "source_sha256": "368296087a925cf78133d27e0854d748605441915e0f4fece93f2f97eea68adb",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-033",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_cm33.h",
+    "source_bytes": 175600,
+    "source_sha256": "7f1b6a76b119e1e1680f756da897929f63d98133442c5115678af60adf20f1a8",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-034",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_cm4.h",
+    "source_bytes": 123607,
+    "source_sha256": "738dff259c25e68ed2529baf425315d8dae1af5dac6c11b66bfdef82e78e86c9",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-035",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_cm7.h",
+    "source_bytes": 148588,
+    "source_sha256": "6b75e3bef1eb81e0d3e2c311ad26fcdbac4cde2cd3462a62b81a23f6aec0e55f",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-036",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_sc000.h",
+    "source_bytes": 47249,
+    "source_sha256": "d1528d13fbf91da620ef977e99802d83ded093c0521c04cad128da23e3001524",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-037",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/core_sc300.h",
+    "source_bytes": 110523,
+    "source_sha256": "fa514ea0cf5327b0523c2bdfebfb76fd2e69f972e5f60fbfb94ade56b31c722b",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-038",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/mpu_armv7.h",
+    "source_bytes": 11711,
+    "source_sha256": "b0b6da4ec744b5f547a94e60e24b0a6ff6bb7307d3f81a83d0b7c3a64dc29326",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-039",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/mpu_armv8.h",
+    "source_bytes": 10958,
+    "source_sha256": "8280a1d4d3d25f60cdc05b84718cf504f02b7265fc3b7c5790cb29cd7dcf116c",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-040",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/Include/tz_context.h",
+    "source_bytes": 2757,
+    "source_sha256": "7fcc21fc190f6fd970390e9caaa6a86d72fd10f9edf4efab36f12aecf1a8baa0",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-041",
+    "repository_path": "firmware/stm32/Drivers/CMSIS/LICENSE.txt",
+    "source_bytes": 11558,
+    "source_sha256": "e03ba41d7fab20700769fe4118bab50d800cb74f990353a05d2f5fff1c228363",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-042",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h",
+    "source_bytes": 237664,
+    "source_sha256": "583cd8373bde87cbf384a9153b7c8ba9c456139baebb248bffe7116c926e2286",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-043",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h",
+    "source_bytes": 11091,
+    "source_sha256": "cc3851d46bc92478fe355f8b1fedd013deaa70da5e8e4136ce5cbb2536519803",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-044",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h",
+    "source_bytes": 17067,
+    "source_sha256": "11ef612e231958eb9f3d4f825cda6bed35bd482996ecbf51f34b5ee7d84371f7",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-045",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h",
+    "source_bytes": 7425,
+    "source_sha256": "377e7fc68715cfb6d09715e9d77bd5cee09e79f00479f502d3191016c3c388dd",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-046",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h",
+    "source_bytes": 17754,
+    "source_sha256": "22cbcbf02ef1867f0d9bbf28c600c9aeb71a7d221608449ae64cb48339687928",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-047",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma_ex.h",
+    "source_bytes": 12389,
+    "source_sha256": "1b09d5229c87587ab894fc3237182a7027b1672a20433b9659433fb978e459f3",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-048",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_exti.h",
+    "source_bytes": 11814,
+    "source_sha256": "745bd5b830259f613d116286a445d18c26677a72170117f2b35b7e0607fd563c",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-049",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h",
+    "source_bytes": 8820,
+    "source_sha256": "fc9d0c2df0c277cbcb37a5baca8e0b6f112e4c7e879dc753b62aa9095732fff5",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-050",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h",
+    "source_bytes": 36013,
+    "source_sha256": "6bdda70eea1f54de098cf7033091c1d367e40043e3e0759ec08700718d38ab35",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-051",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h",
+    "source_bytes": 11876,
+    "source_sha256": "3ae8ac366a2a55952fc4bada166e88f6d15fb884492048191f267f79ffa73d44",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-052",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio_ex.h",
+    "source_bytes": 36048,
+    "source_sha256": "769eb507539209ec99906cb586e60c760c96ffcede2754e5c43717404e3f18de",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-053",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h",
+    "source_bytes": 11533,
+    "source_sha256": "1353dc09e32e7e6ec686b725b80981a9286c7e8b5383f8f4259f672470d481c3",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-054",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h",
+    "source_bytes": 66691,
+    "source_sha256": "8bf099bedb0c4fa035df81520f99e289464293b27e71d7e8759c8d5160ce8ac1",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-055",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc_ex.h",
+    "source_bytes": 99301,
+    "source_sha256": "ed9ac1b6349ed0989367a1daa82819390dcefec0f6cef6fa432e09b2c9ea0adc",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-056",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h",
+    "source_bytes": 122732,
+    "source_sha256": "7a3dac99a810297b21b785846927dea4b1a43f854b2bd19e0f6b3af767e4eda9",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-057",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h",
+    "source_bytes": 9578,
+    "source_sha256": "21f24eb4e1b8eaeeb50240dbb0c177619f55cd4b12e366ddf4105c269ff628ac",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-058",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h",
+    "source_bytes": 45654,
+    "source_sha256": "949edfcd2021d8c73c5eb36d5cc1fb995b6f7a19fc084121b340c7502d33c135",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-059",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_bus.h",
+    "source_bytes": 45017,
+    "source_sha256": "6680693a685a8ed0d09d9c6901328ac23bb207ecc9d68e9521b66cf09c8f75a8",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-060",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_cortex.h",
+    "source_bytes": 24204,
+    "source_sha256": "e46032e4e08ce856c204f91f28018dc4ac59f4b8ea24e3bf0f5a609a4ba7bb32",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-061",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_dma.h",
+    "source_bytes": 76231,
+    "source_sha256": "1a0eba87b8820b996098d1be8d09ab3df996845cf1c1fa5b536cbf6bce8fe16d",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-062",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_exti.h",
+    "source_bytes": 31206,
+    "source_sha256": "9f816072941e79763cbc048fe03bf803fd81bf0a0ade876d74a49be8620bfde5",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-063",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_gpio.h",
+    "source_bytes": 90429,
+    "source_sha256": "d2fe5810dc0640bfc6f10be30162425d6b0004444bc40cb5d62257b6f21338fe",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-064",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_pwr.h",
+    "source_bytes": 12582,
+    "source_sha256": "4e706bc7ad93abf9e67433d7c46abf777e74d9036fa03a16380348c118b8c998",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-065",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_rcc.h",
+    "source_bytes": 83977,
+    "source_sha256": "8f9653c499ac50a5d874c2606091b1a2fbed71aae7d25e70d9d518337d7922ed",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-066",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_system.h",
+    "source_bytes": 23460,
+    "source_sha256": "5506acce915aad3a1d0a93f17a07eb2c26c731808dc77c28014eef081c3824bb",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-067",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_tim.h",
+    "source_bytes": 164051,
+    "source_sha256": "3400329643cad2343f8c357788d5689e8b8db861bd0b1ef953537b45a0e56875",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-068",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usart.h",
+    "source_bytes": 99185,
+    "source_sha256": "8684e487827c318256ba7ae36841bd2c7fa2438c0cc5c8aa36b555f607873e77",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-069",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_utils.h",
+    "source_bytes": 8610,
+    "source_sha256": "decb7156d26dc56db7ed76c06c71533ca579905b80824b178749a03a2f224a1b",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-070",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/LICENSE.txt",
+    "source_bytes": 377,
+    "source_sha256": "d5a162f3eaf2b7b6762f00700017cae5695ebbdce7932fead8316448baafd9c1",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-071",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c",
+    "source_bytes": 20257,
+    "source_sha256": "607343f969fce8d49111fe4d8d32001c9b289742408d0452ae49761034f39f01",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-072",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c",
+    "source_bytes": 19261,
+    "source_sha256": "21ccc3b54e45e62b278e7f32fd34533bb1e0f4105c7f47c9218ffa0801bfbddd",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-073",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c",
+    "source_bytes": 27418,
+    "source_sha256": "9ec6e91366c9b27c64b93c4d31fb4636dbc830b055ec501dc728c34eff6900da",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-074",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c",
+    "source_bytes": 15048,
+    "source_sha256": "6f201feccce8c53717098109bd4d2b4a0894ce4334cd1d6cdd8d15d5e69a8eb6",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-075",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c",
+    "source_bytes": 29013,
+    "source_sha256": "cddd2adcf578c7d63fd27f55a6ef88f50540a3b65927dfc411c192900c127bb1",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-076",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c",
+    "source_bytes": 35761,
+    "source_sha256": "5e0631a9ce807629cc24d26effb6dba3b0e4eeca10e9d46ae9d5dc40fa1989da",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-077",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c",
+    "source_bytes": 21479,
+    "source_sha256": "a2e12792c9d49eecdc567ab9fc1a49ed90723007f9579b702c28960dfd83e121",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-078",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c",
+    "source_bytes": 4149,
+    "source_sha256": "5ec9f22de1b3ee82e8437b3ba52725f8f031cf9075848582a0a297d4d1176450",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-079",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c",
+    "source_bytes": 20744,
+    "source_sha256": "d7db81f800f7f41c942b485e2f3fe9a27f5b21def71830297ecb44f131d91e60",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-080",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c",
+    "source_bytes": 48748,
+    "source_sha256": "5c64b13347aa70dd970f803331d3e106e915e13e2bb029d27c673cfba7cd394c",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-081",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c",
+    "source_bytes": 29870,
+    "source_sha256": "2dc02facf7141e4a25ae5653287d7100adbc3847b8a25e3e00969927c2e727d5",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-082",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c",
+    "source_bytes": 243960,
+    "source_sha256": "d48299529390beba290db650bdac9851d69b9c127d6f9f7bd3dc9f205c843aaf",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-083",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c",
+    "source_bytes": 78962,
+    "source_sha256": "5f129af0c70c87e7c960c11cc046864d5d2f3963b4a952526d306a88d3295c0d",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-084",
+    "repository_path": "firmware/stm32/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c",
+    "source_bytes": 135528,
+    "source_sha256": "0baff878faf8551e43ad63959f04bae08d61ee94e686e56a56cd97d02535c4d9",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-085",
+    "repository_path": "firmware/stm32/Rpi_to_STM32.ioc",
+    "source_bytes": 4052,
+    "source_sha256": "380fd96a08471f138f964ce8dbf2ae0946e73293f5eb6110334152b65f020d80",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  },
+  {
+    "source_id": "LC-086",
+    "repository_path": "firmware/stm32/STM32F103C8TX_FLASH.ld",
+    "source_bytes": 5306,
+    "source_sha256": "4da3a9217836490ea13815c463c9759578d336352d1262e283a53c404c46db03",
+    "transformation": "Byte-for-byte copy with a repository-relative path"
+  }
+]

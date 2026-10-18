@@ -1,0 +1,186 @@
+/** Plasmic Electronic Control 2.0.0 — maint.css: 🔧 Maintenance (login panel, tab bar and the seven tabs).
+ * The rules are the original HMI's (.login, .pin-*, .adm-*, .msgchip, .param-grid, .cal-grid, .spec-*), with the
+ * sizes this build needs so that every tab fits its 528 px of height (526 inside a panel; the tab bar above is 46
+ * with its frame) without a scroll bar (888 px wide in a 4:3
+ * window, up to 1544 px in a wide one: var(--extra) and flex share out what is added). What components.css already
+ * has (panel, ph, btn, seg, kv, table, pager, li, pbtn, gbtn, chart) is not repeated here.*/
+
+/*── Maintenance login: PIN number key ──*/
+.login { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.pin-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px; }
+.pin-note { font-size: 15px; color: var(--ink-2); }
+.pin-dots { width: 360px; height: 56px; border: 2px solid var(--run); display: flex; align-items: center; justify-content: center;
+  font-size: 30px; letter-spacing: 8px; background: #fff; }
+.login-err { min-height: 22px; padding: 2px 16px; color: #8a3d00; font-weight: 700; font-size: 14px; }
+.login-err.wait { color: var(--run); }
+.pin-keys { display: grid; grid-template-columns: repeat(3, 104px); gap: 8px; }
+.pin-keys button { height: 62px; font-size: 26px; border: 1px solid #8b8f94; background: #fff; cursor: pointer; color: var(--ink); }
+.pin-keys button:disabled { color: #a3a6aa; border-color: #d0d2d5; background: #f3f3f3; }
+.pin-foot { display: flex; gap: 10px; }
+.pin-foot .btn { height: 52px; min-width: 120px; font-size: 17px; }
+/* a wide frame: wider keys (the height is what it was) */
+@container hmi (min-width: 1280px) {
+  .pin-dots { width: 444px; }
+  .pin-keys { grid-template-columns: repeat(3, 132px); }
+  .pin-foot .btn { min-width: 150px; }
+}
+
+/*── Pagination column: pagination, message, logout ──*/
+.adm-bar { flex: 0 0 46px; display: flex; align-items: center; gap: 10px; min-width: 0; }      /* tabs of 44 in their frame */
+.adm-bar .seg { flex: 0 0 auto; }
+.adm-bar .seg.tabs button { padding: 0 calc(12px + var(--extra) * .03); }
+.adm-bar .sp { flex: 1; }
+.adm-bar .btn { flex: 0 0 auto; min-width: 72px; }
+.msgchip { height: 44px; max-width: calc(330px + var(--extra) * .7); padding: 0 12px; border: 1px solid var(--line); background: #fff; font-size: 14px; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; min-width: 0; color: var(--ink); }
+.msgchip.err { border: 2px solid var(--p2); color: #8a3d00; background: #fff4ea; font-weight: 700; }
+.msgchip.ok { color: var(--ink-2); }
+.msgchip.busy { color: var(--run); }
+
+/*── The skeleton of paginated content ──*/
+.adm-body { flex: 1; min-height: 0; display: flex; gap: 8px; }
+.adm-left { flex: 0 0 calc(300px + var(--extra) * .2); display: flex; flex-direction: column; min-height: 0; }
+.adm-right, .adm-half, .adm-full { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.adm-view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.adm-foot { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-top: 1px solid #dcdee0; }
+.adm-foot .btn { height: 44px; }
+.adm-foot .sp { flex: 1; }
+.adm-foot .sub { flex: 1; min-width: 0; font-size: 13px; color: var(--ink-3); line-height: 1.4; }
+.adm-foot .sub.txt-warn { color: #8a3d00; }
+.adm-note { flex: 0 0 auto; padding: 8px 12px; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+.adm-fill { flex: 1; min-height: 0; }
+/* why a button beside it is off */
+.why { font-size: 12px; color: #8a5b00; font-weight: 700; white-space: nowrap; }
+/* the small line of a big button that is off is its reason: it must stay readable */
+.maint-tab .gbtn:disabled small { color: #8a5b00; }
+
+/* a value that is cut: a tap opens the whole text */
+.kv div.tap { cursor: pointer; }
+.kv div.tap b { text-decoration: underline dotted; text-underline-offset: 4px; }
+.kv div.tap:focus-visible { outline: 3px solid var(--run); outline-offset: 2px; }
+
+/* narrow panels: the turn buttons of the pager must fit 300 px and 250 px */
+.adm-left .pager, .spec-list .pager { gap: 4px; padding: 3px 4px; }
+.adm-left .pager .btn, .spec-list .pager .btn { min-width: 0; padding: 0 calc(5px + var(--extra) * .03); font-size: 15px; }
+.adm-left .pager b, .spec-list .pager b { min-width: 68px; font-size: 13px; }
+
+/* ── Recipe ── left: .ph 35 + (hint 27) + six Recipes of 58 + pager 51 + foot 61. right, of 492 px under its .ph:
+   a published one = facts 84 + (warnings ≤ 52) + head 28 + seven rows of 32 + pager 45 + foot 53 = 486; a draft =
+   facts 88 + 52 + 28 + six rows of 30 + pager 45 + the editor's bar 45 + foot 53 = 491. The rows stay 32 / 30 px
+   and (in a 4:3 window) the warnings 24 px: there is no height left to give them. A wide frame has the width for
+   the six facts in one row; the 40 px that frees make the two warnings 44 px ── */
+.adm-left .list { flex: 1; }
+.adm-left .li { height: 58px; overflow: hidden; }
+.adm-left .li > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.adm-hint { flex: 0 0 auto; padding: 4px 12px; font-size: 13px; font-weight: 700; color: #8a5b00; background: #fff7d6; border-bottom: 1px solid #dcdee0; }
+.adm-left .empty { padding: 16px; }
+.adm-left .empty b { font-size: 18px; }
+.adm-left .empty p { font-size: 14px; }
+.adm-left .adm-foot { gap: 6px; padding: 8px; }
+.adm-left .adm-foot .btn { flex: 1 1 auto; padding: 0 6px; }
+.file-btn { cursor: pointer; }
+.file-btn input { display: none; }
+.file-btn.off { color: #a3a6aa; border-color: #d0d2d5; background: #f3f3f3; opacity: .45; cursor: not-allowed; }
+
+.adm-right .kv { flex: 0 0 auto; padding: 4px 12px; gap: 3px 16px; }
+.adm-right .kv > div > span, .adm-right .kv > button > span { font-size: 12px; color: var(--ink-3); line-height: 1.3; }
+.adm-right .kv b { line-height: 1.35; }
+/* a fact that is also a control (the name of a draft, its error): the whole cell is the button */
+.adm-right .kv > button { position: relative; display: flex; flex-direction: column; align-items: stretch; min-width: 0; margin: 0 -5px; padding: 0 4px;
+  border: 1px solid #8b8f94; background: #fff; color: var(--ink); text-align: left; cursor: pointer; }
+.adm-right .kv > .tap { position: relative; }
+.adm-right .kv > button::after, .adm-right .kv > .tap::after { content: ""; position: absolute; inset: -4px 0; }      /* 36 px of cell, 44 px of tap */
+.adm-right .kv > button:disabled { border-color: transparent; background: transparent; cursor: default; }
+.adm-warns { flex: 0 0 auto; display: flex; flex-direction: column; gap: 2px; padding: 2px 12px 0; }
+.adm-warns .sch-warn { display: block; width: 100%; margin: 0; padding: 3px 10px; border: 0; border-left: 5px solid var(--p3); background: #fff7d6;
+  color: var(--ink); font-size: 13px; line-height: 1.4; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.adm-right .thead { flex: 0 0 28px; }
+.adm-right .trow.slim { height: 32px; min-height: 32px; overflow: hidden; cursor: pointer; }
+.adm-right .draft .trow.slim { height: 30px; min-height: 30px; }
+.adm-right .trow.slim:focus-visible { outline: 3px solid var(--run); outline-offset: -3px; }
+.c-row { flex: 0 0 44px; font-family: var(--font-heading); font-size: 15px; }
+.c-note { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+.adm-right .c-msg { flex: 1.4; }
+.adm-right .empty b { font-size: 19px; }
+.adm-right .pager { padding: 0 8px; }
+.ed-bar { flex: 0 0 45px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-top: 1px solid #dcdee0; }
+.ed-bar .btn { min-width: calc(64px + var(--extra) * .08); }
+.adm-right .adm-foot { padding: 4px 10px; }
+@container hmi (min-width: 1280px) {
+  .adm-right .kv { grid-template-columns: 1.2fr .8fr 1fr 1fr 1.5fr 1fr; }      /*the fifth is the long one: Liquid used · Measurement/Pump*/
+  .adm-warns .sch-warn { min-height: 44px; font-size: 14px; }
+  .adm-right .trow.slim { font-size: 14px; }
+}
+
+/*── Wiring, pump and scale: two columns ──*/
+.adm-half .kv.big { flex: 0 0 auto; padding: 4px 12px; }
+.adm-half .kv.big div { min-height: 44px; padding: 7px 0; gap: 12px; }      /* a line that is cut opens on a tap */
+.adm-half .kv.big div > span { flex: 0 0 auto; white-space: nowrap; }
+.adm-half .kv.big b { min-width: 0; text-align: right; }
+/* read-only facts of the pump board: long values may take two lines */
+.adm-half .kv.big.facts b { font-size: 15px; line-height: 1.35; white-space: normal; }
+.adm-half .btn-grid { flex: 0 0 auto; }
+.adm-weight { flex: 0 0 auto; padding: 14px 12px 6px; text-align: center; font-family: var(--font-heading); font-size: 44px; line-height: 1.1; }
+.adm-weight.q-na, .adm-weight.q-bad { font-size: 30px; line-height: 1.6; }
+
+/*── Plasma parameters ──*/
+.param-grid { flex: 0 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 12px; align-content: start; }
+.param-grid .pbtn { min-width: 0; }
+.param-grid .pbtn > span, .param-grid .pbtn small { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.adm-full .btn-grid { flex: 0 0 auto; padding-top: 0; }
+@container hmi (min-width: 1280px) {
+  .param-grid { gap: 12px; padding: 14px 16px; }
+  .param-grid .pbtn { padding: 10px 18px; }
+  .param-grid .pbtn > span { font-size: 15px; }
+  .param-grid .pbtn small { font-size: 13px; }
+}
+
+/*── Correction coefficient ──*/
+.cal-grid { flex: 0 0 auto; display: grid; grid-template-columns: 120px repeat(3, 1fr); gap: 14px; padding: 14px 22px; align-items: center; align-content: start; }
+.cal-h { font-size: 18px; font-weight: 700; text-align: center; }
+.cal-m { font-size: 22px; }
+.cal-grid .pbtn { height: 78px; align-items: center; min-width: 0; }
+.cal-grid .pbtn b { font-size: 24px; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-grid .pbtn.q-na b { color: var(--ink-3); font-size: 18px; }
+.adm-full > .kv { flex: 0 0 auto; border-top: 1px solid #dcdee0; border-bottom: 0; }
+.adm-full > .kv div { min-height: 44px; justify-content: center; }
+
+/*── spectrum ── left: .ph 35 + five sets of 70 + pager 51 + foot. right: .ph 35 + two bars of 48 + the chart. chart.js
+   draws 620 x 308; a wide frame shows it up to 1.26 times as big (35 + 96 + 310 x 1.26 = 522 of 526), in the middle ──*/
+.maint-tab[data-tab="spectra"] { --chart-zoom: min(1.26, calc(1 + var(--wx, 0) / 900)); }
+.spec-list { flex: 0 0 calc(250px + var(--extra) * .2); display: flex; flex-direction: column; min-height: 0; }
+.spec-list .list { flex: 1; }
+.spec-list .li { height: 70px; padding: 5px 10px; overflow: hidden; }
+.spec-list .li b { line-height: 1.3; }
+.spec-list .li > span { line-height: 1.35; }
+.spec-list .empty { padding: 16px 10px; }
+.spec-list .empty p { font-size: 14px; }
+.spec-list .adm-foot { flex-direction: column; align-items: stretch; gap: 4px; }
+.spec-list .adm-foot .why { white-space: normal; text-align: center; }
+.spec-main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+.spec-info { font-size: 13px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.spec-ctl { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 2px 10px; }
+.spec-ctl .seg button { min-width: 0; font-size: 14px; padding: 0 calc(10px + var(--extra) * .03); }
+.spec-ctl .sp { flex: 1; }
+.spec-ctl .btn { font-size: 15px; }
+/* the panel is 628 px inside and the chart 620: without the chart's left margin its last tick text stays inside.
+   A wide frame has room beside the chart: it stands in the middle */
+.spec-main .chart { margin-left: 0; }
+@container hmi (min-width: 1200px) {
+  .spec-main .chart { margin: 2px auto 0; }
+}
+/*Single sheet check: .ph 35 + bar 48 + head 28 + ten rows of 36 + pager 53 = 524 of 526*/
+.spec-main .thead { flex-basis: 28px; }
+.spec-main .trow { min-height: 36px; height: 36px; font-size: 13px; cursor: pointer; }
+.spec-main .trow:focus-visible { outline: 3px solid var(--run); outline-offset: -3px; }
+.c-flag { flex: 1; min-width: 0; color: #8a5b00; font-weight: 700; padding-left: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thead .c-flag { color: inherit; font-weight: 400; }
+@container hmi (min-width: 1280px) {
+  .spec-main .trow { font-size: 14px; }
+  .spec-main .c-num { flex-basis: 130px; font-size: 15px; }
+}
+
+/*── operator ── .ph 53 + .thead 34 + eight names of 48 + pager 53 = 524 of 526 ──*/
+.c-del { flex: 0 0 84px; text-align: center; }
+.maint-tab[data-tab="operators"] .trow { min-height: 48px; }
+.maint-tab[data-tab="operators"] .ack { height: 44px; min-width: 72px; }

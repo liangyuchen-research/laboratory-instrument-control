@@ -1,0 +1,15 @@
+{
+  "bind": "0.0.0.0",
+  "port": 8767,
+  "allow": ["127.0.0.1", "192.168.1.2"],
+  "token": "",
+  "watchdog_s": 5,
+  "flow": "unified",
+  "exposure_lead_ms": 5,
+  "poll_s": 3,
+  "discovery": true,
+  "app_dir": "/home/pi/Desktop/Plasmic/app",
+  "tools_dir": "/home/pi/Desktop/Plasmic/nano_lcd_v1_1/rpi_tools",
+  "serial_port": "/dev/RS485",
+  "output_dir": "/home/pi/Desktop/Plasmic/logs/hmi-captures"
+}

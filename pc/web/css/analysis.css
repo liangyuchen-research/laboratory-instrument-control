@@ -1,0 +1,241 @@
+/** Plasmic Electronics 2.0.0 — analysis.css: the pages trend #page-trend and correction #page-calibration (AMENDMENTS M5.5).
+ * Starting point: the original HMI's web/trend/style.css and web/calibration/style.css (same structure and colors),
+ * rebuilt for the frame: every value is a button that opens a dialog, and nothing scrolls (pagers).
+ * Every rule is tied to its page section. A page is 582 px high inside and 888 px (a 4:3 window) to 1544 px wide
+ * (base.css .page: flex column). The widths written here are the ones of 888 px; var(--extra) and flex share out what
+ * a wider frame adds. Heights are the same at every width.*/
+
+/*══════════════ Trending ══════════════ bar 46 (buttons of 44 in their frame) · (notice 32) · three charts · foot 44, 6 px apart*/
+#page-trend { gap: 6px; }
+#page-trend .tr-bar { flex: 0 0 46px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+#page-trend .tr-bar h2 { margin: 0; font-family: inherit; font-size: 18px; font-weight: 700; line-height: 1.2; letter-spacing: 0; white-space: nowrap; }
+#page-trend .tr-bar .sp { flex: 1; }
+#page-trend .tr-bar .seg { flex: 0 0 auto; }
+#page-trend .tr-bar .seg button { padding: 0 calc(12px + var(--extra) * .03); }
+#page-trend .tr-bar .btn { padding: 0 14px; font-size: 15px; }
+#page-trend .tr-chip { flex: 0 1 auto; min-width: 0; padding: 6px 9px; border: 1px solid var(--run); color: var(--run); font-size: 13.5px; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-trend .tr-legend { flex: 0 0 auto; display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+#page-trend .tr-legend i { display: inline-block; width: 18px; height: 10px; margin-left: 8px; }
+#page-trend .tr-legend .lg-sample { border-top: 3px solid var(--run); }
+#page-trend .tr-legend .lg-blank { border-top: 3px dashed #c27a00; }
+#page-trend .tr-legend .lg-bad { width: 10px; background: var(--bad); transform: rotate(45deg); margin-right: 3px; }
+#page-trend .tr-notice { flex: 0 0 auto; padding: 6px 10px; border: 1px solid #e6c56b; background: #fff4d6; color: #7a5200; font-size: 13.5px; line-height: 1.35;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-trend .tr-charts { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+#page-trend .tr-chart { flex: 1 1 0; min-height: 0; position: relative; background: var(--panel); border: 1px solid var(--line); cursor: pointer; overflow: hidden; }
+#page-trend .tr-chart svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+#page-trend .tr-chart text { font-family: var(--font-body); font-size: 11px; fill: var(--ink-3); -webkit-user-select: none; user-select: none; }
+#page-trend .tr-chart text.tr-title { font-size: 13px; font-weight: 700; fill: var(--ink); }
+#page-trend .tr-chart text.tr-empty { font-size: 13px; }
+#page-trend .tr-plot { fill: #fff; stroke: #b9bcc0; }
+#page-trend .tr-grid { stroke: #eceded; }
+#page-trend .tr-zero { stroke: #9a9da1; }
+#page-trend .tr-band { fill: rgba(194, 122, 0, .12); }
+#page-trend .tr-line { fill: none; stroke-width: 2; }
+#page-trend .tr-line.sample { stroke: #2f5f8f; }
+#page-trend .tr-line.blank { stroke: #c27a00; stroke-dasharray: 6 4; }
+#page-trend .tr-dot { fill: #2f5f8f; }
+#page-trend .tr-dia { fill: #fff; stroke: #c27a00; stroke-width: 2; }
+#page-trend .tr-dia.bad { fill: #a3168e; stroke: #a3168e; }
+#page-trend .tr-pick { fill: none; stroke: var(--ink); stroke-width: 2; }
+#page-trend .tr-foot { flex: 0 0 44px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+#page-trend .tr-detail { flex: 1; min-width: 0; height: 44px; padding: 0 10px; border: 1px solid var(--line); background: #fff; color: var(--ink);
+  font-family: inherit; font-size: 13.5px; line-height: 42px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-trend button.tr-detail { cursor: pointer; }
+#page-trend button.tr-detail:disabled { cursor: default; color: var(--ink-2); }
+#page-trend button.tr-detail.err, #page-trend button.tr-detail.err:disabled { color: var(--bad); }
+#page-trend .tr-foot .btn { flex: 0 0 auto; }
+@container hmi (min-width: 1280px) {
+  #page-trend .tr-detail, #page-trend .tr-chip, #page-trend .tr-notice { font-size: 14.5px; }
+  #page-trend .tr-legend { font-size: 14px; }
+  #page-trend .tr-chart text { font-size: 12px; }
+  #page-trend .tr-chart text.tr-title { font-size: 14px; }
+  #page-trend .tr-chart text.tr-empty { font-size: 14px; }
+}
+
+/*══════════════ Correction ══════════════ top row 46 (tabs of 44 in their frame), then one pane of 528: 526 inside a panel*/
+#page-calibration .cal-top { flex: 0 0 46px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+#page-calibration .cal-top h2 { margin: 0; font-family: inherit; font-size: 18px; font-weight: 700; line-height: 1.2; letter-spacing: 0; white-space: nowrap; }
+#page-calibration .cal-top .seg { flex: 0 0 auto; }
+#page-calibration .cal-top .seg button { position: relative; }
+#page-calibration .cal-badge { position: absolute; right: 2px; top: 2px; min-width: 16px; height: 16px; padding: 0 4px; background: var(--p2); color: #fff;
+  font-size: 12px; font-weight: 700; line-height: 16px; text-align: center; }
+/* the coefficients in use: one line; a tap shows all of it */
+#page-calibration .cal-active { flex: 1; min-width: 0; height: 44px; padding: 0 2px; border: 0; background: transparent; color: var(--ink-2);
+  font-family: inherit; font-size: 13px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+#page-calibration .cal-active.err { color: var(--bad); }
+#page-calibration .cal-pane { flex: 1; min-height: 0; display: flex; gap: 8px; }
+#page-calibration .cal-pane.col { flex-direction: column; }
+#page-calibration .panel { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+#page-calibration .ph { flex: 0 0 auto; }
+#page-calibration .ph:has(> .btn) { padding-top: 2px; padding-bottom: 2px; }      /* 49 px with its 44 px button */
+#page-calibration .ph h2 { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .ph .btn { flex: 0 0 auto; }
+#page-calibration .cal-empty { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 20px; color: var(--ink-3); font-size: 15px; text-align: center; }
+
+/*── Correction settings ── left: the standards (ph 49 · head 29 · 8 rows of 46 · pager 53 · foot 26 = 525); right: 320 px at 4:3 ──*/
+#page-calibration .cal-std { flex: 1 1 auto; }
+#page-calibration .cal-side { flex: 0 0 calc(320px + var(--extra) * .3); }
+#page-calibration .cal-ghead, #page-calibration .cal-lvl { display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+#page-calibration .cal-ghead { flex: 0 0 29px; font-size: 13px; color: var(--ink-3); border-bottom: 1px solid var(--line); }
+#page-calibration .cal-levels { flex: 1; min-height: 0; overflow: hidden; }
+#page-calibration .cal-lvl { height: 46px; border-bottom: 1px solid #e3e4e6; }
+#page-calibration .cal-lvl.blank { background: #f2f5f8; }
+#page-calibration .c-name { flex: 1 1 120px; min-width: 0; }
+#page-calibration .c-num { flex: 0 0 calc(92px + var(--extra) * .1); text-align: center; }
+#page-calibration .c-rounds { flex: 0 0 calc(64px + var(--extra) * .06); text-align: center; }
+#page-calibration .c-del { flex: 0 0 48px; }
+#page-calibration .cal-cell { display: block; width: 100%; height: 44px; padding: 0 8px; border: 1px solid #8b8f94; background: #fff; color: var(--ink);
+  font-family: inherit; font-size: 16px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+#page-calibration .cal-cell.name { text-align: left; }
+#page-calibration .cal-cell.none { color: var(--ink-3); }
+#page-calibration .cal-del { width: 48px; height: 44px; padding: 0; font-size: 18px; }
+#page-calibration .cal-std .pager { flex: 0 0 auto; }
+#page-calibration .cal-stdfoot { flex: 0 0 26px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 10px;
+  border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); white-space: nowrap; overflow: hidden; }
+#page-calibration .cal-form { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: 8px 12px 6px; overflow: hidden; }
+/* three lines in 60 px: 13 + 18 + 12 px at 1.15, so that no line is cut */
+#page-calibration .cal-form .stile { flex: 0 0 60px; width: 100%; height: 60px; padding: 3px 10px; gap: 0; line-height: 1.15; }
+#page-calibration .cal-form .stile > b { font-size: 18px; }
+#page-calibration .cal-form .stile.need > b { font-weight: 700; }
+#page-calibration .cal-step { flex: 0 0 52px; display: flex; align-items: center; gap: 8px; }
+#page-calibration .cal-step > span { flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.3; color: var(--ink-2); }
+#page-calibration .cal-step > span small { display: block; font-size: 12px; color: var(--ink-3); }
+#page-calibration .cal-stepper { flex: 0 0 auto; display: flex; align-items: center; }
+#page-calibration .cal-stepper .btn { width: calc(48px + var(--extra) * .04); height: 44px; padding: 0; font-size: 20px; }
+#page-calibration .cal-stepper b { width: 44px; text-align: center; font-family: var(--font-heading); font-size: 22px; }
+#page-calibration .cal-sum { flex: 0 0 auto; padding: 4px 10px; border: 1px solid var(--line); background: #fff; font-size: 13.5px; }
+#page-calibration .cal-sum div { display: flex; justify-content: space-between; gap: 8px; padding: 1px 0; line-height: 1.3; white-space: nowrap; }
+#page-calibration .cal-sum b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* what the program says about the plan: one box per message, as many lines as the room allows (a tap shows all of it) */
+#page-calibration .cal-notes { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+#page-calibration .cal-warn, #page-calibration .cal-err { flex: 0 0 auto; display: block; width: 100%; padding: 4px 8px; font-family: inherit; font-size: 13px;
+  line-height: 1.3; text-align: left; cursor: pointer; }
+#page-calibration button.cal-warn, #page-calibration button.cal-err { min-height: 44px; }      /*the two of correction settings fit: 92 of 94 px*/
+#page-calibration .cal-warn { color: #8a5b00; background: #fff4d6; border: 1px solid #e6c56b; }
+#page-calibration .cal-err { color: var(--bad); background: var(--bad-bg); border: 1px dashed var(--bad); }
+#page-calibration .cal-notes span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; overflow-wrap: anywhere; }
+#page-calibration .cal-notes.k2 span { -webkit-line-clamp: 2; }
+#page-calibration .cal-notes.k4 span { -webkit-line-clamp: 4; }
+#page-calibration .cal-sidefoot { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-top: 1px solid var(--line); }
+#page-calibration .cal-sidefoot .sub { flex: 1; min-width: 0; font-size: 13px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .cal-sidefoot .btn { flex: 0 0 calc(150px + var(--extra) * .1); height: 44px; font-size: 18px; }
+
+/*── Execute ──*/
+#page-calibration .cal-prompt { flex: 0 0 86px; display: flex; align-items: center; gap: 16px; padding: 0 16px; border: 2px solid #e06a00; background: #fff4d6; }
+#page-calibration .cal-prompt > div { flex: 1; align-self: stretch; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; cursor: pointer; }
+#page-calibration .cal-prompt small { font-size: 13px; font-weight: 700; color: #a34d00; }
+#page-calibration .cal-prompt b { font-size: 18px; line-height: 1.3; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+#page-calibration .cal-prompt .btn { flex: 0 0 auto; height: 56px; padding: 0 calc(26px + var(--extra) * .08); font-size: 20px; }
+#page-calibration .cal-runp { flex: 1; }
+/* the cards are as wide as what they say (as the original): four to six in a row; the event list takes what is left */
+#page-calibration .cal-cards { flex: 0 1 auto; min-height: 0; display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); overflow: hidden; }
+#page-calibration .cal-card { flex: 0 0 auto; min-width: 128px; max-width: calc(274px + var(--extra) * .2); height: 66px; padding: 5px 10px; border: 1px solid var(--line); background: #fff;
+  display: flex; flex-direction: column; justify-content: center; gap: 1px; line-height: 1.3; }
+#page-calibration .cal-card b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .cal-card small { font-size: 12.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .cal-card.now { border: 2px solid var(--run); background: var(--run-bg); padding: 4px 9px; }
+#page-calibration .cal-card.done { border-color: #3d7a52; }
+#page-calibration .cal-card.done small:last-child { color: #3d7a52; }
+#page-calibration .cal-state { flex: 0 0 auto; padding: 7px 12px; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 30px; color: var(--ink-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }      /* a tap opens the whole line */
+#page-calibration .cal-state:focus-visible { outline: 3px solid var(--run); outline-offset: -3px; }
+#page-calibration .cal-state.err { color: var(--bad); }
+#page-calibration .cal-log { flex: 1 0 26px; min-height: 26px; overflow: hidden; padding: 0 12px; }
+#page-calibration .cal-ev { height: 26px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eceded; font-size: 13.5px; white-space: nowrap; cursor: pointer; }
+#page-calibration .cal-ev time { flex: 0 0 64px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+#page-calibration .cal-ev span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .cal-ev.warn span { color: #8a5b00; }
+#page-calibration .cal-ev.error span { color: #8a3d00; font-weight: 700; }
+#page-calibration .cal-runp .pager { flex: 0 0 auto; }
+
+/*── Results and records ── left 236 at 4:3: six records of 73; right: the record ──*/
+#page-calibration .cal-reclist { flex: 0 0 calc(236px + var(--extra) * .2); }
+#page-calibration .cal-records { flex: 1; min-height: 0; overflow: hidden; }
+#page-calibration .cal-rec { display: block; width: 100%; height: 73px; padding: 6px 10px; border: 0; border-bottom: 1px solid #e3e4e6; background: #fff; color: var(--ink);
+  font-family: inherit; line-height: 1.35; text-align: left; cursor: pointer; }
+#page-calibration .cal-rec.sel { background: var(--run-bg); box-shadow: inset 4px 0 0 var(--run); }
+#page-calibration .cal-rec b { display: block; font-size: 14px; white-space: nowrap; }
+#page-calibration .cal-rec small { display: block; font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .cst { display: inline-block; margin-right: 4px; padding: 0 6px; border: 1px solid var(--line); font-size: 12px; }
+#page-calibration .cst.analyzed { border-color: #3d7a52; color: #3d7a52; }
+#page-calibration .cst.applied { background: #3d7a52; border-color: #3d7a52; color: #fff; }
+#page-calibration .cst.analysis_failed, #page-calibration .cst.failed, #page-calibration .cst.interrupted { border-color: var(--bad); color: var(--bad); }
+#page-calibration .cst.running, #page-calibration .cst.analyzing { border-color: var(--run); color: var(--run); }
+#page-calibration .cal-reclist .pager { flex: 0 0 auto; gap: 6px; padding: 4px; }
+#page-calibration .cal-reclist .pager .btn { min-width: 0; padding: 0 calc(6px + var(--extra) * .03); font-size: 14px; }
+#page-calibration .cal-reclist .pager b { min-width: 0; font-size: 13px; white-space: nowrap; }
+#page-calibration .cal-detail { flex: 1; }
+#page-calibration .cal-detail .ph .sub { flex: 0 0 auto; overflow: visible; }      /* the status stays whole; the title gives way */
+/*477 px under the .ph: 6 + bar 46 + 8 + the view 409 + 8. standard = head 28 + seven rows of 42 + hint 17.5 + pager 51 and
+   two gaps = 406.5; rounds = 28 + eleven rows of 28 + pager 51 + 8 = 395*/
+#page-calibration .cal-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 6px 12px 8px; overflow: hidden; }
+#page-calibration .cal-ctl { flex: 0 0 46px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+#page-calibration .cal-ctl .seg { flex: 0 0 auto; }
+#page-calibration .cal-ctl .seg button { min-width: calc(62px + var(--extra) * .04); }
+#page-calibration .cal-ctl .cal-fitline { flex: 1; min-width: 0; font-size: 13.5px; color: var(--ink-2); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .cal-view { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+#page-calibration .cal-fit { flex: 0 0 auto; display: flex; gap: 12px; }
+#page-calibration .cal-fitchart { flex: 0 0 362px; height: 242px; border: 1px solid var(--line); background: #fff; }
+#page-calibration .cal-fitchart svg { display: block; width: 360px; height: 240px; }
+#page-calibration .cal-fitchart text { font-family: var(--font-body); font-size: 11px; fill: var(--ink-3); }
+#page-calibration .cf-frame { fill: none; stroke: #b9bcc0; }
+#page-calibration .cf-grid { stroke: #eceded; }
+#page-calibration .cf-line { stroke: #2f5f8f; stroke-width: 2; }
+#page-calibration .cf-dot { fill: #e06a00; stroke: #fff; }
+#page-calibration .cal-coef { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; font-size: 14px; }
+#page-calibration .cal-coef > div { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; border-bottom: 1px solid #eceded; white-space: nowrap; }
+#page-calibration .cal-coef b { font-variant-numeric: tabular-nums; }
+#page-calibration .cal-coef > div.formula { display: block; border: 0; font-size: 13px; line-height: 1.4; color: var(--ink-2); white-space: normal; }
+#page-calibration .cal-coef > div.cal-warn, #page-calibration .cal-coef > div.cal-err { display: block; padding: 4px 8px; white-space: normal; cursor: default; }
+#page-calibration .cal-view .cal-notes { flex: 0 0 auto; }
+#page-calibration button.cal-note { min-height: 44px; }      /* a tap opens the whole note: 242 + 92 + 44 and three gaps fit the 411 px of the view */
+#page-calibration .cal-note { flex: 0 1 auto; min-height: 0; padding: 0; border: 0; background: transparent; color: var(--ink-3); font-family: inherit; font-size: 12.5px;
+  line-height: 1.5; text-align: left; cursor: pointer; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; overflow-wrap: anywhere; }
+/* a wide frame: the regression chart is up to 1.45 times as big (it is drawn 360 x 240) and stands alone on the left;
+   the coefficients, the messages and the note are a column beside it */
+@container hmi (min-width: 1280px) {
+  #page-calibration .cal-view:has(> .cal-fit) { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr);
+    column-gap: 16px; row-gap: 8px; align-content: start; }
+  #page-calibration .cal-fit { display: contents; }
+  #page-calibration .cal-fitchart { grid-column: 1; grid-row: 1 / span 3; align-self: start; zoom: min(1.45, calc(1 + var(--wx, 0) / 700)); }
+  #page-calibration .cal-coef { grid-column: 2; grid-row: 1; font-size: 15px; }
+  #page-calibration .cal-view > .cal-notes { grid-column: 2; grid-row: 2; }
+  #page-calibration .cal-view > .cal-note { grid-column: 2; grid-row: 3; align-self: start; font-size: 13.5px; -webkit-line-clamp: 5; }
+}
+/* the two tables */
+#page-calibration .cal-thead, #page-calibration .cal-trow { display: flex; align-items: center; gap: 6px; padding: 0 8px; font-variant-numeric: tabular-nums; }
+#page-calibration .cal-thead { flex: 0 0 28px; background: #f2f3f4; border: 1px solid #dfe1e3; color: var(--ink-2); font-size: 13px; font-weight: 600; }
+#page-calibration .cal-tbody { flex: 1; min-height: 0; margin-top: -8px; overflow: hidden; background: #fff; border: 1px solid #dfe1e3; border-top: 0; }   /* joined to its head */
+#page-calibration .cal-trow { border-bottom: 1px solid #dfe1e3; font-size: 13.5px; white-space: nowrap; }
+#page-calibration .cal-trow.bad { color: var(--bad); }
+#page-calibration .cal-levelrows .cal-trow { height: 42px; }
+#page-calibration .cal-pointrows .cal-trow { height: 28px; }
+#page-calibration .cal-pointrows .cal-trow.bad { cursor: pointer; }      /* a tap opens why it was left out */
+#page-calibration .t-in { flex: 0 0 52px; }
+#page-calibration .t-name { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .t-num { flex: 0 0 calc(86px + var(--extra) * .12); text-align: right; }
+#page-calibration .t-n { flex: 0 0 calc(34px + var(--extra) * .04); text-align: right; }
+#page-calibration .t-wide { flex: 0 0 calc(270px + var(--extra) * .36); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* 40 px in a row of 42: the px above and below take the tap too */
+#page-calibration .cal-tick { position: relative; width: 44px; height: 40px; padding: 0; border: 2px solid var(--ink); background: #fff; color: #fff; font-size: 20px; line-height: 1; cursor: pointer; }
+#page-calibration .cal-tick::after { content: ""; position: absolute; inset: -1px -4px; }
+#page-calibration .cal-tick.on { background: var(--run); border-color: var(--run); }
+#page-calibration .cal-tick:disabled { border-color: #b9bcc0; background: #f3f3f3; color: #f3f3f3; }
+#page-calibration .cal-tick.on:disabled { background: #8aa3bd; border-color: #8aa3bd; color: #fff; }
+#page-calibration .cal-hint { flex: 0 0 auto; font-size: 12.5px; line-height: 1.4; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-calibration .cal-hint.why { color: #8a3d00; font-weight: 700; }
+#page-calibration .cal-view .pager { flex: 0 0 auto; padding: 3px 8px; }
+#page-calibration .cal-msgs { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+#page-calibration .cal-msgs .cal-warn, #page-calibration .cal-msgs .cal-err { font-size: 13.5px; padding: 6px 8px; }
+#page-calibration .cal-msgs .cal-notes { flex: 0 0 auto; }
+#page-calibration .cal-msgs .cal-note { font-size: 13.5px; -webkit-line-clamp: 6; cursor: default; }
+/*a wide frame: one size more where the height of a row is fixed anyway (.cal-sum and .cal-hint stay: the 44 px of
+   the message boxes and the seven rows of standard products have no px to spare)*/
+@container hmi (min-width: 1280px) {
+  #page-calibration .cal-active { font-size: 14px; }
+  #page-calibration .cal-trow, #page-calibration .cal-ev, #page-calibration .cal-ctl .cal-fitline { font-size: 14.5px; }
+  #page-calibration .cal-rec b { font-size: 15px; }
+  #page-calibration .cal-rec small { font-size: 13px; }
+}

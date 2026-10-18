@@ -1,0 +1,183 @@
+/** Plasmic electronic control 2.0.0 — base.css: tokens, fonts, reset, scaling and the frame (top bar, banner, nav, footer).
+ * Starting point: the original HMI's style block (hmi_v1_1 web/index.html lines 18-468); its class names are kept.
+ *
+ * Status display rules (consistent across the entire screen)
+ * The color is only used to indicate "abnormality" or "operation", and the normal state remains grayscale.
+ * Run/Command ON ....... blue solid .q-run
+ * Normal value/command OFF...Dark gray text .q-ok
+ * The value is not trustworthy (no response).. Magenta + "?" dashed box .q-bad
+ * Not installed/not selected ........ light gray dashed box .q-na
+ * Alarm priority (only used for alarms) Emergency Red .p1 / High Orange .p2 / Medium Yellow .p3
+ * High voltage ........................ red frame + yellow and black warning strip .hv
+ *
+ * Touch control: Things that can be clicked must be at least 44 px high (if the layout really cannot fit, use ::after to increase the "clickable range" to 44 px).
+ * Nothing can be seen by hovering the mouse; the screen does not scroll or zoom.*/
+
+/* ── tokens ── */
+:root {
+  --run: #2f5f8f; --run-bg: #dce9f6;
+  --bad: #a3168e; --bad-bg: #fbe8f7;
+  --p1: #c62828; --p2: #e06a00; --p3: #e0b400;
+  --ink: #1d1f20; --ink-2: #45484b; --ink-3: #6b6e72;
+  --line: #b9bcc0; --panel: #fbfbfb;
+  --color-bg: #f2f2f3;
+  --font-heading: "Barlow Condensed", system-ui, "Microsoft JhengHei", sans-serif;
+  --font-body: "Barlow", system-ui, "Microsoft JhengHei", sans-serif;
+  --nav-h: 50px; --nav-gap: 4px;   /* eight entries (AMENDMENTS M5.4); the original used 54 / 5 */
+  /* main.js sets --k (scale of the frame), --w (its width) and --wx (how much wider than 1024 it is, a plain number).
+     --extra is that surplus as a length: 0 in a 4:3 window, 341px at 16:9, at most 656px. */
+  --extra: calc(var(--wx, 0) * 1px);
+}
+
+/* ── fonts (copied from the original; SIL OFL 1.1, the licence texts are beside them) ── */
+@font-face { font-family: "Barlow"; font-style: normal; font-weight: 400; font-display: swap; src: url(/fonts/barlow-400.ttf) format("truetype"); }
+@font-face { font-family: "Barlow"; font-style: normal; font-weight: 500; font-display: swap; src: url(/fonts/barlow-500.ttf) format("truetype"); }
+@font-face { font-family: "Barlow"; font-style: normal; font-weight: 700; font-display: swap; src: url(/fonts/barlow-700.ttf) format("truetype"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 400; font-display: swap; src: url(/fonts/barlow-condensed-400.ttf) format("truetype"); }
+@font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 600; font-display: swap; src: url(/fonts/barlow-condensed-600.ttf) format("truetype"); }
+
+/* ── reset (what the original inherited from its design system) ── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100vh; overflow: hidden; background: #d9dadc; overscroll-behavior: none; }
+/* a touch screen: no pinch zoom, no double-tap zoom, no swipe "back". Nothing on the screen scrolls (lists turn pages),
+   so no finger movement is the browser's */
+html { touch-action: none; }
+body { color: #1d1f20; font-family: var(--font-body); font-size: 15px; line-height: 1.55; font-weight: 400; }
+h1, h2, h3, h4, h5, h6 { line-height: 1.12; letter-spacing: -0.015em; }
+p { margin: 0 0 10.2px; }
+img { display: block; max-width: 100%; }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid #5980a6; outline-offset: 2px; }
+::selection { background: rgba(89, 128, 166, .3); }
+[hidden] { display: none !important; }
+button { font-family: inherit; }
+button:focus-visible { outline: 3px solid var(--run); outline-offset: 2px; }
+button:disabled { cursor: not-allowed; }
+/* a finger has no hover: what is being pressed darkens while it is pressed */
+button:not(:disabled):active, a.btn:active, a.userbtn:active { filter: brightness(.9); }
+@keyframes blink { 50% { opacity: .35; } }
+
+/* ── the frame: 768 px high and as wide as the shape of the window asks for (1024 px at 4:3, 1365 px at 16:9, 1680 px
+   at most), scaled as a whole to the window. main.js sets --k, --w and --wx. A page section is (--w - 116) x 598;
+   its width is what changes, its height never does ── */
+.hmi { position: absolute; left: 50%; top: 50%; width: var(--w, 1024px); height: 768px; margin: -384px 0 0 calc(var(--w, 1024px) / -2);
+  transform: scale(var(--k, 1)); transform-origin: 50% 50%;
+  container: hmi / inline-size;      /* page rules ask for the width of the frame with @container hmi (min-width: …) */
+  background: var(--color-bg); color: var(--ink); font-family: var(--font-body); font-size: 15px;
+  display: flex; flex-direction: column; overflow: hidden;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }   /* a finger that slides marks no text */
+.hmi input { -webkit-user-select: text; user-select: text; }      /* only what is typed can be marked */
+.hmi a { -webkit-user-drag: none; }                               /* a finger that rests on a link does not drag it away */
+/* practice mode: amber ring. Drawn above the regions so that it is whole (in the original the white bars covered most of it). */
+.hmi.demo::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 5px #d9a300; pointer-events: none; z-index: 39; }
+
+/*── Top bar ──*/
+.top { flex: 0 0 56px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-bottom: 1px solid var(--line); background: #fff; }
+.top .sp { flex: 1; }
+.title { font-family: var(--font-heading); font-weight: 600; font-size: 22px; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.mode { font-size: 14px; padding: 4px 9px; border: 1px solid var(--line); white-space: nowrap; }
+.mode.demo { background: repeating-linear-gradient(135deg, #ffe7a3 0 8px, #fff3cc 8px 16px); border-color: #b88a00; font-weight: 700; }
+/* the two status words: a tap says the rest (address, port, the last error) */
+.top .chip { position: relative; cursor: pointer; }
+.top .chip::after { content: ""; position: absolute; inset: -7px -4px; }
+.top .chip:focus-visible { outline: 3px solid var(--run); outline-offset: 2px; }
+.userbtn { height: 44px; min-width: 56px; padding: 0 12px; background: #fff; border: 1px solid var(--line); font-size: 15px; cursor: pointer; white-space: nowrap; color: var(--ink); }
+a.userbtn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+a.userbtn:focus-visible { outline: 3px solid var(--run); outline-offset: 2px; }
+.opbtn { height: 44px; min-width: 110px; max-width: 140px; padding: 0 10px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+  line-height: 1.15; background: #fff; border: 1px solid var(--line); cursor: pointer; text-align: left; color: var(--ink); }
+.opbtn small { font-size: 12px; color: var(--ink-3); }
+.opbtn b { font-size: 15px; max-width: 118px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opbtn.none b { color: #8a3d00; }
+.clock { display: flex; flex-direction: column; align-items: flex-end; font-family: var(--font-heading); font-size: 19px; line-height: 1.05; min-width: 74px; white-space: nowrap; }
+.clock small { font-size: 12px; color: var(--ink-3); font-family: var(--font-body); }
+
+/*── Alert banner: only show alerts ──*/
+.banner { flex: 0 0 44px; display: flex; align-items: center; gap: 10px; padding: 0 12px; font-size: 16px; border-bottom: 1px solid var(--line); }
+.banner.none { background: #eceded; color: var(--ink-3); font-size: 15px; }
+.banner.p1 { background: var(--p1); color: #fff; }
+.banner.p2 { background: var(--p2); color: #fff; }
+.banner.p3 { background: var(--p3); color: #111; }
+.banner.acked { background: #fff; color: var(--ink); }
+/* color: the pill rule .pri of the tables is white; here the box takes the colour of its banner (dark on white and on yellow) */
+.banner .pri { font-weight: 700; padding: 3px 9px; border: 2px solid currentColor; white-space: nowrap; color: inherit; }
+.banner.unacked .pri { animation: blink 1s steps(1) infinite; }
+/* the message takes the tap over the whole height of the banner */
+.banner .msg { flex: 1; align-self: stretch; min-width: 0; line-height: 43px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600;
+  cursor: pointer; text-decoration: underline dotted; text-underline-offset: 4px; }
+.banner .msg:focus-visible { outline: 3px solid currentColor; outline-offset: -3px; }
+.banner .time { font-family: var(--font-heading); white-space: nowrap; }
+.banner .more { font-size: 14px; white-space: nowrap; }
+/* 40 px in a banner of 44: the two px above and below take the tap too */
+.banner button { position: relative; height: 40px; min-width: 96px; padding: 0 16px; background: rgba(255, 255, 255, .92); color: var(--ink); border: 1px solid rgba(0, 0, 0, .35); font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.banner button::after { content: ""; position: absolute; inset: -3px -1px; }
+
+/*── Left navigation ──*/
+.body { flex: 1; display: flex; min-height: 0; }
+.nav { flex: 0 0 116px; display: flex; flex-direction: column; gap: var(--nav-gap); padding: 8px 6px; border-right: 1px solid var(--line); background: #f7f7f7; }
+.nav button { position: relative; width: 100%; min-height: var(--nav-h); display: flex; align-items: center; justify-content: flex-start; text-align: left; padding: 0 10px; font-size: 16px; white-space: nowrap; background: #fff; border: 1px solid var(--line); color: var(--ink); cursor: pointer; }
+.nav button.sel { background: var(--run); border-color: var(--run); color: #fff; font-weight: 700; }
+.nav button.navmaint { margin-top: auto; min-height: 46px; font-size: 15px; color: var(--ink-2); border-style: dashed; }
+.nav button.navmaint.sel { color: #fff; border-style: solid; }
+.nav .badge { position: absolute; right: 4px; top: 4px; min-width: 20px; height: 20px; padding: 0 5px; font-size: 13px; line-height: 20px; text-align: center; color: #fff; font-weight: 700; }
+.badge.p1 { background: var(--p1); } .badge.p2 { background: var(--p2); } .badge.p3 { background: var(--p3); color: #111; } .badge.acked { background: var(--ink-3); }
+
+/*── Page area: (--w - 116) x 598, padding 8 / 10; available width 888 (4:3) to 1544, available fixed height 582; no scrolling ──*/
+.page { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 8px 10px; overflow: hidden; }
+/*Repair: main.js gives maint.js and each tab module a root of its own; their content lays out as if it sat in .page itself*/
+.maint-head, .maint-tab { display: contents; }
+
+/*── Bottom action column ──*/
+.foot { flex: 0 0 70px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-top: 1px solid var(--line); background: #fff; }
+.start { flex: 0 0 140px; height: 54px; font-size: 21px; font-weight: 700; background: var(--run); border: 1px solid var(--run); color: #fff; cursor: pointer; white-space: nowrap; padding: 0 4px; }
+.start:disabled { background: #e4e6e8; border-color: #c9ccd0; color: #8b8f94; }
+.start.resume { background: #2f7a4b; border-color: #2f7a4b; }
+.start.resume:disabled { background: #e4e6e8; border-color: #c9ccd0; color: #8b8f94; }
+.stop { flex: 0 0 120px; height: 54px; font-size: 20px; font-weight: 700; background: #fff; border: 2px solid var(--ink); color: var(--ink); cursor: pointer; white-space: nowrap; padding: 0 4px; }
+.stop:disabled { border-color: #c9ccd0; color: #a3a6aa; background: #f3f3f3; font-weight: 400; }
+.pause-btn { flex: 0 0 120px; height: 54px; font-size: 18px; white-space: nowrap; padding: 0 4px; font-weight: 700; background: #fff; border: 2px solid #b88a00; color: #6b4d00; cursor: pointer; }
+.pause-btn:disabled { border-color: #c9ccd0; color: #a3a6aa; background: #f3f3f3; font-weight: 400; }
+.prog { flex: 1; align-self: stretch; min-width: 0; display: flex; gap: 14px; align-items: center; }
+.prog > div { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+/* a line that opens the whole text: the whole height of the footer takes the tap */
+.prog > div.tap { align-self: stretch; justify-content: center; cursor: pointer; }
+.prog > div.tap:focus-visible { outline: 3px solid var(--run); outline-offset: -3px; }
+.prog small { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.prog b { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prog .why { color: var(--ink-2); font-weight: 400; font-size: 14px; }
+/*“Recheck” beside the reason (AMENDMENTS M18): it keeps its width, the reason beside it is cut*/
+.prog > .recheck { flex: 0 0 auto; align-self: center; min-width: 96px; }
+.prog .why.err { color: #8a3d00; font-weight: 700; }
+.prog .paused { color: #6b4d00; }
+/*four cells of a running schedule: the two short ones keep their width, steps gives way first. A tap on any of them
+   shows all four in full (frame.js)*/
+.prog.cells { gap: 10px; }
+.prog.cells > div { flex: 0 1 auto; min-width: 44px; }
+.prog.cells > div.keep { flex-shrink: 0; }
+.prog.cells > div.give { flex-shrink: 8; }
+.hvtag { flex: 0 0 auto; padding: 4px 8px; border: 2px solid var(--p1); color: var(--p1); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.estop { flex: 0 0 188px; display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 2px solid var(--p1); background: #fff; font-size: 13px; line-height: 1.3; color: var(--ink); }
+.estop svg { flex: 0 0 30px; }
+.estop .e-out { fill: #c62828; } .estop .e-in { fill: #e0b400; }
+.estop small { display: none; }      /* 4:3: the sentence is the tooltip of the box, as before */
+/* a wide frame has the room: the cells of a running schedule stand apart, and the box of the emergency stop says in
+   words what a mouse reads from its tooltip (a finger has no tooltip): 270 px instead of 188 */
+@container hmi (min-width: 1280px) {
+  .prog.cells { gap: 22px; }
+  .prog b { font-size: 17px; }
+  .estop { flex-basis: 270px; }
+  .estop small { display: block; font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+}
+
+/*── Full screen: The layer (frame.js) that covers the entire window when it is opened. It's outside the .hmi, so the size is multiplied by itself by --k──*/
+.fs-gate { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: calc(22px * var(--k, 1)); background: rgba(20, 22, 24, .58); cursor: pointer;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.fs-go { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(12px * var(--k, 1));
+  width: calc(660px * var(--k, 1)); max-width: 92vw; min-height: calc(230px * var(--k, 1)); padding: calc(16px * var(--k, 1));
+  border: calc(3px * var(--k, 1)) solid #fff; background: var(--run); color: #fff; cursor: pointer; box-shadow: 0 12px 40px rgba(0, 0, 0, .4); }
+.fs-go b { font-size: calc(36px * var(--k, 1)); line-height: 1.25; font-weight: 700; }
+.fs-go small { font-size: calc(17px * var(--k, 1)); line-height: 1.4; color: #dce9f6; }
+.fs-skip { min-width: calc(220px * var(--k, 1)); height: calc(60px * var(--k, 1)); padding: 0 calc(28px * var(--k, 1));
+  border: 1px solid #8b8f94; background: #fff; color: var(--ink); font-size: calc(19px * var(--k, 1)); cursor: pointer; }
+.fs-gate button:focus-visible { outline: calc(4px * var(--k, 1)) solid #ffd000; outline-offset: 3px; }

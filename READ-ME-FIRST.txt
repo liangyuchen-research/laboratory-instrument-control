@@ -1,0 +1,84 @@
+Plasmic Control 2.0.0
+====================
+
+For everyday use, open guide.html. The Help button in the upper-right corner opens the same guide.
+
+Getting started
+---------------
+Double-click the desktop shortcut "Plasmic Control". Tap the interface to enter fullscreen;
+use "Exit Fullscreen" in the upper-right corner to leave it.
+Both status indicators should be green: "RPi connected" and "Pump control board COM3".
+Pumps are labeled Pump 1-8 in wiring order: Pump 1 is water, Pump 7 is the drain (OUT),
+and Pump 8 is CuSO4. Connect the board's USB cable; the application detects the serial port
+automatically and displays its name.
+To practice, launch "Plasmic Control (Demo)". All devices are simulated; the maintenance PIN is 000000.
+
+First use
+---------
+This release and the new pump-board firmware have not completed commissioning on real equipment.
+They have been tested with simulators. Complete the checklist in guide.html in this order:
+observe only -> pumps with water only -> 30 V discharge -> reconnect the load.
+If any check fails, stop. Do not increase the voltage.
+
+Safety
+------
+* The on-screen Stop button is software, not an emergency stop.
+* Before wiring or maintenance, physically switch off the high-voltage and 24 V drive supplies.
+* If a pump will not stop or liquid overflows, use the pump-side 24 V disconnect first.
+* Do not run Autonomous Laboratory v7 (run.bat) or the Arduino IDE serial monitor at the same time.
+* Before starting or restarting the RPi, physically switch off the 24 V drive supply and high
+  voltage. The Nano restarts with it, and its pulse-output pin can toggle several times.
+
+Folder contents
+---------------
+guide.html          Concise everyday guide
+Start.cmd           Start the application; the desktop shortcut points here
+Start-Demo.cmd      Demo mode using simulated equipment
+Set-PIN.cmd         Set the maintenance PIN; run again if the PIN is forgotten
+Install.cmd         Install or update on a new PC or update the RPi
+Flash-Nano.cmd      Flash a replacement Arduino Nano
+Start-Kiosk.cmd     Optional fullscreen touchscreen mode
+mega/               Arduino Mega pump-board firmware, backups, and flashing tools; see mega/README.txt
+docs/               detailed-guide.html: installation, wiring, complete checklist, troubleshooting,
+                    and technical development records
+pc/ rpi/ nano/ installer/ tests/
+                    Application files. Settings, recipes, spectra, and records are stored in pc/data/.
+SHA256SUMS.txt      Checksums for retained files from earlier releases
+
+This application needs only this folder. The old desktop "UI" and "Autonomous Laboratory v1-v7"
+applications are not used; the required components were copied into pc/vendor/ and mega/.
+Keep those older installations as backups.
+
+Verification status as of 2026-10-07
+------------------------------------
+* The PC, RPi application 2.0.0, and Nano firmware 1.2.1 are installed.
+  RPi 192.168.1.1 connects directly by Ethernet to PC 192.168.1.2; Wi-Fi provides Internet access.
+* The pump board is on COM3. Its firmware was updated to Plasmic p2 on the evening of 2026-10-07,
+  after an earlier p1 update that morning. Weight-based dosing now stops on the board itself;
+  water and OUT can be assigned to different pumps. Solenoid valves operate only after their
+  assignments are configured under Maintenance > Pumps & Scale > Valve Following.
+  Earlier firmware is backed up and can be restored. After flashing, the board reported p2,
+  stopped motors, and closed valves. No pump had yet run under p2.
+* Real equipment was first opened with this release at noon on 2026-10-07. The RPi connected,
+  the pump board was detected automatically, and existing data was migrated. That afternoon,
+  while the board still ran p1, Pump 1-4 were manually started and stopped; scale readings later
+  became available, and the syringe pump was detected. Weight-based dosing, syringe motion,
+  automatic cleaning, scheduling, and discharge had not yet been tested on the equipment.
+* The high-voltage supply responded at 19:50 on 2026-10-07. Its output was OFF and the panel
+  setpoint was 1000 V. Communication was intermittent that afternoon; if it stops responding,
+  inspect the two RS485 wires at the rear and use "Check Again". A spectrum was captured at 19:53.
+* Features added that afternoon: Pump 1-8 labels, individual pump calibration under Maintenance
+  > Pumps & Scale, a full-width interface, fullscreen mode, and touch controls. These changes
+  were tested only with simulators.
+* Features added that evening: the software no longer rejects the supply's current-limit
+  setting above 0.1 A; the panel setting determines the current limit. Pump Connections assigns
+  each pump to water, OUT, a chemical, or no connection; Valve Following configures solenoids.
+  Visual styling was revised without changing the layout. These changes were tested only
+  with simulators.
+* Later that evening, Scheduled Measurement > Custom gained an editable step list: dispense a
+  volume, dose with two pumps, stop at a measured weight, run plasma, clean, wait, or use the
+  syringe pump. The application now writes the voltage setpoint over RS485; no manual panel
+  adjustment or setpoint-mismatch message is needed. These changes were tested only in simulation.
+* The maintenance PIN was set on 2026-10-06.
+* The only completed measurements on real equipment were the 30 V runs on 2026-10-05 using
+  the earlier application.

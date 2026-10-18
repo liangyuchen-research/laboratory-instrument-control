@@ -1,0 +1,278 @@
+/** Plasmic Electronic Control 2.0.0 — components.css: the parts every page shares.
+ * panel / ph · quality colors / tag / chip · btn / seg · st / pri · table / trow / pager · list / li · empty · notice ·
+ * kv · value tiles (stile, pbtn, gbtn, vol) · dialogs, number pad, keyboard, tick rows · chart.
+ * The rules are the original HMI's (same class names). Page files (pages.css, maint.css, analysis.css) come after this
+ * one in index.html, so a page rule of the same weight wins.
+ * Touch: every button here is 44 px high or more. A rule of a page that makes one smaller must give the tap its
+ * 44 px back (a bigger ::after), and say why.*/
+
+/* ── panel ── */
+.panel { background: var(--panel); border: 1px solid var(--line); }
+.ph { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-bottom: 1px solid var(--line); min-height: 34px; }
+.ph h2 { margin: 0; font-size: 18px; font-family: inherit; font-weight: 700; white-space: nowrap; }
+.ph .sub { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--ink-3); }
+.ph .sp { flex: 1; }
+/* a header with a button in it: the button is 44 px, the header stays 53 */
+.ph:has(> .btn, > .seg) { padding-top: 4px; padding-bottom: 4px; }
+
+/*── Quality status ──*/
+.q-ok { color: var(--ink); }
+.q-run { color: var(--run); font-weight: 700; }
+.q-bad { color: var(--bad); font-weight: 700; }
+.q-na { color: var(--ink-3); }
+.q-uncal { color: var(--ink-2); }
+.q-cal { color: #3d7a52; }
+.tag { display: inline-block; font-size: 13px; padding: 2px 7px; border: 1px solid var(--line); white-space: nowrap; letter-spacing: .02em; }
+.tag.q-run { background: var(--run); color: #fff; border-color: var(--run); }
+.tag.q-bad { border: 1px dashed var(--bad); background: var(--bad-bg); }
+.tag.q-na { border-style: dashed; }
+.tag.q-uncal { background: repeating-linear-gradient(135deg, #e2e2e2 0 4px, #f6f6f6 4px 8px); border-color: #9a9a9a; }
+.tag.q-cal { background: #fff; border-color: #3d7a52; color: #3d7a52; }
+.tag.q-blank { background: #fff4d6; border-color: #c99a2e; color: #7a5200; }
+.tag.q-blankbad { background: var(--bad-bg); border: 1px dashed var(--bad); color: var(--bad); font-weight: 700; }
+.tag.q-maint { background: #fff; border-color: var(--run); color: var(--run); font-weight: 700; font-variant-numeric: tabular-nums; }
+.chip { display: flex; align-items: center; gap: 6px; font-size: 14px; padding: 5px 9px; border: 1px solid var(--line); white-space: nowrap; background: #fff; }
+.chip i { width: 11px; height: 11px; display: block; background: var(--ink-3); }
+.chip.q-ok i { background: #3d7a52; }
+.chip.q-bad { color: var(--bad); border: 1px dashed var(--bad); background: var(--bad-bg); font-weight: 700; }
+.chip.q-bad i { background: var(--bad); }
+.chip.q-na { color: var(--ink-3); border-style: dashed; }
+.txt-warn { color: #8a3d00; font-weight: 700; }
+
+/*── Button ──*/
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
+  font-family: var(--font-heading); font-weight: 600; line-height: 1.2;
+  height: 44px; min-width: 44px; padding: 0 14px; border: 1px solid #8b8f94; background: #fff; font-size: 16px; cursor: pointer; color: var(--ink); white-space: nowrap; }
+.btn:disabled { color: #a3a6aa; border-color: #d0d2d5; background: #f3f3f3; opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--run); border-color: var(--run); color: #fff; font-weight: 700; }
+.btn.primary:disabled { background: #b9c6d3; border-color: #b9c6d3; color: #fff; }
+a.btn:focus-visible { outline: 3px solid var(--run); outline-offset: 2px; }
+.seg { display: flex; overflow: hidden; border: 1px solid rgba(29, 31, 32, .16); }
+.seg button { height: 44px; min-width: 64px; padding: 0 12px; border: 1px solid var(--line); background: #fff; font-size: 15px; cursor: pointer; margin-left: -1px; white-space: nowrap; color: var(--ink); }
+.seg button.sel { background: var(--run); color: #fff; border-color: var(--run); font-weight: 700; position: relative; }
+.seg button:disabled { color: #9a9da1; }
+.seg button.sel:disabled { background: #8aa3bd; color: #fff; }
+.seg.tabs button { height: 44px; font-size: 16px; padding: 0 16px; }
+/* a button inside a table row of 44: 40 px to look at, the whole height of the row to tap */
+.ack { position: relative; height: 40px; min-width: 64px; padding: 0 12px; border: 1px solid #8b8f94; background: #fff; font-size: 15px; font-weight: 700; cursor: pointer; color: var(--ink); }
+.ack::after { content: ""; position: absolute; inset: -2px -5px; }
+.ack:disabled { color: #a3a6aa; border-color: #d0d2d5; background: #f3f3f3; }
+.fnav { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.fnav .btn { height: 44px; width: 52px; padding: 0; justify-content: center; font-size: 16px; }
+.fnav b { min-width: 78px; text-align: center; }
+
+/*── Status tag ──*/
+.pri { display: inline-block; font-size: 13px; font-weight: 700; padding: 2px 8px; color: #fff; }
+.pri.p1 { background: var(--p1); } .pri.p2 { background: var(--p2); } .pri.p3 { background: var(--p3); color: #111; }
+.st { display: inline-block; font-size: 13px; padding: 2px 8px; border: 1px solid var(--line); white-space: nowrap; }
+.st.completed { border-color: #3d7a52; color: #2b5a3b; }
+.st.failed { background: var(--p2); color: #fff; border-color: var(--p2); }
+.st.running { background: var(--run); color: #fff; border-color: var(--run); }
+.st.skipped { border: 1px dashed #b88a00; color: #6b4d00; background: #fff7d6; }
+.st.stopped { color: var(--ink-2); }
+
+/*── Empty status/table ──*/
+.empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; color: var(--ink-2); padding: 20px; }
+.empty b { font-size: 21px; color: var(--ink); }
+.empty p { margin: 0; font-size: 15px; max-width: 560px; line-height: 1.6; }
+.table { flex: 1; min-height: 0; display: flex; flex-direction: column; width: 100%; font-size: 14px; }
+.thead, .trow { display: flex; align-items: center; gap: 8px; padding: 0 12px; }
+.thead { flex: 0 0 34px; font-size: 13px; color: var(--ink-3); border-bottom: 2px solid var(--ink-2); }
+.tbody { flex: 1; min-height: 0; overflow: hidden; }
+.trow { min-height: 44px; border-bottom: 1px solid #dcdee0; font-size: 15px; }
+.trow.unacked { background: #fff6e5; }
+.trow.slim { min-height: 32px; font-size: 13px; }
+.trow.sel { background: #dce9f6; }
+.trow.flag { background: #fff6e5; } .trow.flag.sel { background: #f5dcae; }
+button.trow { width: 100%; border: 0; border-bottom: 1px solid #dcdee0; background: transparent; text-align: left; color: var(--ink); cursor: pointer; }
+button.trow:not(:disabled):active { background: #e6edf5; }      /* a row has no fill to darken: it turns blue while it is pressed */
+.c-time { flex: 0 0 126px; font-family: var(--font-heading); font-size: 16px; }
+.c-msg { flex: 1; min-width: 0; }
+.c-msg.one { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* a cell that opens its whole text: the whole height of the row takes the tap */
+.trow .c-msg.tap { align-self: stretch; display: flex; align-items: center; cursor: pointer; }
+.trow .c-msg.one.tap { display: block; line-height: 43px; }
+.c-no { flex: 0 0 56px; }
+.c-num { flex: 0 0 96px; text-align: right; font-family: var(--font-heading); font-size: 14px; }
+
+/*── Touch operation: All lists are paged with a fixed number of pens, no scroll appears ──*/
+.pager { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 4px 8px; border-top: 1px solid #dcdee0; }
+.pager .btn { height: 44px; min-width: 104px; justify-content: center; }
+.pager b { min-width: 96px; text-align: center; font-size: 15px; }
+.list { flex: 1; min-height: 0; overflow: hidden; }
+.li { display: block; width: 100%; min-height: 58px; text-align: left; padding: 7px 12px; border: 0; border-bottom: 1px solid #dcdee0; background: #fff; cursor: pointer; color: var(--ink); }
+.li b { display: block; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.li > span { display: block; font-size: 13px; color: var(--ink-3); }
+.li .warn { color: #8a5b00; font-weight: 700; }
+.li.sel { background: var(--run); color: #fff; } .li.sel > span { color: #dce9f6; } .li.sel .warn { color: #ffe08a; }
+.li:disabled { background: #f6f6f6; color: var(--ink-3); cursor: not-allowed; }
+
+/*── Prompt bar ──*/
+.notice { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 8px 12px; font-size: 15px; border: 1px solid var(--line); background: #fff; }
+.notice.warn { border-left: 6px solid var(--p3); }
+.notice.block { border-left: 6px solid var(--ink-3); color: var(--ink-2); }
+.notice.ok { border-left: 6px solid var(--run); }
+.notice.err { border-left: 6px solid var(--p2); color: #8a3d00; background: #fff4ea; }
+.notice .n-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.notice .n-fix { font-size: 14px; color: var(--ink); font-weight: 400; }
+.notice .btn { height: 44px; flex: 0 0 auto; }
+
+/* ── key / value ── */
+.kv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 16px; padding: 8px 12px; border-bottom: 1px solid #dcdee0; }
+.kv div { display: flex; flex-direction: column; min-width: 0; }
+.kv div > span { font-size: 12px; color: var(--ink-3); }
+.kv b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kv.big { grid-template-columns: 1fr; gap: 0; border-bottom: 0; }
+.kv.big div { flex-direction: row; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px dotted #d0d2d5; }
+.kv.big div > span { font-size: 15px; } .kv.big b { font-size: 17px; }
+
+/*── Numeric box: Click to open the numeric keyboard (there is no value field on the screen that can be typed directly)──*/
+.stile { height: 80px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 8px 12px; border: 1px solid #8b8f94; background: #fff; text-align: left; cursor: pointer; min-width: 0; color: var(--ink); }
+.stile > span { font-size: 13px; color: var(--ink-2); }
+.stile > b { font-size: 21px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stile > small { font-size: 12px; color: var(--ink-3); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stile:disabled { cursor: default; background: #f6f6f6; color: var(--ink); }
+.stile.need { border: 2px dashed #b88a00; } .stile.need b { color: #8a5b00; }
+div.stile { cursor: default; }
+/*will output high voltage: red box + yellow and black warning bar*/
+.stile.hv { border: 3px solid var(--p1); background: repeating-linear-gradient(135deg, #ffd000 0 9px, #1d1f20 9px 18px) left / 12px 100% no-repeat, #fff; padding-left: 22px; }
+.stile.hv b { color: var(--p1); }
+.pbtn { height: 112px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; padding: 10px 14px; border: 1px solid #8b8f94; background: #fff; text-align: left; cursor: pointer; color: var(--ink); }
+.pbtn > span { font-size: 14px; color: var(--ink-2); } .pbtn b { font-size: 26px; font-family: var(--font-heading); } .pbtn small { font-size: 12px; color: var(--ink-3); }
+.pbtn.changed { border: 2px solid var(--run); background: var(--run-bg); }
+.pbtn.local { border-style: dashed; }
+.pbtn.local.warn { border: 2px dashed var(--bad); }
+div.pbtn { cursor: default; }
+.pbtn:disabled { cursor: not-allowed; background: #f6f6f6; }
+.btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
+.btn-grid .gbtn { height: 66px; } .btn-grid .gbtn.hv { height: 72px; }
+.gbtn { height: 86px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 17px; font-weight: 700; border: 1px solid #8b8f94; background: #fff; cursor: pointer; color: var(--ink); }
+.gbtn small { font-size: 12px; font-weight: 400; color: var(--ink-3); }
+.gbtn.primary { background: var(--run); border-color: var(--run); color: #fff; } .gbtn.primary small { color: #dce9f6; }
+.gbtn:disabled { color: #a3a6aa; border-color: #d0d2d5; background: #f3f3f3; } .gbtn:disabled small { color: #b9bcc0; }
+.gbtn.hv { grid-column: span 2; height: 80px; padding: 0 32px; border: 3px solid var(--p1); color: var(--p1); font-size: 19px;
+  background: repeating-linear-gradient(135deg, #ffd000 0 9px, #1d1f20 9px 18px) left / 22px 100% no-repeat,
+    repeating-linear-gradient(135deg, #ffd000 0 9px, #1d1f20 9px 18px) right / 22px 100% no-repeat, #fff; }
+.gbtn.hv small { color: #8a1c1c; }
+.gbtn.hv:disabled { opacity: .55; color: #8a8d91; border-color: #c9ccd0; } .gbtn.hv:disabled small { color: #6b6e72; }
+.vol { flex: 1; height: 46px; border: 1px solid #8b8f94; background: #fff; font-size: 24px; font-family: var(--font-heading); cursor: pointer; color: var(--ink); }
+.vol small { font-size: 14px; margin-left: 4px; font-family: var(--font-body); color: var(--ink-3); }
+.vol:disabled { color: #a3a6aa; border-color: #d0d2d5; background: #f3f3f3; }
+
+/*── Confirmation/Number Keyboard Dialog (dialog.js; only one at a time)──*/
+.overlay { position: absolute; inset: 0; background: rgba(20, 22, 24, .45); z-index: 40; }
+.dialog { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(var(--fit, 1)); width: 440px; z-index: 41; background: #fff;
+  border: 2px solid var(--ink); box-shadow: 0 12px 40px rgba(0, 0, 0, .35); display: flex; flex-direction: column;
+  gap: 10.2px; padding: 13.6px; }
+.dialog:focus { outline: none; }
+.dialog.wide { width: 720px; }
+.dialog.danger { border-color: var(--p2); }
+.dlg-h { padding: 12px 16px; font-size: 20px; font-weight: 700; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.dialog.danger .dlg-h { background: #fff1e3; }
+.dlg-b { padding: 10px 16px; display: flex; flex-direction: column; gap: 6px; }
+.dlg-line { display: flex; justify-content: space-between; gap: 12px; font-size: 16px; padding: 3px 0; border-bottom: 1px dotted #d0d2d5; }
+.dlg-line > span { color: var(--ink-3); white-space: nowrap; } .dlg-line b { text-align: right; overflow-wrap: anywhere; min-width: 0; }
+/* a line that opens another dialog and comes back with the new value */
+button.dlg-line.tap { width: 100%; min-height: 48px; align-items: center; padding: 0 12px; border: 1px solid #8b8f94; background: #fff; color: var(--ink); cursor: pointer; text-align: left; }
+button.dlg-line.tap b::after { content: " ›"; color: var(--ink-3); font-weight: 400; }
+.dlg-warn { margin-top: 6px; padding: 8px 10px; font-size: 14px; line-height: 1.5; background: #fff7d6; border-left: 5px solid var(--p3); overflow-wrap: anywhere; }
+.dlg-detail { margin-top: 4px; padding: 10px 12px; font-size: 15px; line-height: 1.55; background: #f6f6f7; border: 1px solid var(--line); overflow-wrap: anywhere; white-space: pre-wrap; max-height: 330px; overflow: hidden; }
+.dlg-detail.err { background: #fff4ea; border-left: 5px solid var(--p2); }
+.dlg-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.dlg-links .btn { height: 48px; flex: 1 1 auto; }
+.dlg-buf { height: 54px; border: 2px solid var(--run); display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 0 12px; font-family: var(--font-heading); font-size: 32px; }
+.dlg-buf small { font-size: 16px; color: var(--ink-3); font-family: var(--font-body); }
+.dlg-buf.fresh > span { background: var(--run-bg); padding: 0 4px; }   /* the value that was there: the first digit replaces it */
+.dlg-range { font-size: 14px; color: var(--ink-3); display: flex; justify-content: space-between; gap: 10px; }
+.dlg-range .err { color: var(--p2); font-weight: 700; }
+.keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.keys button { height: 52px; font-size: 24px; border: 1px solid #8b8f94; background: #fff; cursor: pointer; color: var(--ink); }
+.dlg-choices { display: flex; gap: 8px; }
+.dlg-choices button { flex: 1; height: 60px; font-size: 22px; border: 1px solid #8b8f94; background: #fff; cursor: pointer; color: var(--ink); min-width: 0; }
+.dlg-choices button.sel { background: var(--run); color: #fff; border-color: var(--run); font-weight: 700; }
+.dlg-choices.grid { flex-wrap: wrap; align-content: flex-start; }
+.dlg-choices.grid.paged { min-height: 232px; }            /* 4 rows of 52 px, 8 px apart */
+.dlg-choices.grid.one.paged { min-height: 472px; }        /* 8 rows */
+.dlg-choices.grid button { flex: 0 0 calc(50% - 4px); height: 52px; font-size: 18px; padding: 0 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; }
+.dlg-choices.grid.one button { flex-basis: 100%; }
+.dlg-choices.grid.left button { align-items: flex-start; text-align: left; padding: 0 14px; }   /* a list: the steps of a flow */
+.dlg-choices.grid button > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dlg-choices.grid button small { font-size: 12px; font-weight: 400; color: var(--ink-3); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dlg-choices.grid button.sel small { color: #dce9f6; }
+.dlg-choices button:disabled { color: #a3a6aa; border-color: #d0d2d5; background: #f3f3f3; cursor: not-allowed; }
+.dlg-choices.grid button:disabled small { color: #8a5b00; }
+.dialog .pager { border-top: 0; padding: 2px 0 0; }
+/* the one native input of the program (names need the IME) */
+.dlg-input-row { display: flex; align-items: center; gap: 10px; }
+.dlg-input { flex: 1; min-width: 0; height: 52px; padding: 0 12px; border: 2px solid var(--run); background: #fff; color: var(--ink); font-family: inherit; font-size: 22px; }
+.dlg-input:focus, .dlg-input:focus-visible { outline: none; }
+.dlg-input-row .btn { height: 52px; }
+.dlg-rule { font-size: 14px; color: var(--ink-3); }
+/* the keyboard under that input: letters, digits and the signs of a name, an address or a token. Its keys write into
+   the input and never take the focus from it, so a real keyboard and the Windows input method work as before */
+.kb { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+.kb-row { display: flex; gap: 6px; }
+.kb-row.in { padding: 0 33px; }                            /* the row of nine letters stands half a key in */
+.kb button { flex: 1 1 0; min-width: 0; height: 52px; padding: 0; border: 1px solid #8b8f94; background: #fff; color: var(--ink); font-size: 23px; cursor: pointer; }
+.kb button.word { flex-grow: 1.55; font-size: 17px; background: #f2f3f4; }
+.kb button.space { flex-grow: 2.6; }
+.kb button.sel { background: var(--run); border-color: var(--run); color: #fff; font-weight: 700; }
+.dlg-f { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.dlg-f button { flex: 1; height: 52px; font-size: 18px; cursor: pointer; color: var(--ink); white-space: nowrap; }
+.dlg-f .cancel, .dlg-f .extra { background: #fff; border: 1px solid #8b8f94; }
+.dlg-f .ok { background: var(--run); border: 1px solid var(--run); color: #fff; font-weight: 700; }
+.dialog.danger .dlg-f .ok { background: var(--p2); border-color: var(--p2); }
+.dlg-f .ok:disabled { background: #c9ccd0; border-color: #c9ccd0; }
+.dlg-timeout { font-size: 12px; color: var(--ink-3); padding: 0 16px 8px; min-height: 12px; }
+/*will output a high voltage confirmation window*/
+.dialog.danger.hv { border: 3px solid var(--p1); width: 580px; }
+.dialog.danger.hv .dlg-h { background: var(--p1); color: #fff; }
+.dialog.danger.hv .dlg-f .ok { background: var(--p1); border-color: var(--p1); }
+.dialog.danger.hv .dlg-f .ok:disabled { background: #c9ccd0; border-color: #c9ccd0; }
+/*Confirmation column that must be checked one by one*/
+.ack-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; margin-top: 6px; padding: 0 12px;
+  border: 2px solid var(--p1); background: #fff; font-size: 16px; font-weight: 700; text-align: left; cursor: pointer; color: var(--ink); line-height: 1.35; }
+.ack-row .box { flex: 0 0 28px; height: 28px; border: 2px solid var(--ink); display: flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1; }
+.ack-row.on { background: #fdecec; } .ack-row.on .box { background: var(--p1); border-color: var(--p1); color: #fff; }
+.dialog.hv .ack-row { margin-top: 4px; min-height: 48px; font-size: 15px; }
+/*Options bar that can be unchecked (such as "Clear saved tokens")*/
+.ack-row.plain { border: 1px solid #8b8f94; font-weight: 400; }
+.ack-row.plain.on { background: var(--run-bg); } .ack-row.plain.on .box { background: var(--run); border-color: var(--run); }
+/* a dialog that would not fit the 768 px frame: dialog.js first takes away the outer margins (snug), then sets it
+   tighter (compact), and scales it only if that is still not enough */
+.dialog.snug { gap: 6px; padding: 8px; }
+.dialog.snug .dlg-h { padding: 9px 16px; }
+.dialog.snug .dlg-b { padding: 6px 16px; gap: 4px; }
+.dialog.snug .dlg-warn, .dialog.snug .ack-row { margin-top: 3px; }
+.dialog.snug .dlg-f { padding: 9px 16px; }
+.dialog.snug .dlg-timeout { padding: 0 16px 3px; }
+.dialog.compact { gap: 6px; padding: 8px; }
+.dialog.compact .dlg-h { padding: 7px 14px; font-size: 18px; }
+.dialog.compact .dlg-b { padding: 4px 14px; gap: 3px; }
+.dialog.compact .dlg-line { font-size: 15px; padding: 1px 0; line-height: 1.4; }
+.dialog.compact .dlg-warn { margin-top: 3px; padding: 5px 10px; font-size: 13px; line-height: 1.4; }
+.dialog.compact .dlg-detail { padding: 6px 10px; font-size: 14px; line-height: 1.45; }
+.dialog.compact .ack-row { margin-top: 3px; min-height: 44px; font-size: 15px; }
+.dialog.compact .dlg-f { padding: 8px 14px; }
+.dialog.compact .dlg-f button { height: 48px; }
+.dialog.compact .kb button { height: 46px; }
+.dialog.compact .dlg-timeout { padding: 0 14px 2px; }
+
+/*── Spectral chart (chart.js)── chart.js draws it 620 x 308, always. A page with more room sets --chart-zoom: the whole
+   chart, its texts too, is then that much bigger──*/
+.chart { position: relative; width: 620px; height: 308px; margin: 2px 0 0 8px; zoom: var(--chart-zoom, 1); }
+.chart svg { position: absolute; left: 52px; top: 4px; background: #fff; border: 1px solid #c9ccd0; }
+.chart .ytk { position: absolute; left: 0; width: 48px; text-align: right; font-size: 11px; color: var(--ink-3); transform: translateY(-50%); }
+.chart .xtk { position: absolute; top: 291px; font-size: 11px; color: var(--ink-3); transform: translateX(-50%); }
+.chart .unit { position: absolute; left: 14px; top: 291px; font-size: 11px; color: var(--ink-3); }
+.chart .lgd { position: absolute; right: 8px; top: 8px; font-size: 12px; color: var(--ink-2); background: rgba(255, 255, 255, .9); padding: 2px 6px; border: 1px solid #dcdee0; }
+.chart .ref { position: absolute; top: 6px; font-size: 11px; font-weight: 700; color: #8a5b00; transform: translateX(4px); }
+.chart .msg { position: absolute; left: 52px; top: 4px; width: 566px; height: 282px; display: flex; align-items: center; justify-content: center; color: var(--ink-3); font-size: 15px; }
+.sl-mean { stroke: var(--ink); stroke-width: 1.6; fill: none; }
+.sl-frame { stroke: var(--run); stroke-width: 1.3; fill: none; }
+.sl-over { stroke: #8fb0d0; stroke-width: .8; fill: none; opacity: .8; }
+.sl-over.sel { stroke: var(--run); stroke-width: 1.6; opacity: 1; }
+.sl-zero { stroke: #b9bcc0; stroke-width: 1; stroke-dasharray: 3 3; }
+.sl-grid { stroke: #eceded; stroke-width: 1; }
+.sl-ref { stroke: #8a5b00; stroke-width: 1; stroke-dasharray: 4 3; }

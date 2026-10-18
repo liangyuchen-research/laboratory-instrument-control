@@ -1,0 +1,48 @@
+{
+  "id": "7d5e3f1a9b2c4d6e8f0a1b2c3d4e5f60",
+  "status": "running",
+  "created_at": "2026-10-05T12:00:00.120000+00:00",
+  "finished_at": null,
+  "spec": {
+    "first_slot": "2026-10-05T20:00:00+08:00",
+    "interval_seconds": 600,
+    "interval_minutes": 10,
+    "start": {
+      "mode": "now",
+      "time": null
+    },
+    "end": {
+      "mode": "count",
+      "count": 6
+    }
+  },
+  "planned_total": 6,
+  "last_slot_at": "2026-10-05T20:50:00+08:00",
+  "estimate_seconds": 32,
+  "voltage_v": 30,
+  "sequence": "verified",
+  "next_index": 1,
+  "next_slot_at": "2026-10-05T20:10:00+08:00",
+  "slots": [
+    {
+      "index": 0,
+      "planned_at": "2026-10-05T20:00:00+08:00",
+      "status": "done",
+      "job": "HMI-0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+      "started_at": "2026-10-05T12:00:00.410000+00:00",
+      "finished_at": "2026-10-05T12:00:31.900000+00:00",
+      "note": ""
+    },
+    {
+      "index": 1,
+      "planned_at": "2026-10-05T20:10:00+08:00",
+      "status": "running",
+      "job": "HMI-1b2c3d4e5f60718293a4b5c6d7e8f90a",
+      "started_at": "2026-10-05T12:10:00.380000+00:00"
+    }
+  ],
+  "counts": {
+    "done": 1
+  },
+  "error": ""
+}

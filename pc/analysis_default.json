@@ -1,0 +1,15 @@
+{
+  "comment": "Seeded from the original HMI's analysis settings of 2026-10-02, which were tuned for the original spectrometer (200-350 nm, 1933 pixels). NOT yet checked for the spectrometer on this rig (180-500 nm, 1862 pixels). The program reads data\\analysis_config.json, a copy of pc\\analysis_default.json made at the first start: edit that copy in the data folder to change the windows.",
+  "subtract_dark": true,
+  "shift": {"enabled": true, "windows_nm": [[277.5, 280.0], [330.5, 333.0]],
+            "search_nm": 0.5, "step_nm": 0.005, "max_shift_nm": 0.1, "min_correlation": 0.95},
+  "metals": {
+    "Cu": {"peak": [324.5484, 325.1032], "bg_left": [323.0181, 323.7146], "bg_right": [325.1032, 325.7262], "normalize": null, "baseline": "poly3", "metric": "peak"},
+    "Ni": {"normalize": null, "lines": [
+      {"peak": [231.3899, 232.1667], "bg_left": [228.8788, 229.746], "bg_right": [234.0608, 234.4045], "baseline": "const", "metric": "area", "weight": 1},
+      {"peak": [230.5253, 231.3035], "bg_left": [228.0971, 228.4447], "bg_right": [233.8029, 234.0608], "baseline": "const", "metric": "area", "weight": 0.4359},
+      {"peak": [341.126, 341.5213], "bg_left": [340.5322, 340.7302], "bg_right": [341.9161, 342.7041], "baseline": "lin2", "metric": "area", "weight": 1.0887}
+    ]},
+    "Zn": {"peak": [213.1156, 213.7405], "bg_left": [212.2215, 212.5793], "bg_right": [213.8298, 214.2757], "normalize": null, "baseline": "poly1", "metric": "mean"}
+  }
+}

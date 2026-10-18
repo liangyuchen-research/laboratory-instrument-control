@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — Autonomous Laboratory v6</title>
+<style>
+  :root{--navy:#12263f;--acc:#2563eb;--acc2:#60a5fa;--grey:#64748b;--light:#eff4fb;
+        --green:#15803d;--teal:#0f6e56;--purple:#4338ca;--red:#b91c1c;--amber:#b45309;
+        --ink:#1f2937;--line:#dbe3ef;--soft:#f6f9fd}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#e9eef7 0%,#eef1f6 340px);color:var(--ink);
+       font-family:"Segoe UI",-apple-system,sans-serif;
+       font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+  .page{max-width:1020px;margin:34px auto 60px;background:#fff;border-radius:18px;
+        box-shadow:0 1px 3px rgba(18,38,63,.06),0 12px 40px rgba(18,38,63,.10);
+        padding:54px 62px 66px}
+  header.doc{text-align:center;padding-bottom:28px;margin-bottom:28px;position:relative}
+  header.doc::after{content:"";position:absolute;left:32%;right:32%;bottom:0;height:3px;
+        border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+  header.doc h1{margin:0 0 12px;font-size:28px;color:var(--navy);letter-spacing:-.4px;line-height:1.35}
+  header.doc .sub{color:var(--grey);font-size:14px;line-height:1.8}
+  nav.toc{background:var(--soft);border:1px solid var(--line);border-radius:12px;
+        padding:16px 24px;margin:0 0 34px;font-size:14px;line-height:2.1}
+  nav.toc b{color:var(--navy);letter-spacing:.5px}
+  nav.toc a{color:var(--acc);text-decoration:none;margin-right:16px;white-space:nowrap;
+        border-bottom:1px solid transparent;transition:.15s}
+  nav.toc a:hover{border-bottom-color:var(--acc)}
+  h2{font-size:21px;color:var(--navy);margin:48px 0 16px;padding:2px 0 2px 15px;
+     border-left:5px solid var(--acc);border-radius:2px;line-height:1.45;letter-spacing:-.2px}
+  h3{font-size:16.5px;color:var(--navy);margin:30px 0 10px;padding-left:2px}
+  h3::before{content:"▸ ";color:var(--acc2)}
+  p{margin:0 0 15px;text-align:justify}
+  ul,ol{margin:0 0 16px;padding-left:24px}
+  li{margin-bottom:7px}
+  table{border-collapse:separate;border-spacing:0;width:100%;margin:16px 0 26px;
+        font-size:13.5px;line-height:1.6;border:1px solid var(--line);
+        border-radius:11px;overflow:hidden;box-shadow:0 1px 2px rgba(18,38,63,.04)}
+  th{background:linear-gradient(180deg,#1c3357,#12263f);color:#fff;font-weight:600;
+     padding:11px 13px;text-align:left;font-size:13px;letter-spacing:.3px}
+  td{border-top:1px solid var(--line);padding:10px 13px;vertical-align:top}
+  tr:nth-child(even) td{background:#fafcff}
+  tbody tr:hover td,table tr:hover td{background:#f0f6ff}
+  code{background:var(--light);padding:2px 7px;border-radius:5px;font-size:.88em;
+       color:#1e40af;font-family:Consolas,"Consolas",monospace}
+  pre{background:linear-gradient(180deg,#152238,#0f172a);color:#dbe7ff;border-radius:12px;
+      padding:18px 22px;font-size:12.8px;line-height:1.7;overflow-x:auto;margin:14px 0 24px;
+      font-family:Consolas,"Consolas",monospace;
+      box-shadow:0 4px 16px rgba(15,23,42,.18)}
+  pre code{background:none;color:inherit;padding:0}
+  figure{margin:24px 0 30px;text-align:center}
+  figure svg{width:100%;height:auto;display:block;border:1px solid var(--line);
+             border-radius:14px;box-shadow:0 2px 12px rgba(18,38,63,.07)}
+  figcaption{margin-top:12px;color:var(--grey);font-size:13.5px;font-weight:600}
+  .note,.danger,.ok{border-radius:10px;padding:14px 18px 14px 46px;margin:16px 0 22px;
+       font-size:14.5px;line-height:1.85;position:relative}
+  .note::before,.danger::before,.ok::before{position:absolute;left:16px;top:13px;
+       font-weight:700;font-size:15px}
+  .note{background:#fffbeb;border:1px solid #fcd995;border-left:4px solid var(--amber)}
+  .note::before{content:"!";color:var(--amber);left:19px}
+  .danger{background:#fef4f4;border:1px solid #f6bcbc;border-left:4px solid var(--red)}
+  .danger::before{content:"\26A0";color:var(--red)}
+  .ok{background:#f2fdf5;border:1px solid #a7e8bf;border-left:4px solid var(--green)}
+  .ok::before{content:"\2713";color:var(--green)}
+  .tA{color:var(--teal);font-weight:700}
+  .tB{color:var(--purple);font-weight:700}
+  .tC{color:var(--green);font-weight:700}
+  td .sub{color:var(--grey);font-size:12px}
+  .chk{list-style:none;padding-left:4px;margin:10px 0 20px}
+  .chk li{margin-bottom:9px;padding-left:30px;position:relative}
+  .chk li::before{content:"\2610";position:absolute;left:0;top:-1px;font-size:19px;color:var(--acc)}
+  footer.doc{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);
+             color:var(--grey);font-size:13px;text-align:center;line-height:1.8}
+  a{color:var(--acc)}
+  @media(max-width:820px){.page{padding:28px 18px 40px;margin:0;border-radius:0}
+    header.doc h1{font-size:23px}h2{font-size:19px;margin-top:38px}
+    table{font-size:12.8px}th,td{padding:9px 10px}}
+  @media print{body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:0}
+    nav.toc{display:none}h2{break-after:avoid}table,figure{break-inside:avoid}}
+
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:26px 0 10px}
+  .doccard{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);
+    border-radius:14px;padding:20px 22px;background:#fff;position:relative;
+    box-shadow:0 1px 2px rgba(18,38,63,.05);transition:.16s}
+  .doccard:hover{box-shadow:0 6px 22px rgba(18,38,63,.13);transform:translateY(-2px);border-color:var(--acc2)}
+  .doccard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+    border-radius:14px 0 0 14px;background:var(--c,#94a3b8)}
+  .doccard .n{font-size:12px;color:var(--grey);letter-spacing:1px;font-weight:700}
+  .doccard h3{margin:6px 0 8px;font-size:18px;color:var(--navy);padding:0}
+  .doccard h3::before{content:none}
+  .doccard p{margin:0;font-size:13.5px;color:var(--grey);line-height:1.75;text-align:left}
+  .doccard .pins{margin-top:11px;font-size:12px;font-family:Consolas,monospace;color:var(--acc)}
+  @media(max-width:820px){.cards{grid-template-columns:1fr}}
+</style></head><body><div class="page">
+<header class="doc">
+  <h1>Autonomous Laboratory v6 · Documentation</h1>
+  <p class="sub">System architecture and detailed wiring guides for four hardware subsystems<br>Pin assignments follow <code>config/hardware.yaml</code>, the shared configuration for firmware, backend, and console. Regenerate and reflash firmware after changing hardware settings.</p>
+</header>
+
+<h2>Start here</h2>
+<div class="cards">
+  <a class="doccard" href="architecture.html" style="--c:#4338ca">
+    <div class="n">ARCHITECTURE</div>
+    <h3>System architecture</h3>
+    <p>Backend responsibilities, registered command handlers, configuration generation, command and measurement flows, operation, and troubleshooting.</p>
+    <div class="pins">Browser → FastAPI → USB → Arduino Mega</div>
+  </a>
+  <a class="doccard" href="/" style="--c:#0f6e56">
+    <div class="n">CONSOLE</div>
+    <h3>Control console</h3>
+    <p>Run <code>run.bat</code> to open the console. The public checkout starts in simulation mode. Continuous flow defaults to 40 mL/min, as do volume dosing and the initial mass-feedback stage. Adjust mL or g targets using +10/+5/+1 and −10/−5/−1 buttons. Weight streams at 10 Hz.</p>
+    <div class="pins">http://127.0.0.1:8000</div>
+  </a>
+</div>
+
+<h2>Hardware wiring guides</h2>
+<div class="cards">
+  <a class="doccard" href="wiring-motors.html" style="--c:#2563eb">
+    <div class="n">1 · Relays and peristaltic pumps</div>
+    <h3>8 stepper-driven pumps</h3>
+    <p>Two DM542J drivers, eight MY4N-GS relays, and two ULN2803A arrays. Each group of four motors shares one driver through relay selection with the driver disabled during switching. Groups A and B can operate concurrently, with one selected motor per group.</p>
+    <div class="pins">D2–D9 relays · D22–D24 / D25–D27 drivers</div>
+  </a>
+  <a class="doccard" href="wiring-valves.html" style="--c:#b45309">
+    <div class="n">2 · Solenoid valves</div>
+    <h3>2 normally closed interlocked valves</h3>
+    <p>24 VDC valves use ULN2803A-driven LB2HN-24DS relays. Motors 2 (water) and 9 (CuSO₄) control valves 1 and 2 with 1 s pre-open and post-stop delays. Cleaning runs water for 30 s, water and OUT together for 45 s, then OUT motor 8 alone for 45 s.</p>
+    <div class="pins">D10 / D11 → ULN#1 IN5 / IN6 · automatic only</div>
+  </a>
+  <a class="doccard" href="wiring-pump.html" style="--c:#0f6e56">
+    <div class="n">3 · Syringe pump</div>
+    <h3>RUNZE SY-01B</h3>
+    <p>RS485 on Serial1. The guide covers mirrored solder-side and mating-side views of the female DB15 connector, identification of the three cable bundles, and conversion between microlitres and steps.</p>
+    <div class="pins">D18 = TX1 ‧ D19 = RX1 ‧ DB15 pin 1/9/10/11/12</div>
+  </a>
+  <a class="doccard" href="wiring-scale.html" style="--c:#b91c1c">
+    <div class="n">4 · Weight module</div>
+    <h3>Load cell and weighing transmitter</h3>
+    <p>Four-wire load-cell identification, separate transmitter power and excitation terminals, Serial2 RS485 with a direction-control pin, and a three-stage diagnostic procedure for missing readings.</p>
+    <div class="pins">D17 = RX2 ‧ D16 = TX2 ‧ D36 = DE+RE</div>
+  </a>
+</div>
+
+<h2>Shared setup requirements</h2>
+<div class="danger"><b>A COM port can be opened by only one process.</b> Close Arduino Serial Monitor while the backend runs. Before flashing firmware, press <code>Ctrl+C</code> in the service terminal to stop the backend.</div>
+
+<div class="note"><b>Edit pin assignments in configuration.</b> The wiring guides follow <code>config/hardware.yaml</code>. To change pins: edit YAML → run <code>python tools/gen_firmware_config.py</code> → reflash firmware → restart the backend. Duplicate assignments prevent startup and produce a message identifying both conflicts.</div>
+
+<div class="ok"><b>Use star wiring for the 24 V supply.</b> Run separate supply branches to the motor drivers, valves, syringe pump, and weighing transmitter. Daisy-chained supply wiring can cause voltage drops when a load starts, leading to Arduino resets or disturbed weight readings during valve switching.</div>
+
+<h2>Arduino Mega pin map</h2>
+<table>
+<tr><th style="width:34%">Function</th><th style="width:30%">Pins</th><th>Guide</th></tr>
+<tr><td>Relays (motor n uses D<i>n</i>)</td><td><code>D2 ~ D9</code></td>
+    <td><a href="wiring-motors.html">1 · Peristaltic pumps</a></td></tr>
+<tr><td>Driver group A (motors 2–5)</td><td><code>D22</code> PUL / <code>D23</code> DIR / <code>D24</code> ENA</td>
+    <td><a href="wiring-motors.html">1 · Peristaltic pumps</a></td></tr>
+<tr><td>Driver group B (motors 6–9)</td><td><code>D25</code> PUL / <code>D26</code> DIR / <code>D27</code> ENA</td>
+    <td><a href="wiring-motors.html">1 · Peristaltic pumps</a></td></tr>
+<tr><td>Interlocked valves 1 / 2 (motors 2 / 9)</td><td><code>D10</code> / <code>D11</code></td>
+    <td><a href="wiring-valves.html">2 · Solenoid valves</a></td></tr>
+<tr><td>Syringe-pump RS485 (Serial1)</td><td><code>D18</code> = TX1, <code>D19</code> = RX1</td>
+    <td><a href="wiring-pump.html">3 · Syringe pump</a></td></tr>
+<tr><td>Weight-module RS485 (Serial2)</td>
+    <td><code>D16</code> = TX2, <code>D17</code> = RX2, <code>D36</code> = DE+RE</td>
+    <td><a href="wiring-scale.html">4 · Weight module</a></td></tr>
+</table>
+<p>The two RS485 adapters use <b>separate buses</b>: the syringe pump uses Serial1 and the weighing transmitter uses Serial2.</p>
+
+<footer class="doc">Autonomous Laboratory v6 · 8 RZ1030B-8 pumps, cleaning sequence, syringe pump, 2 valves, and weight feedback<br>
+<a href="architecture.html">Architecture</a> ‧ <a href="wiring-motors.html">Peristaltic-pump wiring</a> ‧
+<a href="wiring-valves.html">Valve wiring</a> ‧ <a href="wiring-pump.html">Syringe-pump wiring</a> ‧
+<a href="wiring-scale.html">Weight-module wiring</a> ‧ <a href="/">Return to console</a></footer>
+</div></body></html>

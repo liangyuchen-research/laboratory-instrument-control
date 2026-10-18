@@ -1,0 +1,5 @@
+{
+  "rpi_host": "127.0.0.1",
+  "rpi_port": 9,
+  "token": "fixture-token-not-a-real-one"
+}

@@ -1,0 +1,109 @@
+/** Plasmic electronic control 2.0.0 — polish.css: the same screens with a softer face (the person's wish of 2026-10-07: "Modify the page slightly
+ * More beautiful" "The layout is also more refined"; AMENDMENTS M21).
+ *
+ * Looks only: corners, lines, fills, shadows. No size and no position is set here: the layout of every page, and the
+ * 44 px of everything a finger taps, is what the five files before this one say. The rule of the status colors
+ * stays as base.css states it — color means "abnormal" or "operation", red and yellow keep their meanings — and nothing needs a
+ * mouse. This file comes last in index.html, so a rule here wins over a rule of the same weight in the others.*/
+
+/* ── tokens ── */
+:root {
+  --r: 8px;                /* panels, the big buttons of the footer, dialogs */
+  --r-s: 6px;              /* everything else a finger taps: buttons, tiles, keys */
+  --r-xs: 4px;             /* tags, chips, small marks */
+  --line: #c7cbd0;         /* the lines between regions and around panels (was #b9bcc0) */
+  --line-soft: #e3e6e9;    /* a line inside a panel */
+  --edge: #9da3aa;         /* the edge of something that can be tapped (was #8b8f94): still darker than a plain line */
+  --color-bg: #eceef1;     /* the floor the panels stand on */
+  --panel: #fff;
+  --head: #f5f6f8;         /* the strip that carries a panel's title */
+  --lift: 0 1px 2px rgba(24, 32, 42, .08), 0 0 1px rgba(24, 32, 42, .05);
+  --lift-2: 0 2px 6px rgba(24, 32, 42, .10), 0 0 1px rgba(24, 32, 42, .06);
+}
+html, body { background: #cfd3d8; }
+
+/* ── everything a finger taps is rounded; rows that fill a list from edge to edge are not ── */
+.hmi button, .hmi a.btn, .hmi a.userbtn, .hmi input { border-radius: var(--r-s); }
+.hmi .seg button, .hmi button.trow, .hmi .li { border-radius: 0; }
+
+/* ── the frame ── */
+.top { border-bottom-color: var(--line); }
+.mode { border-radius: var(--r-xs); }
+.userbtn, .opbtn { border-color: var(--line); box-shadow: var(--lift); }
+.chip { border-radius: var(--r-s); }
+.chip i { border-radius: 50%; }
+.banner .pri { border-radius: var(--r-xs); }
+.nav { background: #f1f2f4; border-right-color: var(--line); }
+.nav button { border-color: var(--line); box-shadow: var(--lift); }
+.nav button.sel { box-shadow: 0 1px 3px rgba(31, 66, 102, .35); }
+.nav button.navmaint { box-shadow: none; }
+.nav .badge { border-radius: 10px; }
+.foot { border-top-color: var(--line); }
+.hmi .start, .hmi .stop, .hmi .pause-btn { border-radius: var(--r); }
+.start:not(:disabled) { box-shadow: 0 1px 3px rgba(31, 66, 102, .40); }
+.stop:not(:disabled), .pause-btn:not(:disabled) { box-shadow: var(--lift); }
+.estop { border-radius: var(--r); }
+.hvtag { border-radius: var(--r-xs); }
+/* the layer that asks for full screen stands outside .hmi: its sizes carry the scale themselves */
+.fs-go { border-radius: calc(14px * var(--k, 1)); }
+.fs-skip { border-radius: calc(8px * var(--k, 1)); border-color: var(--edge); }
+
+/* ── panels ── */
+.panel { border-radius: var(--r); box-shadow: var(--lift); overflow: hidden; }
+.ph { background: var(--head); border-bottom-color: var(--line-soft); }
+/* a row that reaches both edges of its panel keeps its focus mark inside the rounded frame */
+.panel .li:focus-visible, .panel button.trow:focus-visible { outline-offset: -3px; }
+.trow, .li, button.trow { border-bottom-color: var(--line-soft); }
+.pager { border-top-color: var(--line-soft); }
+.kv { border-bottom-color: var(--line-soft); }
+.kv.big div { border-bottom-color: #dfe2e5; }
+.thead { border-bottom-color: #868b92; }
+
+/* ── tags and marks ── */
+.tag, .st, .pri, .cst { border-radius: var(--r-xs); }
+.tag, .st { border-color: var(--line); }
+
+/* ── buttons, tiles ── */
+.btn, .ack, .vol, .gbtn, .stile, .pbtn { border-color: var(--edge); }
+button.btn, a.btn, button.gbtn, button.stile, button.pbtn, .vol { box-shadow: var(--lift); }
+.btn:disabled, .gbtn:disabled, button.stile:disabled, button.pbtn:disabled, .vol:disabled { box-shadow: none; }
+.btn.primary:not(:disabled), .gbtn.primary:not(:disabled) { box-shadow: 0 1px 3px rgba(31, 66, 102, .35); }
+.seg { border-radius: var(--r-s); border-color: var(--edge); }
+.seg button { border-color: var(--line); }
+div.stile, div.pbtn { border-radius: var(--r-s); border-color: var(--line); }
+.notice { border-radius: var(--r-s); border-color: var(--line); box-shadow: var(--lift); }
+
+/* ── dialogs ── */
+.overlay { background: rgba(22, 26, 32, .50); }
+.dialog { border-color: #4f565e; border-radius: 12px; box-shadow: 0 18px 48px rgba(10, 14, 20, .38), 0 2px 8px rgba(10, 14, 20, .20); overflow: hidden; }
+.dialog.danger { border-color: var(--p2); }
+.dialog.danger.hv { border-color: var(--p1); }
+.dlg-h { border-bottom-color: var(--line-soft); border-radius: 6px 6px 0 0; }
+.dlg-f { border-top-color: var(--line-soft); }
+.dlg-line { border-bottom-color: #dfe2e5; }
+.dlg-detail, .dlg-warn, .dlg-buf { border-radius: var(--r-s); }
+.dlg-detail { border-color: var(--line-soft); background: #f5f6f8; }
+.keys button, .kb button, .dlg-choices button, .dlg-f .cancel, .dlg-f .extra, button.dlg-line.tap, .ack-row.plain { border-color: var(--edge); }
+.keys button, .kb button, .dlg-choices button:not(:disabled), .dlg-f button:not(:disabled) { box-shadow: var(--lift); }
+.dlg-choices button.sel, .dlg-f .ok:not(:disabled) { box-shadow: 0 1px 3px rgba(31, 66, 102, .35); }
+.ack-row { border-radius: var(--r-s); }
+.ack-row .box { border-radius: var(--r-xs); }
+
+/* ── the chart ── */
+.chart svg { border-color: var(--line); border-radius: var(--r-xs); }
+.chart .lgd { border-radius: var(--r-xs); border-color: var(--line-soft); }
+
+/* ── pages ── */
+.pin-dots { border-radius: var(--r); }
+.pin-keys button { border-color: var(--edge); box-shadow: var(--lift); }
+.msgchip { border-radius: var(--r-s); }
+#page-alarms .count { border-radius: var(--r-xs); }
+#page-dash .setup-line .no { border-radius: 50%; }
+#page-trend .tr-chip, #page-trend .tr-notice { border-radius: var(--r-xs); }
+#page-trend .tr-chart, #page-trend .tr-detail { border-radius: var(--r-s); }
+#page-calibration .cal-cell { border-color: var(--edge); }
+#page-calibration .cal-sum, #page-calibration .cal-warn, #page-calibration .cal-err, #page-calibration .cal-prompt,
+#page-calibration .cal-card, #page-calibration .cal-fitchart { border-radius: var(--r-s); }
+#page-calibration .cal-tick { border-radius: var(--r-xs); }
+#page-calibration .cal-thead { border-radius: var(--r-s) var(--r-s) 0 0; }
+#page-calibration .cal-tbody { border-radius: 0 0 var(--r-s) var(--r-s); }

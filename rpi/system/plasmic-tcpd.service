@@ -1,0 +1,18 @@
+[Unit]
+Description=Plasmic electrical-control TCP server (HSPY, Nano, spectrometer)
+After=network.target plasmic-trigger-low.service
+
+[Service]
+Type=simple
+User=@USER@
+WorkingDirectory=@BASE@/tcpd
+ExecStart=/usr/bin/python3 -B @BASE@/tcpd/plasmic_tcpd.py --config @BASE@/tcpd/config.json
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+RestartSec=5
+# Stopping the service also stops a running discharge: the tool receives SIGTERM and needs
+# up to about a minute for HSPY OFF readback, Nano STOP and waiting for 0 V.
+TimeoutStopSec=90
+
+[Install]
+WantedBy=multi-user.target

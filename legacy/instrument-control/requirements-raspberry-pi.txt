@@ -1,0 +1,4 @@
+# Install on the compatible Raspberry Pi environment only.
+pyserial>=3.5,<4
+RPi.GPIO>=0.7,<1
+# Obtain the platform-specific UAI spectrometer SDK separately from the vendor.

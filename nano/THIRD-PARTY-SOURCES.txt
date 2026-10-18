@@ -1,0 +1,21 @@
+There are two files in this folder that were not written for this project.2026-10-05 is downloaded from the original source and the content has not been modified.
+
+1. tools\avrdude\avrdude.exe, avrdude.conf      (burning tool,Flash-Nano.cmd will use it)
+   version:AVRDUDE 8.3 (Windows x64) 
+   source: https://github.com/avrdudes/avrdude/releases/tag/v8.3
+         Release file avrdude-v8.3-windows-x64.zip (7,657,431 bytes) 
+   Release file SHA-256: 8630c7d8bb9682a1685aaa9ad42550ae1131c9d13528f0d20975368ba615e9b0
+          (and GitHub )
+   avrdude.exe  SHA-256: 525533521be9bb77ee92dfd86fb49fe4ffdce05196ddcb4e8506fe49754f35c8
+   avrdude.conf SHA-256: e75250cffc416f0b6be6bb8491a0f075f45ec7c6673a56a60a15d63586f164ec
+   Authorize: GNU GPL No. 2 version or newer version; the source code is at the above URL.
+   in the release file Handover information of avrdude.pdb ((used for debugging) is not put in.
+
+2. drivers\CH341SER.EXE                         (CH340/CH341 USB converted to serial port Windows Driver installation file) 
+   version:4.0 (Original factory page mark 2026-06-24) 
+   Source: Original chip factory WCH (Nanjing Qinheng Microelectronics)https://www.wch-ic.com/downloads/CH341SER_EXE.html
+   Size:799,096 bytes
+   SHA-256: 458c37bdafbe4ce3cd0baf728c232b4b765b36d7463956e9b94cdf099212cad1
+   Digital signature: valid, signer Nanjing Qinheng Microelectronics Co., Ltd.
+   When is it needed:Nano uses CH340 USB chip (most compatible boards), and Windows When the driver is not installed automatically.
+               Flash-Nano.cmd will tell you whether you need it. Installation requires system administrator rights: double-click it and press INSTALL.

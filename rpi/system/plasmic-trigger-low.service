@@ -1,0 +1,13 @@
+[Unit]
+Description=Initialize UNO220 Nano trigger pin 3 to LOW only
+After=systemd-udev-trigger.service
+Before=rs232_executor.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/sbin/uno220-trigger-low.py
+RemainAfterExit=yes
+TimeoutStartSec=20
+
+[Install]
+WantedBy=multi-user.target

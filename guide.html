@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plasmic Electric Control - Description</title>
+<style>
+:root { --bg:#eef0f2; --paper:#fff; --ink:#1b222b; --muted:#5a6572; --line:#cdd2d9; --soft:#e6e9ed; --blue:#1d5fc2; --red:#b3261e; --redbg:#fde3e0; --okbg:#e8f1ea; --ok:#2f6f44; --hvbg:#fff0d4; --hv:#9a4a00; }
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.75 "Segoe UI","Microsoft JhengHei UI","Microsoft JhengHei","PingFang TC",sans-serif; }
+main { max-width:860px; margin:0 auto; background:var(--paper); padding:32px 44px 60px; border-left:1px solid var(--line); border-right:1px solid var(--line); min-height:100vh; }
+@media (max-width:700px) { main { padding:20px 16px 40px; } }
+h1 { margin:0 0 4px; font-size:30px; line-height:1.3; }
+h2 { margin:44px 0 10px; padding-top:14px; border-top:2px solid var(--ink); font-size:23px; scroll-margin-top:8px; }
+h3 { margin:22px 0 6px; font-size:18px; }
+p { margin:10px 0; }
+.lead { color:var(--muted); margin-bottom:14px; }
+.toc { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; padding:0; list-style:none; }
+.toc a { display:block; padding:4px 12px; border:1px solid var(--line); border-radius:16px; color:var(--ink); text-decoration:none; font-size:15px; background:#f7f8f9; }
+.toc a:hover { background:var(--soft); }
+code { font-family:Consolas,"Cascadia Mono",monospace; font-size:.9em; background:var(--soft); padding:1px 5px; border-radius:3px; }
+table { border-collapse:collapse; width:100%; margin:12px 0; font-size:16px; }
+th, td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+th { background:var(--soft); font-weight:600; white-space:nowrap; }
+td:first-child { width:38%; }
+.box { margin:14px 0; padding:12px 16px; border-radius:6px; border:1px solid var(--line); background:#f7f8f9; }
+.box.danger { background:var(--redbg); border-color:var(--red); }
+.box.ok { background:var(--okbg); border-color:#7fa98a; }
+.box.hv { background:var(--hvbg); border-color:var(--hv); }
+.box > b:first-child { display:block; margin-bottom:4px; }
+ol, ul { padding-left:24px; margin:8px 0; }
+li { margin:5px 0; }
+.check { list-style:none; padding:0; margin:6px 0 0; }
+.check li { margin:0; padding:9px 0; border-top:1px solid var(--soft); }
+.check label { display:grid; grid-template-columns:30px minmax(0,1fr); gap:6px; cursor:pointer; }
+.check input { width:20px; height:20px; margin-top:6px; }
+.check small { display:block; color:var(--muted); font-size:15px; }
+figure { margin:16px 0; }
+figure img { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:6px; }
+figcaption { margin-top:6px; font-size:15px; color:var(--muted); }
+.foot { margin-top:44px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:14.5px; }
+@media print { body { background:#fff; } main { border:0; padding:0; max-width:none; } .toc { display:none; } h2 { break-after:avoid; } }
+</style>
+<!-- test-count: 1015 -->
+</head>
+<body>
+<main>
+
+<h1>Plasmic Electric Control Description</h1>
+<p class="lead">Version 2.0.0 (2026-10-07) .This page only writes what is commonly used.</p>
+<ul class="toc">
+<li><a href="#start">start</a></li>
+<li><a href="#safety">Security</a></li>
+<li><a href="#first">first time use</a></li>
+<li><a href="#daily">How to use it normally</a></li>
+<li><a href="#trouble">when something goes wrong</a></li>
+<li><a href="#status">Current status Use after</a></li>
+</ul>
+
+<h2 id="start">start</h2>
+<ol>
+<li>Double-click ”<b>Plasmic Electronic control</b>”.A black window (the program itself, close it after use) and the operation screen in the browser will appear.</li>
+<li><b>Click the screen</b>,will become full screen. To leave: click on the upper right corner<b>Leave full screen</b>”.</li>
+<li>Look at the two squares in the upper right corner. They are both<b>green</b>is connected: ”<b>RPi Connected</b>”and ”<b>pump control board COM3</b>”.</li>
+<li>Select the operator in the upper right corner and you can use it.</li>
+</ol>
+<div class="box ok"><b>pump control board does not need to select the connection port.</b>USB cable is plugged into this computer, the program will find it by itself, and the screen will directly write which one it is (now it is COM3) .changed USB hole, no setting is required.</div>
+<figure><img alt="Overview of the operation screen: The upper right corner is RPi and the pump control board. On the left are eight pages, and at the bottom are three big buttons: start scheduling, pause, and stop." src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="><figcaption>operation screen. This is a screenshot of practice mode, so write ”simulation” in the upper right corner; if you are really connected, write ”RPi Connected” ”Pump Control Board COM3”.Select the page on the left, and there are three big buttons at the bottom: start scheduling, pause,<b>Stop STOP</b>.</figcaption></figure>
+<p>The pump calls on the screen <b>Pump 1-8</b>,According to the wiring sequence:Pump 1 It’s water,Pump 7 is emptying (OUT) ,Pump 8 yes CuSO₄.All the buttons on the screen can be clicked with your fingers; when you want to enter numbers or text, a keyboard will appear on the screen. Allow list of</p>
+<p>Want to practice first: Double-click ”<b>Plasmic electronic control (practice mode)</b>”.The equipment is all simulated, and every button can be pressed with confidence; maintenance PIN yes <code>000000</code>.</p>
+
+<h2 id="safety">Security</h2>
+<div class="box danger"><b>on the screen“stop STOP”is software, not an emergency stop.</b>
+<ul>
+<li>Before wiring, repairing, or touching the electrode: use<b>physical switch</b>Turn off the high voltage power supply and 24 V drive power supply, wait for the voltage to return to zero.</li>
+<li>screen display OFF, “Stopped”,<b>does not mean that the electrode is out of power</b>,There is no guarantee that the pump will stop. Go and see it on site.</li>
+<li>The pump does not stop, the pipeline falls off, and the liquid overflows: first press the button on the side of the pump. <b>24 V power-off switch</b>,Come back and look at the screen.</li>
+<li>When discharging and turning the pump, people must be present, and the physical switch must be at hand.</li>
+<li>When executing this program, do not open an independent laboratory at the same time v7 or Arduino IDE Serial port window.</li>
+</ul></div>
+
+<h2 id="first">First time use: do this checklist first</h2>
+<p>This version of the program and the new firmware for the pump control board<b>has not been run on real devices yet</b> (was only tested on simulated devices). So for the first time, please do it in the order below, and check each item only after you have really seen it.</p>
+<div class="box hv"><b>rule: </b>Stop if one thing is wrong. Don’t go down, don’t increase the voltage. Write down the message on the screen (also visible on the Alerts page).</div>
+
+<h3>1. Only look at (high voltage load and 24 V The drive power supply is disconnected) </h3>
+<ul class="check">
+<li><label><input type="checkbox"><span>The two squares in the upper right corner are green: ”RPi Connected” ”Pump Control Board COM3”.</span></label></li>
+<li><label><input type="checkbox"><span>“Overview” bottom row:HSPY writes ”OFF”,Nano Write ”standby”.<small>When the high-voltage power supply is not turned on HSPY writes ”? Readback is invalid”, which is normal.</small></span></label></li>
+<li><label><input type="checkbox"><span>Click the lower left corner“🔧 Maintenance”, enter PIN,point“Connect”: RPi program version is <b>2.0.0</b>; Pump control board connection port writing ”COM3 = pump control board”, firmware written”<b>Plasmic p2</b>”.</span></label></li>
+<li><label><input type="checkbox"><span>“Click ”Measurement Content” in ”Schedule Measurement” and change the discharge voltage to <b>30</b>,Click ”Save and Sync”.</span></label></li>
+</ul>
+
+<h3>2. Pump (only receives water; turn off the high pressure; put your hand on 24 V Next to the power-off switch)</h3>
+<ul class="check">
+<li><label><input type="checkbox"><span><b>What to connect the pump to:</b>“Maintenance › ”Pump and scale” ”What to connect to the pump” is written<b>water</b>and <b>OUT</b> It should be the same as the actual one (Cleaning will transfer these two) ; “Solenoid valve linkage”: There is no solenoid valve in the pipeline.“Not used”,If installed, set it to the pump it follows..<small>The solenoid valve set to ”not in use” will always be closed: if it is really installed on that pipeline, the liquid cannot be pumped out.</small></span></label></li>
+<li><label><input type="checkbox"><span><b>change 10 seconds:</b>“manual operation” is set above 10 mL/min, 10 Automatically stops in seconds. Press ”Pump 1 · ”water”ON”→“starts”. The pump starts turning, approx. 10 seconds later<b>Stop by yourself</b>.<small>If the high-voltage power supply is turned off from the switch, there will be an extra box in the window asking you to confirm ”The high-voltage power supply is off”. Check it again after confirming it.</small></span></label></li>
+<li><label><input type="checkbox"><span><b>Can stop: </b>Start again, click ”OFF”,Stop now.Start again,press bottom“stop STOP”,Stop now.</span></label></li>
+<li><label><input type="checkbox"><span><b>scale:</b>“Maintenance › Pump and Scale” Empty the cup and press ”Reset to Zero”, add the weight and press ”Scale Calibration”. Returning to ”Manual Operation”, the weight in the lower right corner is consistent with the actual weight.</span></label></li>
+<li><label><input type="checkbox"><span><b>pump calibration (do it for each pump to be used):</b>“Maintenance › Pump and Scale” click ”Pump Calibration”→ Choose one →“① beat 10 mL” ((Put the measuring cylinder first at the outlet), and the pump will stop automatically after it rotates. Read the measuring cylinder and press ”② Enter the actual number mL”.<small>, the ration of this one will be based on the new number. If you want to confirm, call again. 10 mL.</small></span></label></li>
+<li><label><input type="checkbox"><span><b>Weighing and quantitative:</b>For the pump whose outlet is on the scale, press ”Quantification”→“weight”→ 10 g.The pump is fast first, then slow, until the weight is reached<b>Stop by yourself</b>,At the bottom, write ”Quantitative completion:... g”.<small>This is the first real run of the new firmware: just stare at it. If you need to stop, just press 24 V power-off switch.</small></span></label></li>
+<li><label><input type="checkbox"><span><b>syringe pump:</b>outlet is connected to the beaker. Press ”Initialize” and try ”Aspiration” again1 mL, “injection”1 mL.Go to the scene and see if there is any movement.</span></label></li>
+<li><label><input type="checkbox"><span><b>automatic cleaning: </b>Press ”Start Cleaning”, approx. 2 minutes.</span></label></li>
+<li><label><input type="checkbox"><span><b>Turn both together: </b>“Schedule Measurement Click ”Process”→“Set yourself”→ Click ”Steps”. First click on ”Plasma” in the list＋The step of ”taking spectrum” →“Delete this step” (no discharge this time); press ”＋ New step”→“Use two pumps at the same time”,Pump 1-4 Choose one,Pump 5-8 Choose one, each 5 mL →“Completed”. Press ”Start Schedule”: two<b>at the same time</b>transfer, each will stop after transferring.<small>Two simultaneous rotation is a new version of this version. It has not been run on a real pump yet: keep an eye on it.</small></span></label></li>
+</ul>
+
+<h3>three, discharge (30 V; The high voltage load is still disconnected and the wire ends are fixed)</h3>
+<ul class="check">
+<li><label><input type="checkbox"><span><b>first discharge:</b>“Schedule Measurement, click ”Process”, select ”Discharge Measurement Only”, start immediately, and ” 1 times. Click ”Start Scheduling” at the bottom and check each item in the window after confirmation.HSPY panel changes first ON (about 30 V) ,will discharge after a few seconds and return to ”Plasma parameters” under <b>OFF, 0 V</b>.“Execution Record” has one more ”Complete”.</span></label></li>
+<li><label><input type="checkbox"><span><b>Press to stop during discharge:</b>Do it again, press ”Stop” during discharge. STOP”.within seconds HSPY Panel changes OFF.</span></label></li>
+<li><label><input type="checkbox"><span><b>Unplug the network line (the most important):</b>Do it again and see HSPY panel ON Then unplug the network cable.HSPY panel should be in <b>10 changes in seconds OFF</b>.exceeds 15 seconds even if it fails. It takes</span></label></li>
+</ul>
+
+<h3>4. Connect the load</h3>
+<ul class="check">
+<li><label><input type="checkbox"><span>Reconnect when power is off 24 V and high-voltage loads, keep personnel away from the electrodes. Change the voltage to <b>50</b>,Do a discharge-only measurement: normal end,HSPY Back OFF, 0 V.</span></label></li>
+<li><label><input type="checkbox"><span>pass, the voltage is increased step by step (for example 100 → 300 → target value, upper limit 700 V) .</span></label></li>
+</ul>
+<p>The details of each item and ”what should be seen” are in<a href="docs/detailed-guide.html#s5">Detailed steps 5</a>.</p>
+
+<h2 id="daily">How to use it normally</h2>
+<table>
+<tr><th>what to do</th><th>how to do</th></tr>
+<tr><td>Measure</td><td>“Schedule Measurement Click ”Process”→“<b>Set yourself</b>”,Click below again“<b>Steps</b>”.One round of steps 1, 2, 3… order to do,Write it yourself: <br>Press ”<b>＋ New steps</b>”Choose what to do:<b>pump: How many times mL</b> (Use this to add liquid, move to another tank, and drain),<b>Use two pumps together</b>, <b>pump: stop with scale</b>, <b>Plasma＋Take spectrum</b>, <b>automatic cleaning</b>, <b>Waiting</b>, <b>syringe pump</b> ((aspiration, injection).<br>Click a step to modify it, move forward or backward, clone, delete, write notes.Every modification is saved immediately.List writing“Not available yet”hour,Change it as it says.<br>Number of resets → bottom“<b>Start scheduling</b>”.Just measure once and choose ”Total 1 times”.</td></tr>
+<tr><td>Change discharge conditions</td><td>“Schedule Measurement Click<b>measurement content</b>” (When setting by yourself: Click ”Steps”→ ):ON/OFF time, number of pulses per round, number of rounds (=(number of spectra), integration time, spectral interval, voltage. No need PIN.<b>voltage is used by the program RS485 writes into high voltage power supply</b>,does not need to be adjusted on the panel.<small>is changed, the concentration calibration done before must be redone.</small></td></tr>
+<tr><td>stop</td><td>bottom“<b>Stop STOP</b>”,can be pressed at any time. ”Pause PAUSE”Stop after completing this step.</td></tr>
+<tr><td>Manually open the pump, syringe pump, and check the weight</td><td>“manual operation”. The pump will stop automatically after starting: it will stop when the time limit reaches the number of seconds, and it will stop when the weighing scale reaches the weight.</td></tr>
+<tr><td>See the results</td><td>“”Overview” looks at the concentration; ”Trend” looks at the changes; ”Execution Record” looks at each spectrum.</td></tr>
+<tr><td>Correction</td><td>“Calibration” page, follow the prompts on the screen to replace the standard.</td></tr>
+<tr><td>Calibration pump, calibration scale</td><td>“🔧 Maintenance › Pump and Scale”. Pump: ”Pump Calibration” ”→ Choose one → beat 10 mL → Enter the actual number mL.Scale: Empty cup ”returns to zero”→ Put the weight ”scale calibration”.</td></tr>
+<tr><td>Change the pipeline (which pump is connected to what) Replace ”</td><td>“🔧 Maintenance › Pump and Scale”. ”What to connect to the pump”: Choose water for each pump,OUT, Chemical (name) or not answered. ”Solenoid valve linkage”: Choose which pump to follow for each solenoid valve, or not use it.<small>Shuihe OUT are two tablets for cleaning. One should be in Pump 1-4, One in Pump 5-8.is changed, the steps on the schedule page are the same as Recipe are all photos Pump number is written and will not be changed by itself: the program will list what needs to be checked, please read it again.</small></td></tr>
+<tr><td>Change settings</td><td>lower left corner ”🔧 Maintenance” (Required PIN) : Recipe, Connections, plasma parameters, pumps and scales, spectra, operators. Except for removing the</td></tr>
+<tr><td>read message</td><td>“Alert” page. The gray bar at the top will show the current alert.</td></tr>
+</table>
+
+<h2 id="trouble">when something goes wrong</h2>
+<table>
+<tr><th>See</th><th>what to do</th></tr>
+<tr><td>Upper right corner ”RPi not connected”</td><td>Check the network line first RPi power supply.again“repair › Connection”, click ”Connection Diagnosis”, the first ✗ is the place to be processed. The actual machine verification of</td></tr>
+<tr><td>“Start Scheduling” is gray, and at the bottom it says ”High Voltage Power Supply (HSPY) No response”</td><td>Turn on the power switch of the high-voltage power supply and press the ”<b>Recheck</b>”: The screen will directly say the high voltage power supply and Nano Everyone has no answer. Open and still no response: look behind it RS485 of A, B Two lines (loose or reversed), and the communication address of the panel (1) , rate (9600) .</td></tr>
+<tr><td>”Pump control board not connected” in the upper right corner</td><td>Check the pump control board USB line. It will connect itself within a few seconds after connecting, no need to select a port.</td></tr>
+<tr><td>“Stop command not confirmed”</td><td>Use the physical switch to cut off the power, and then look at what is written on the ”Alarm” page.</td></tr>
+<tr><td>The pump does not stop and liquid overflows.</td><td>Press the pump first 24 V power-off switch.</td></tr>
+<tr><td>“The scale is not responding”, Syringe pump“no response”</td><td>First check whether the power supply on the pump side is turned on and whether the module wires are connected properly. The board itself (USB) is connected, but the module did not answer.</td></tr>
+<tr><td>“The scale has not been calibrated yet”</td><td>“Maintenance › Pump and Scale” perform a zero reset and scale calibration.</td></tr>
+<tr><td>The screen cannot be opened</td><td>Is the black window still there? If not, double-click again.Plasmic electronic control”.</td></tr>
+<tr><td>Forgot to repair PIN</td><td>Double-click in the folder <code>Set-PIN.cmd</code> reset.</td></tr>
+<tr><td>Others</td><td><a href="docs/detailed-guide.html#trouble">Detailed ”When something goes wrong”</a>.</td></tr>
+</table>
+
+<h2 id="status">Current status (tell the truth)</h2>
+<ul>
+<li><b>Already installed: </b>This computer,RPi (program 2.0.0) , Nano (firmware 1.2.1) .Computer and  RPi is connected directly with a network cable.</li>
+<li><b>pump control board (Arduino Mega,COM3) : </b>The firmware is in 2026-10-07 Change to evening <b>Plasmic p2</b> (Changed it first in the morning p1) : The scale weighs and quantifies by the board itself, and stops when the weight is reached; water and OUT can be replaced with another pump;<b>The solenoid valve will only move if ”solenoid valve linkage” is set. If not set, it will not be used. The</b>.confirmed after burning: board report p2, The motor stops and the solenoid valve closes.<b>The pump is not used yet. p2 transferred.</b>is backed up and can be burned back ( Each line between<code>mega\README.txt</code>) .</li>
+<li><b>2026-10-07 Did you do it with real equipment?</b> ((read from the program’s records): Open this version for the first time at noon:RPi Connect and the program will find the pump control board by itself (COM3) , The original data upgrade is completed. Click ”Stop” once. STOP”.afternoon (the firmware is still Program commanded by p1 ) manual start and stop The program of Pump 1-4 Several times, the board did as instructed;15:30 The scale has a reading and the syringe pump has also detected it.<b>Weighing and quantification, syringe pump action, automatic cleaning, and scheduling have not been done yet.</b></li>
+<li><b>high voltage power supply:</b>2026-10-07 night 19:50 read (output What is the difference between OFF; The set voltage on the panel is <b>1000 V</b>,program is 30 V) .In the afternoon, it is clear and unavailable; when you can’t read it again, look behind it RS485 of A/B two lines, communication address (1) with rate (9600) ,Click ”Recheck” after touching it.<b>This version has not been discharged yet.</b></li>
+<li><b>The set voltage is written by the program (2026-10-07 Made at night):</b>When the set voltage on the panel is different from that of the program, the program will use it by itself when the power is turned off. RS485 Change it to the program voltage (the highest 700 V) ,Confirm again before discharging; if it cannot be written in, the high voltage will not be turned on. No more ”inconsistent” messages.<b>I haven’t tried it on a real power supply.</b></li>
+<li><b>spectrometer: </b>19:53 in ”Maintenance › Spectrum” was captured (without discharge) and can be read.</li>
+<li><b>Current Limitation of High Voltage Power Supply: </b>The program no longer checks (The original current limit setting exceeds 0.1 A No discharge; 2026-10-07 Remove it according to your request). The current limit is the value set on the high voltage power supply panel.</li>
+<li><b>has not been run on real devices yet:</b>New measurement sequence, weighing and rationing, syringe pump, cleaning, scheduling, and<b>Newly added to this version: Two pumps meter simultaneously, Write your own step-by-step process (Including syringe pump) , pump calibration, “What to connect to the pump”and“Solenoid valve linkage”, Full screen wide picture</b>.They have only been tested on simulated devices (1015 automatic tests). So do the above checklist first.</li>
+<li><b>Did it on real equipment</b> (2026-10-05,Use the old program of the time) : Read about high voltage power supplies and Nano, captures the spectrum to 30 V discharge.</li>
+</ul>
+
+<h3>What’s in the folder?</h3>
+<table>
+<tr><th>Name</th><th>used for?</th></tr>
+<tr><td><code>Start.cmd</code> (Desktop“Plasmic electronic control”)</td><td>Get started.</td></tr>
+<tr><td><code>Start-Demo.cmd</code> (Desktop ”...Practice Mode”)</td><td>Practice without touching the equipment.</td></tr>
+<tr><td><code>Set-PIN.cmd</code></td><td>Setup maintenance PIN.</td></tr>
+<tr><td><code>Install.cmd</code>, <code>Flash-Nano.cmd</code></td><td>Change computer and update RPi, Replace with new ones Nano .</td></tr>
+<tr><td><code>mega</code> folder</td><td>pump control board firmware: source code, backup, and burning tools.</td></tr>
+<tr><td><code>docs</code> folder</td><td>Detailed description and work record (for maintenance personnel).</td></tr>
+<tr><td><code>pc</code>, <code>rpi</code>, <code>nano</code>, <code>installer</code>, <code>tests</code></td><td>The program itself does not need to be touched. The measurement data is in <code>pc\data</code>.</td></tr>
+</table>
+<p>installation, wiring, network,Recipe How to do it, complete checklist:<a href="docs/detailed-guide.html">Detailed description</a> (<code>docs\detailed-guide.html</code>) .”Steps” written in the program message 1”“Steps 5”“Reference Material” refers to that one.</p>
+
+<p class="foot">Plasmic Electronic control 2.0.0 · pump control board firmware Plasmic p2 · 2026-10-07</p>
+</main>
+</body>
+</html>

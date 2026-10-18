@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="light">
+<title>Plasmic Control</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/pages.css">
+<link rel="stylesheet" href="/css/maint.css">
+<link rel="stylesheet" href="/css/analysis.css">
+<link rel="stylesheet" href="/css/polish.css">
+</head>
+<body>
+<div class="hmi" id="hmi">
+
+  <!--top bar-->
+  <div class="top">
+    <div class="title">Plasmic Control</div>
+    <span class="mode" id="mode">Production</span>
+    <span class="sp"></span>
+    <span class="chip q-na" id="chip-rpi" role="button" tabindex="0"><i></i><span>RPi …</span></span>
+    <span class="chip q-na" id="chip-pump" role="button" tabindex="0"><i></i><span>Pump controller…</span></span>
+    <button type="button" class="opbtn none" id="opbtn" title="Change operator"><small>Operator</small><b>Please select</b></button>
+    <span class="tag q-maint" id="maint-mark" hidden></span>
+    <a class="userbtn" href="/guide" target="_blank" rel="noopener">Help</a>
+    <button type="button" class="userbtn" id="fsbtn" hidden>Full Screen</button>
+    <div class="clock" id="clock"><small></small><span></span></div>
+  </div>
+
+  <!--Alert Banner-->
+  <div class="banner none" id="banner">
+    <span class="none-text">No active alarm</span>
+    <span class="pri" hidden></span>
+    <span class="time" hidden></span>
+    <span class="msg" role="button" tabindex="0" title="Click to see the complete message" hidden></span>
+    <span class="more" hidden></span>
+    <button type="button" id="banner-ack" hidden>Confirm ACK</button>
+    <button type="button" id="banner-list" hidden>Alarm List</button>
+  </div>
+
+  <div class="body">
+    <!--Left navigation-->
+    <div class="nav" id="nav">
+      <button type="button" data-page="dash"><span class="lbl">Overview</span></button>
+      <button type="button" data-page="schedule"><span class="lbl">Schedule</span></button>
+      <button type="button" data-page="manual"><span class="lbl">Manual Control</span></button>
+      <button type="button" data-page="trend"><span class="lbl">Trends</span></button>
+      <button type="button" data-page="runs"><span class="lbl">Run History</span></button>
+      <button type="button" data-page="calibration"><span class="lbl">Calibration</span><span class="badge p2" hidden>!</span></button>
+      <button type="button" data-page="alarms"><span class="lbl">Alarms</span><span class="badge" hidden></span></button>
+      <button type="button" class="navmaint" data-page="maint"><span class="lbl">🔧 Maintenance</span></button>
+    </div>
+
+    <!--One block per page; content is created by js/pages/<name>.js-->
+    <section class="page" id="page-dash" hidden></section>
+    <section class="page" id="page-schedule" hidden></section>
+    <section class="page" id="page-manual" hidden></section>
+    <section class="page" id="page-trend" hidden></section>
+    <section class="page" id="page-runs" hidden></section>
+    <section class="page" id="page-calibration" hidden></section>
+    <section class="page" id="page-alarms" hidden></section>
+    <section class="page" id="page-maint" hidden></section>
+  </div>
+
+  <!--bottom action column-->
+  <div class="foot">
+    <button type="button" class="start" id="btn-start" disabled>Start Schedule</button>
+    <button type="button" class="pause-btn" id="btn-pause" disabled>Pause</button>
+    <button type="button" class="stop" id="btn-stop" data-through="1">Stop</button>
+    <div class="prog" id="prog"></div>
+    <span class="hvtag" id="hvtag" title="schedules to automatically output high voltage for each measurement." hidden>⚡ Contains high voltage</span>
+    <div class="estop" title="STOP is a software stop, not a safety level emergency stop.">
+      <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><circle class="e-out" cx="16" cy="16" r="14"></circle><circle class="e-in" cx="16" cy="16" r="8"></circle></svg>
+      <span>For an emergency, press the device's <b>physical emergency-stop button</b><small>The on-screen Stop button performs a software stop.</small></span>
+    </div>
+  </div>
+
+  <!--dialog box (one at a time)-->
+  <div class="overlay" id="overlay" hidden></div>
+  <div class="dialog" id="dialog" role="dialog" aria-modal="true" tabindex="-1" hidden></div>
+</div>
+
+<!--full screen: once opened, cover the entire window and click to enter full screen (js/frame.js). If you add ?fs=0 to the URL, it will not appear.-->
+<div class="fs-gate" id="fs-gate" hidden>
+  <button type="button" class="fs-go" id="fs-go"><b>Click the screen to start (full screen)</b><small>To leave later: Press &quot;Leave full screen&quot; in the upper right corner</small></button>
+  <button type="button" class="fs-skip" id="fs-skip">Continue without full screen</button>
+</div>
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

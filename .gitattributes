@@ -1,0 +1,19 @@
+# Preserve reviewed source and scientific artifact checksums across platforms.
+# The 2.0.0 tests check line endings: *.cmd and the Chinese text files are CRLF,
+# *.sh, *.service and the Python/JS/CSS sources are LF. Nothing is converted.
+* -text
+*.h5 binary
+*.npy binary
+*.zcos binary
+*.ttf binary
+*.png binary
+
+# Treat preserved Windows CRLF line endings as valid whitespace.
+* whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# GitHub language statistics: vendored and generated code, design notes and guides.
+pc/vendor/** linguist-vendored
+mega/source/** linguist-generated
+legacy/instrument-control/firmware/stm32/Drivers/** linguist-vendored
+docs/** linguist-documentation
+*.html linguist-documentation

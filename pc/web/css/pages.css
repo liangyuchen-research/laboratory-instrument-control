@@ -1,0 +1,260 @@
+/** Plasmic Electronic Control 2.0.0 — pages.css: the five operator pages (SPEC E.4–E.8, AMENDMENTS M5.4).
+ * Overview #page-dash · Schedule measurement #page-schedule · Manual operation #page-manual · Execution record #page-runs · Alarms #page-alarms
+ * Starting point: the original HMI's style block (same class names). Every rule is tied to its page section, so
+ * nothing here reaches another page and no later style sheet changes these pages by accident.
+ * A page is 582 px high inside and 888 px (a 4:3 window) to 1544 px wide (base.css .page: flex column, 8 px between
+ * its panels); nothing scrolls. The widths written here are the ones of 888 px; what a wider frame adds is shared out
+ * with var(--extra) (0 at 4:3, 341px at 16:9) or by flex. Heights are the same at every width.*/
+
+/*══════════════ Overview ══════════════ 84 + 84 + 304 + 56 + 22, four gaps of 8 = 582*/
+#page-dash .metals { flex: 0 0 84px; display: flex; gap: 8px; }
+#page-dash .metal { flex: 1 1 0; min-width: 0; padding: 6px 12px; display: flex; flex-direction: column; justify-content: space-between; }
+#page-dash button.metal { font: inherit; text-align: left; color: var(--ink); cursor: pointer; }
+#page-dash button.metal:disabled { cursor: default; }
+#page-dash .metal-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+#page-dash .metal-name { font-size: 19px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+#page-dash .metal-head .tag { line-height: 1.3; }
+#page-dash .metal-val { display: flex; align-items: flex-end; gap: 6px; min-width: 0; }
+#page-dash .metal-val b { flex: 0 0 auto; font-family: var(--font-heading); font-size: 30px; line-height: 1; color: var(--ink-3); white-space: nowrap; }
+#page-dash .metal-val.has b { color: var(--ink); }
+/* the sub-line stands beside the value and may take three lines: the cards are 216 px wide, a third less than the original's */
+#page-dash .metal-val > span { min-width: 0; font-size: 13px; line-height: 1.13; color: var(--ink-3); overflow: hidden;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+#page-dash .metal-val .nb { white-space: nowrap; }
+/* a tap on a card says its sub-line in full (it shows three lines at most) */
+#page-dash div.metal { cursor: pointer; }
+#page-dash div.metal:focus-visible { outline: 3px solid var(--run); outline-offset: -3px; }
+/* a header line that is cut (an error, a long name): underlined, and a tap anywhere on the height of the header opens it */
+#page-dash .ph .sub.tap { margin: -6px 0; padding: 6px 0; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+
+#page-dash .steps { flex: 0 0 84px; min-height: 0; display: flex; flex-direction: column; }
+#page-dash .steps .meta { font-size: 14px; color: var(--ink-2); white-space: nowrap; }
+#page-dash .steps-row { display: flex; gap: 3px; padding: 6px 8px 7px; }
+#page-dash .step { flex: 1 1 0; min-width: 0; height: 36px; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 0 4px;
+  border: 1px solid var(--line); background: #fff; font-size: 15px; color: var(--ink-2); white-space: nowrap; }
+#page-dash .step .no { font-size: 12px; color: var(--ink-3); }
+#page-dash .step .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#page-dash .step.done { background: #e4e8ec; color: var(--ink-2); }
+#page-dash .step.cur { background: var(--run); border-color: var(--run); color: #fff; font-weight: 700; }
+#page-dash .step.cur .no { color: #dce9f6; }
+#page-dash .step.pause { background: #ffe9a8; border-color: #b88a00; color: #5a4100; font-weight: 700; }
+#page-dash .step.pause .no { color: #5a4100; }
+#page-dash .step.fail { background: var(--p2); border-color: var(--p2); color: #fff; font-weight: 700; }
+#page-dash .step.fail .no { color: #fff; }
+#page-dash .steps-empty { padding: 10px 12px; font-size: 15px; color: var(--ink-3); }
+
+/* D3: .ph 35 + .thead 28 + six rows of 32 + pager 47 (its buttons are 44 px) inside 304. The six rows stay 32 px:
+   there is no height to take, and a wide frame adds none */
+#page-dash .d3 { flex: 0 0 304px; }
+#page-dash .d3-steps { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+#page-dash .d3 .thead { flex-basis: 28px; }
+#page-dash .d3 .pager { padding: 1px 8px; }
+#page-dash .d3 .empty { padding: 16px 20px; }
+/*Before you start using: four status lines, no buttons (the nav rail is the one way into maintenance)*/
+#page-dash .setup { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+#page-dash .setup-line { flex: 0 0 58px; display: flex; align-items: center; gap: 12px; padding: 0 12px; border-bottom: 1px solid #dcdee0; }
+#page-dash .setup-line .no { flex: 0 0 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line);
+  background: #fff; font-family: var(--font-heading); font-size: 18px; color: var(--ink-2); }
+#page-dash .setup-line .txt { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+#page-dash .setup-line .txt b { font-size: 16px; }
+/* what to do, in full: two lines where a 4:3 window has no room for one (16 + 2 x 13 px at 1.3 = 55 of 57 px) */
+#page-dash .setup-line .txt small { font-size: 13px; color: var(--ink-3); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+#page-dash .setup-line .tag { flex: 0 0 auto; font-size: 14px; }
+
+/*D4: seven cells. They share the width by what they hold (measured at 14 px bold: the pump and the syringe say the
+   most; "Fault: Heartbeat interrupted" and "12 items (unconfirmed 12)" still fit). A value that is longer is cut; a tap shows all of it.*/
+#page-dash .strip { flex: 0 0 56px; display: flex; }
+#page-dash .cell { flex: 95 1 0; min-width: 0; padding: 5px 8px; display: flex; flex-direction: column; justify-content: center; gap: 3px;
+  border: 0; border-right: 1px solid var(--line); background: transparent; font: inherit; line-height: 1.2; text-align: left; color: var(--ink); cursor: pointer; }
+#page-dash .cell:last-child { border-right: 0; }
+#page-dash .cell:nth-child(2) { flex-grow: 79; }
+#page-dash .cell:nth-child(3) { flex-grow: 98; }
+#page-dash .cell:nth-child(4) { flex-grow: 155; }
+#page-dash .cell:nth-child(5) { flex-grow: 157; }
+#page-dash .cell:nth-child(6) { flex-grow: 66; }
+#page-dash .cell:nth-child(7) { flex-grow: 116; }
+#page-dash .cell:not(:disabled):active { background: var(--run-bg); }
+#page-dash .cell small { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+#page-dash .cell b { max-width: 100%; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-dash .cell b.q-na { font-weight: 400; }
+#page-dash .cell b.p1 { color: var(--p1); }
+#page-dash .cell b.p2 { color: var(--p2); }
+#page-dash .cell b.p3 { color: #8a6d00; }
+
+#page-dash .dash-note { flex: 0 0 22px; padding: 0 2px; font-size: 13px; line-height: 22px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* a wide frame: the cards and the cells have the room for one size more */
+@container hmi (min-width: 1280px) {
+  #page-dash .metal { padding: 6px 16px; }
+  #page-dash .metal-val > span { font-size: 14px; }
+  #page-dash .cell { padding: 5px 12px; }
+  #page-dash .cell b { font-size: 15px; }
+  #page-dash .step { font-size: 16px; }
+  #page-dash .dash-note { font-size: 14px; }
+}
+
+/*── the step table of D3; the "step" view of execution record shows the same table ──*/
+:is(#page-dash, #page-runs) .s-no { flex: 0 0 44px; font-family: var(--font-heading); font-size: 15px; }
+:is(#page-dash, #page-runs) .s-text { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#page-dash, #page-runs) .s-st { flex: 0 0 110px; }
+:is(#page-dash, #page-runs) .s-res { flex: 0 0 calc(190px + var(--extra) * .3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#page-dash, #page-runs) .s-time { flex: 0 0 calc(70px + var(--extra) * .06); font-family: var(--font-heading); font-size: 15px; }
+:is(#page-dash, #page-runs) .thead .s-no, :is(#page-dash, #page-runs) .thead .s-time { font-family: inherit; font-size: 13px; }
+:is(#page-dash, #page-runs) .trow.cur { background: var(--run-bg); }
+:is(#page-dash, #page-runs) .trow.wait { color: var(--ink-3); cursor: default; }
+:is(#page-dash, #page-runs) .st.notrun { color: var(--ink-3); border-style: dashed; }
+
+/*══════════════ Schedule Measurement ══════════════ 392 + 8 + 488 at 4:3; a third of what a wide frame adds goes to the form*/
+#page-schedule .sch-body { flex: 1; min-height: 0; display: flex; gap: 8px; }
+#page-schedule .sch-left { flex: 0 0 calc(392px + var(--extra) * .32); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+#page-schedule .sch-right { flex: 1; min-width: 0; }
+#page-schedule .ph .meta { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+/*four rows of tiles (80 px, 8 px apart): the Recipe and measurements take a whole row each*/
+#page-schedule .sch-grid { flex: 0 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px 12px 4px; }
+#page-schedule .sch-grid .both { grid-column: span 2; }
+#page-schedule .stile { line-height: 1.2; }
+#page-schedule .stile.hv { padding-top: 5px; padding-bottom: 5px; }
+#page-schedule .stile.na > b { color: var(--ink-3); font-weight: 400; }
+/*the steps of a round written on this page (AMENDMENTS M23, schedule.js .sch-stages; the four stages of M16
+   before). One tile lists them: its name, the steps on up to four lines (what is cut, its dialog shows), and a line
+   that says how many there are or what is still wrong. The grid is then .staged and its other tiles are lower
+   (Flow 48 px without its second line, the four settings 72 px): 48 + 128 + 72 + 72 and three gaps = 344 px, exactly
+   the four rows of 80 px of a Recipe, so the estimate and the messages keep their room*/
+#page-schedule .sch-stages { grid-column: span 2; display: grid; grid-template-columns: 1fr; min-width: 0; }
+#page-schedule .sch-stages .stile { height: 128px; padding: 4px 10px; gap: 1px; justify-content: flex-start; }
+#page-schedule .sch-stages .stile > span { white-space: nowrap; }
+#page-schedule .sch-stages .stile > b { font-size: 15px; line-height: 1.25; font-weight: 600; white-space: normal;
+  overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
+#page-schedule .sch-stages .stile > small { margin-top: auto; }
+#page-schedule .sch-grid.staged > .stile { height: 72px; padding-top: 6px; padding-bottom: 6px; }
+#page-schedule .sch-grid.staged > .stile.both { height: 48px; padding-top: 3px; padding-bottom: 3px; gap: 0; }
+#page-schedule .sch-grid.staged > .stile.both > b { font-size: 18px; }
+#page-schedule .sch-grid.staged > .stile.both > small { display: none; }
+#page-schedule .sch-est { flex: 0 0 auto; padding: 0 12px 4px; }
+#page-schedule .sch-est .dlg-line { font-size: 15px; line-height: 1.25; padding: 2px 0; }
+#page-schedule .sch-est .dlg-line b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-schedule .sch-est button.dlg-line { width: 100%; border: 0; border-bottom: 1px dotted #d0d2d5; background: transparent; font-family: inherit; text-align: left; color: var(--ink); cursor: pointer; }
+/* what the program says about the form: one box per message, as many lines as the room allows (a tap shows all of it) */
+#page-schedule .sch-notes { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 3px; padding: 0 12px 4px; }
+#page-schedule .sch-warn, #page-schedule .sch-err { flex: 0 0 auto; display: block; width: 100%; padding: 3px 10px; border: 0; font-family: inherit; font-size: 13px;
+  line-height: 1.3; text-align: left; cursor: pointer; }
+#page-schedule .sch-warn { background: #fff7d6; border-left: 5px solid var(--p3); color: var(--ink); }
+#page-schedule .sch-err { background: #fff4ea; border-left: 5px solid var(--p2); color: #8a3d00; font-weight: 700; }
+#page-schedule .sch-notes span { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow-wrap: anywhere; }
+#page-schedule .sch-notes.k2 span { -webkit-line-clamp: 2; }
+#page-schedule .sch-notes.k3 span { -webkit-line-clamp: 3; }
+/*a wide frame: the form is wide enough for the estimate in two columns. That frees the height the message boxes and
+   the "liquid used" line need to be 44 px, which a 4:3 window does not have (there they stay as high as their text)*/
+@container hmi (min-width: 1280px) {
+  #page-schedule .sch-est { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  #page-schedule .sch-est button.dlg-line { grid-column: 1 / -1; min-height: 44px; align-items: center; }
+  #page-schedule .sch-warn, #page-schedule .sch-err { min-height: 44px; font-size: 14px; }
+}
+/*slot log. The order is wider than the original's 52 px: a blank slot reads “［［］12”*/
+#page-schedule .sch-right .thead, #page-schedule .sch-right .trow { gap: 6px; padding: 0 8px; }
+#page-schedule .c-slot { flex: 0 0 calc(70px + var(--extra) * .06); font-size: 14px; white-space: nowrap; }
+#page-schedule .c-plan { flex: 0 0 calc(84px + var(--extra) * .06); font-family: var(--font-heading); font-size: 15px; white-space: nowrap; }
+#page-schedule .c-sst { flex: 0 0 calc(136px + var(--extra) * .06); font-size: 14px; }
+#page-schedule .c-hm { flex: 0 0 calc(42px + var(--extra) * .06); font-family: var(--font-heading); font-size: 15px; }
+#page-schedule .thead .c-slot, #page-schedule .thead .c-plan, #page-schedule .thead .c-hm { font-family: inherit; font-size: 13px; }
+#page-schedule .sch-right .empty { padding: 30px 24px; }
+
+/*══════════════ Manual operation ══════════════ notice 41, then 550 + 8 + 330 at 4:3. Of what a wide frame adds, the pump
+   rows take two thirds (wider buttons) and syringe pump · weight one third*/
+#page-manual .notice { min-height: 41px; }
+#page-manual .notice .n-body b { font-weight: 400; }
+#page-manual .manual { flex: 1; min-height: 0; display: flex; gap: 8px; }
+#page-manual .pumps { flex: 1 1 550px; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+#page-manual .pumps .ph { flex: 0 0 52px; padding: 0 12px; }
+#page-manual .prow { flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: 12px; padding: 0 12px; border-bottom: 1px solid #dcdee0; }
+#page-manual .prow:last-child { border-bottom: 0; }
+#page-manual .prow .nm { flex: 1; min-width: 0; line-height: 1.25; }
+#page-manual .prow .nm b { display: block; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-manual .prow .nm small { display: block; font-size: 13px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#page-manual .prow .tag { flex: 0 0 auto; min-width: calc(116px + var(--extra) * .08); font-size: 14px; text-align: center; }
+#page-manual .prow .btn { flex: 0 0 auto; height: 46px; padding: 0; font-size: 17px; }
+#page-manual .prow .b-on, #page-manual .prow .b-off { width: calc(56px + var(--extra) * .1); }
+#page-manual .prow .b-dose { width: calc(60px + var(--extra) * .1); }
+#page-manual .prow .b-clean { width: calc(120px + var(--extra) * .2); }
+#page-manual .pumps .empty { padding: 20px; }
+#page-manual .side { flex: 0 0 calc(330px + var(--extra) * .34); min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+#page-manual .syr-panel { flex: 0 0 318px; min-height: 0; display: flex; flex-direction: column; }
+#page-manual .syr { flex: 1; min-height: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+#page-manual .syr .row { display: flex; align-items: center; gap: 8px; }
+#page-manual .syr .row > span { flex: 0 0 44px; font-size: 15px; color: var(--ink-2); }
+#page-manual .syr .seg { flex: 1; }
+#page-manual .syr .seg button { flex: 1; min-width: 0; height: 50px; font-size: 16px; }
+#page-manual .syr .nudge { flex: 0 0 calc(48px + var(--extra) * .05); width: calc(48px + var(--extra) * .05); height: 46px; padding: 0; font-size: 22px; }
+#page-manual .syr .acts { display: flex; gap: 8px; }
+#page-manual .syr .acts .btn { flex: 1; height: 46px; padding: 0; }
+#page-manual .fb { font-size: 13px; line-height: 1.4; color: var(--ink-3); }
+#page-manual .fb .why { display: block; color: #8a3d00; font-weight: 700; }
+#page-manual .scale-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+#page-manual .scale-val { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 44px; line-height: 1; white-space: nowrap; }
+#page-manual .scale-val.q-bad, #page-manual .scale-val.q-na { font-weight: 400; }
+#page-manual .scale-note { flex: 0 0 auto; padding: 0 12px 10px; font-size: 13px; line-height: 1.4; color: var(--ink-3); text-align: center; }
+
+/*══════════════ Execution record ══════════════*/
+#page-runs .c-time { white-space: nowrap; }
+#page-runs .c-op { flex: 0 0 calc(80px + var(--extra) * .08); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#page-runs .c-recipe { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#page-runs .c-slot { flex: 0 0 52px; white-space: nowrap; }
+#page-runs .c-hm { flex: 0 0 48px; font-family: var(--font-heading); font-size: 15px; }
+#page-runs .c-status { flex: 0 0 76px; }
+#page-runs .c-conc { flex: 0 0 calc(190px + var(--extra) * .3); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#page-runs .c-err { flex: 0 0 calc(110px + var(--extra) * .3); font-size: 13px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#page-runs .thead .c-time, #page-runs .thead .c-hm { font-family: inherit; font-size: 13px; }
+/* the note of a row that opens nothing else: the whole height of the row takes the tap */
+#page-runs div.trow .c-err.tap { align-self: stretch; line-height: 43px; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+/*a slot that was skipped has a long status word and a short result ("not measured"): the two columns trade their room*/
+#page-runs .trow.long-st .c-status { flex-basis: 136px; }
+#page-runs .trow.long-st .c-conc { flex-basis: calc(130px + var(--extra) * .3); }
+#page-runs .list-view, #page-runs .detail-view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+@container hmi (min-width: 1280px) {
+  #page-runs .c-conc, #page-runs .c-err { font-size: 14px; }
+}
+/* detail: the facts beside the chart. chart.js draws 620 x 308; a wide frame shows it up to 1.3 times as big (as
+   much as the height allows: 55 + 4 + 310 x 1.3 + 54 + 54 = 570 of 580) and the facts take the width that is left */
+#page-runs { --chart-zoom: min(1.3, calc(1 + var(--wx, 0) / 640)); }
+#page-runs .detail-view .ph { gap: 10px; }
+#page-runs .detail-view .ph h2 { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#page-runs .det-body { flex: 1; min-height: 0; display: flex; gap: 6px; padding: 4px 0 0 12px; }
+#page-runs .det-left { flex: 1 1 244px; min-width: 0; }
+#page-runs .det-left .kv.big { padding: 0; }
+#page-runs .det-left .kv.big div { padding: 7px 0; }
+#page-runs .det-left .kv.big b { min-width: 0; padding-left: 8px; }
+#page-runs .det-left .kv.big div.stack { flex-direction: column; align-items: flex-start; }
+#page-runs .det-left .kv.big div.stack b { padding-left: 0; font-size: 15px; max-width: 100%; }
+#page-runs .det-left .kv.big div[role="button"] { min-height: 44px; justify-content: center; cursor: pointer; }
+#page-runs .det-right { flex: 0 0 auto; min-width: 0; display: flex; flex-direction: column; }
+#page-runs .det-right .chart { margin: 2px 4px 0 0; flex: 0 0 308px; }
+#page-runs .det-under { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; padding: 10px 8px 0 0; font-size: 14px; white-space: nowrap; }
+#page-runs .det-under .sp { flex: 1; }
+#page-runs .det-under .btn { padding: 0 10px; }
+#page-runs .peaks { display: flex; gap: 6px; }
+#page-runs .peaks .btn { min-width: 56px; }
+#page-runs .det-under .btn.sel { background: var(--run); border-color: var(--run); color: #fff; }
+#page-runs .det-foot { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 10px 8px 0 0; }
+#page-runs .det-foot .sp { flex: 1; }
+#page-runs .det-steps { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+/*══════════════ Alarms ══════════════ .ph 55 + .thead 34 + (8 alarms of 54 | 12 events of 36 = 432) + pager 53 = 574 of 580*/
+#page-alarms .counts { display: flex; gap: 6px; }
+#page-alarms .count { display: flex; align-items: center; gap: 6px; padding: 3px 8px; border: 1px solid var(--line); background: #fff; font-size: 14px; white-space: nowrap; }
+#page-alarms .count i { display: block; width: 10px; height: 10px; }
+#page-alarms .count i.p1 { background: var(--p1); }
+#page-alarms .count i.p2 { background: var(--p2); }
+#page-alarms .count i.p3 { background: var(--p3); }
+#page-alarms .c-time { white-space: nowrap; }
+#page-alarms .c-pri { flex: 0 0 58px; }
+#page-alarms .c-area { flex: 0 0 calc(60px + var(--extra) * .08); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#page-alarms .c-state { flex: 0 0 118px; font-size: 14px; white-space: nowrap; }
+#page-alarms .c-act { flex: 0 0 84px; text-align: center; }
+#page-alarms .c-who { flex: 0 0 calc(80px + var(--extra) * .1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#page-alarms .thead .c-time { font-family: inherit; font-size: 13px; }
+#page-alarms .tab-view .trow { min-height: 54px; }
+#page-alarms .tab-view .trow.slim { min-height: 36px; font-size: 14px; }
+#page-alarms .trow .c-msg.one.tap { line-height: 53px; }
+#page-alarms .trow.slim .c-time { font-size: 15px; }
+#page-alarms .ack { height: 44px; min-width: 72px; }
+#page-alarms .tab-view { flex: 1; min-height: 0; display: flex; flex-direction: column; }

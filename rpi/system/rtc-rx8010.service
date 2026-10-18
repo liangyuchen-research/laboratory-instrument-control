@@ -1,0 +1,12 @@
+[Unit]
+Description=Set system time from RX8010 RTC (I2C)
+After=systemd-modules-load.service local-fs.target
+Before=time-sync.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /home/pi/rtc_driver.py
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

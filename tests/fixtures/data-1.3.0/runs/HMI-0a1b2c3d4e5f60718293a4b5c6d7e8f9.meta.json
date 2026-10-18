@@ -1,0 +1,27 @@
+{
+  "job": "HMI-0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+  "kind": "plasma",
+  "started_at": "2026-10-05T12:00:01.050000+00:00",
+  "finished_at": "2026-10-05T12:00:30.700000+00:00",
+  "voltage_v": 30,
+  "model": "OES-C225",
+  "integration_ms": 1000,
+  "pixels": 16,
+  "signal_frames": 2,
+  "background_frames": 3,
+  "parameters": {
+    "valid": true,
+    "voltage_v": 30,
+    "integration_ms": 1000,
+    "on_time_ms": 25.0,
+    "off_time_ms": 5,
+    "cycles": 25,
+    "loops": 2,
+    "spectra_interval_ms": 1500
+  },
+  "sequence": "verified",
+  "saved_at": "2026-10-05T12:00:32.250000+00:00",
+  "peak_nm": 337.1,
+  "peak_value": 2900.0,
+  "wait_s": 10.3
+}

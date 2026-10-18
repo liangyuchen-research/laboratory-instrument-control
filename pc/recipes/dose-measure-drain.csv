@@ -1,0 +1,9 @@
+action,target,value,unit,note
+dose_weight,P8,10,g,join in CuSO₄ solution 10 g (Confirm with scale) .Please modify the value according to actual needs
+dose_volume,P1,20,mL,add water 20 mL
+delay,,5,s,and other liquid levels are stable
+scale_read,,,,Weight after adding liquid
+plasma_run,,,,discharge＋capture spectrum
+pump_on,P7,40,mL/min,discharge (OUT)
+delay,,60,s,Row 60 Second
+pump_off,P7,,,
